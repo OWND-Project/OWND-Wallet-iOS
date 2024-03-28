@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package datastore;
+
+message IdTokenSharingHistory {
+  string rp = 1;
+  int32 accountIndex = 2;
+  google.protobuf.Timestamp createdAt = 3;
+}

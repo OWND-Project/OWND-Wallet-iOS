@@ -1,0 +1,248 @@
+[
+  {
+    "rp": "https://messenger.ownd-project.com/",
+    "accountIndex": 2,
+    "createdAt": "2023-10-21T12:00:00Z",
+    "credentialID": "001",
+    "claims": [
+      {
+        "claimKey": "is_older_than_13",
+        "claimValue": "Yes",
+        "purpose": "Purpose Text"
+      }
+    ],
+    "rpName": "OWNDMessenger",
+    "privacyPolicyUrl": "https://www.ownd-project.com/messenger/privacy/index.html",
+    "logoUrl": "https://www.ownd-project.com/img/logo_only.png"
+  },
+  {
+    "rp": "https://messenger.ownd-project.com/",
+    "accountIndex": 2,
+    "createdAt": "2023-10-22T12:00:00Z",
+    "credentialID": "001",
+    "claims": [
+      {
+        "claimKey": "is_older_than_13",
+        "claimValue": "Yes",
+        "purpose": "For determining if the user is older than 13"
+      },
+      {
+        "claimKey": "is_older_than_18",
+        "claimValue": "Yes",
+        "purpose": "For determining if the user is older than 18"
+      }
+    ],
+    "rpName": "OWNDMessenger",
+    "privacyPolicyUrl": "https://www.ownd-project.com/messenger/privacy/index.html",
+    "logoUrl": "https://www.ownd-project.com/img/logo_only.png"
+  },
+  {
+    "rp": "https://messenger.ownd-project.com/",
+    "accountIndex": 2,
+    "createdAt": "2023-10-23T12:00:00Z",
+    "credentialID": "001",
+    "claims": [
+      {
+        "claimKey": "Name",
+        "claimValue": "Sample User Name",
+        "purpose": ""
+      },
+      {
+        "claimKey": "Address",
+        "claimValue": "Sample User Address",
+        "purpose": ""
+      },
+      {
+        "claimKey": "Gender",
+        "claimValue": "Male",
+        "purpose": ""
+      },
+      {
+        "claimKey": "BirthOfDate",
+        "claimValue": "2000-01-01",
+        "purpose": ""
+      },
+      {
+        "claimKey": "is_older_than_13",
+        "claimValue": "Yes",
+        "purpose": "For determining if the user is older than 13"
+      },
+      {
+        "claimKey": "is_older_than_18",
+        "claimValue": "Yes",
+        "purpose": "For determining if the user is older than 18"
+      },
+      {
+        "claimKey": "is_older_than_20",
+        "claimValue": "No",
+        "purpose": "For determining if the user is older than 20"
+      }
+    ],
+    "rpName": "OWNDMessenger",
+    "privacyPolicyUrl": "https://www.ownd-project.com/messenger/privacy/index.html",
+    "logoUrl": "https://www.ownd-project.com/img/logo_only.png"
+  },
+  {
+    "rp": "https://OtherVerifier1.com/",
+    "accountIndex": 2,
+    "createdAt": "2023-11-21T12:00:00Z",
+    "credentialID": "001",
+    "claims": [
+      {
+        "claimKey": "is_older_than_13",
+        "claimValue": "Yes",
+        "purpose": "For determining if the user is older than 13"
+      }
+    ],
+    "rpName": "OtherVerifier1",
+    "privacyPolicyUrl": "",
+    "logoUrl": ""
+  },
+  {
+    "rp": "https://OtherVerifier1.com/",
+    "accountIndex": 2,
+    "createdAt": "2023-11-22T12:00:00Z",
+    "credentialID": "001",
+    "claims": [
+      {
+        "claimKey": "is_older_than_13",
+        "claimValue": "Yes",
+        "purpose": "For determining if the user is older than 13"
+      },
+      {
+        "claimKey": "is_older_than_18",
+        "claimValue": "Yes",
+        "purpose": "For determining if the user is older than 18"
+      }
+    ],
+    "rpName": "OtherVerifier1",
+    "privacyPolicyUrl": "",
+    "logoUrl": ""
+  },
+  {
+    "rp": "https://OtherVerifier1.com/",
+    "accountIndex": 2,
+    "createdAt": "2023-11-23T12:00:00Z",
+    "credentialID": "001",
+    "claims": [
+      {
+        "claimKey": "Name",
+        "claimValue": "Sample User Name",
+        "purpose": ""
+      },
+      {
+        "claimKey": "Address",
+        "claimValue": "Sample User Address",
+        "purpose": ""
+      },
+      {
+        "claimKey": "Gender",
+        "claimValue": "Male",
+        "purpose": ""
+      },
+      {
+        "claimKey": "BirthOfDate",
+        "claimValue": "2000-01-01",
+        "purpose": ""
+      },
+      {
+        "claimKey": "is_older_than_13",
+        "claimValue": "Yes",
+        "purpose": "For determining if the user is older than 13"
+      },
+      {
+        "claimKey": "is_older_than_18",
+        "claimValue": "Yes",
+        "purpose": "For determining if the user is older than 18"
+      },
+      {
+        "claimKey": "is_older_than_20",
+        "claimValue": "No",
+        "purpose": "For determining if the user is older than 20"
+      }
+    ],
+    "rpName": "OtherVerifier1",
+    "privacyPolicyUrl": "",
+    "logoUrl": ""
+  },
+  {
+    "rp": "https://OtherVerifier2.com/",
+    "accountIndex": 2,
+    "createdAt": "2023-12-21T12:00:00Z",
+    "credentialID": "001",
+    "claims": [
+      {
+        "claimKey": "is_older_than_13",
+        "claimValue": "Yes",
+        "purpose": "For determining if the user is older than 13"
+      }
+    ],
+    "privacyPolicyUrl": "",
+    "logoUrl": ""
+  },
+  {
+    "rp": "https://OtherVerifier2.com/",
+    "accountIndex": 2,
+    "createdAt": "2023-12-22T12:00:00Z",
+    "credentialID": "001",
+    "claims": [
+      {
+        "claimKey": "is_older_than_13",
+        "claimValue": "Yes",
+        "purpose": "For determining if the user is older than 13"
+      },
+      {
+        "claimKey": "is_older_than_18",
+        "claimValue": "Yes",
+        "purpose": "For determining if the user is older than 18"
+      }
+    ],
+    "privacyPolicyUrl": "",
+    "logoUrl": ""
+  },
+  {
+    "rp": "https://OtherVerifier2.com/",
+    "accountIndex": 2,
+    "createdAt": "2023-12-23T12:00:00Z",
+    "credentialID": "001",
+    "claims": [
+      {
+        "claimKey": "Name",
+        "claimValue": "Sample User Name",
+        "purpose": ""
+      },
+      {
+        "claimKey": "Address",
+        "claimValue": "Sample User Address",
+        "purpose": ""
+      },
+      {
+        "claimKey": "Gender",
+        "claimValue": "Male",
+        "purpose": ""
+      },
+      {
+        "claimKey": "BirthOfDate",
+        "claimValue": "2000-01-01",
+        "purpose": ""
+      },
+      {
+        "claimKey": "is_older_than_13",
+        "claimValue": "Yes",
+        "purpose": "For determining if the user is older than 13"
+      },
+      {
+        "claimKey": "is_older_than_18",
+        "claimValue": "Yes",
+        "purpose": "For determining if the user is older than 18"
+      },
+      {
+        "claimKey": "is_older_than_20",
+        "claimValue": "No",
+        "purpose": "For determining if the user is older than 20"
+      }
+    ],
+    "privacyPolicyUrl": "",
+    "logoUrl": ""
+  }
+]

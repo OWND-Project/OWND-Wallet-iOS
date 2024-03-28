@@ -1,0 +1,7 @@
+{
+  "access_token": "example-access-token",
+  "token_type": "bearer",
+  "expires_in": 86400,
+  "c_nonce": "example-c-nonce",
+  "c_nonce_expires_in": 86400
+}

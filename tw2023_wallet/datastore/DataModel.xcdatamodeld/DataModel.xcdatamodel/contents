@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22522" systemVersion="23D60" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <entity name="ClaimEntity" representedClassName="ClaimEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="claimName" optional="YES" attributeType="String"/>
+        <attribute name="claimValue" optional="YES" attributeType="String"/>
+        <attribute name="purpose" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="CredentialDataEntity" representedClassName="CredentialDataEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="accessToken" optional="YES" attributeType="String"/>
+        <attribute name="cNonce" optional="YES" attributeType="String"/>
+        <attribute name="cNonceExpiresIn" optional="YES" attributeType="String"/>
+        <attribute name="credential" optional="YES" attributeType="String"/>
+        <attribute name="credentialIssuerMetadata" optional="YES" attributeType="String"/>
+        <attribute name="exp" optional="YES" attributeType="String"/>
+        <attribute name="format" optional="YES" attributeType="String"/>
+        <attribute name="iat" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="String"/>
+        <attribute name="iss" optional="YES" attributeType="String"/>
+        <attribute name="type" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="CredentialSharingHistoryEntity" representedClassName="CredentialSharingHistoryEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="accountIndex" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="credentialID" optional="YES" attributeType="String"/>
+        <attribute name="logoURL" optional="YES" attributeType="String"/>
+        <attribute name="privacyPolicyURL" optional="YES" attributeType="String"/>
+        <attribute name="rp" optional="YES" attributeType="String"/>
+        <attribute name="rpName" optional="YES" attributeType="String"/>
+        <relationship name="claims" optional="YES" toMany="YES" deletionRule="No Action" destinationEntity="ClaimEntity"/>
+    </entity>
+    <entity name="IdTokenSharingHistoryEntity" representedClassName="IdTokenSharingHistoryEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="accountIndex" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="rp" optional="YES" attributeType="String"/>
+    </entity>
+</model>

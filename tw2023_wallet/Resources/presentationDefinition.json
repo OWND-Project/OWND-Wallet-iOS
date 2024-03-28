@@ -1,0 +1,39 @@
+[
+  {
+    "id": "12345",
+    "inputDescriptors": [
+      {
+        "id": "input1",
+        "name": "First Input",
+        "purpose": "For identification",
+        "format": {
+          "vc+sd-jwt": {}
+        },
+        "group": [
+          "A"
+        ],
+        "constraints": {
+          "limitDisclosure": "required",
+          "fields": [
+            {
+              "path": [
+                "$.is_older_than_13"
+              ],
+              "filter": {
+                "type": "boolean"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "submissionRequirements": [
+      {
+        "name": "Over13 Proof",
+        "rule": "pick",
+        "count": 1,
+        "from": "A"
+      }
+    ]
+  }
+]
