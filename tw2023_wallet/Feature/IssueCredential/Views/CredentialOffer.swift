@@ -36,6 +36,7 @@ struct CredentialOfferView: View {
     var viewModel: CredentialOfferViewModel
     @State private var navigateToHome = false
     @State private var navigateToPinInput = false
+    @State private var showErrorDialog = false
 
     init(viewModel: CredentialOfferViewModel = CredentialOfferViewModel()) {
         self.viewModel = viewModel
@@ -123,11 +124,21 @@ struct CredentialOfferView: View {
                     try viewModel.initialize(rawCredentialOfferString: args.credentialOffer!)
                     try await viewModel.loadData()
                 }catch{
+                    self.showErrorDialog = true
                     print("credential offerが正しくありません")
                     print(error)
                 }
             }
         }
+        .alert(isPresented: $showErrorDialog) {
+                    Alert(
+                        title: Text("error"),
+                        message: Text("failed_to_show_credential_offer"),
+                        dismissButton: .default(Text("OK")) {
+                            presentationMode.wrappedValue.dismiss()
+                        }
+                    )
+                }
     }
 }
 
