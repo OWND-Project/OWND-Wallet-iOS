@@ -598,6 +598,38 @@
     "Enter PIN Code" : {
 
     },
+    "error" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "エラー"
+          }
+        }
+      }
+    },
+    "failed_to_show_credential_offer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to read information required for certificate issuance. Please start the operation again from the beginning."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "証明書発行に必要な情報の読み込みに失敗しました。操作を始めからやり直してください。"
+          }
+        }
+      }
+    },
     "familyName" : {
       "extractionState" : "manual",
       "localizations" : {
