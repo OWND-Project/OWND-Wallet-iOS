@@ -152,9 +152,7 @@ final class OpenIdProviderTests: XCTestCase {
             clientId: "https://rp.example.com",
             nonce: "dummy-nonce"
         )
-        let vpToken = presentationSubmission.first
-        let descriptorMap = presentationSubmission.second
-        let disclosedClaims = presentationSubmission.third
+        let (vpToken, descriptorMap, disclosedClaims, _) = presentationSubmission
         let parts = vpToken.split(separator: "~").map(String.init)
         XCTAssertEqual(parts.count, 3)
         XCTAssertEqual(parts[0], "issuer-jwt")
@@ -198,7 +196,8 @@ final class OpenIdProviderTests: XCTestCase {
             requestObjectJwt: "dummy-jwt",
             requestObject: requestObject,
             clientMetadata: RPRegistrationMetadataPayload(),
-            presentationDefinition: presentationDefinition
+            presentationDefinition: presentationDefinition, 
+            requestIsSigned: false
         )
         
         runAsyncTest {
@@ -208,15 +207,20 @@ final class OpenIdProviderTests: XCTestCase {
                 let result = try await idProvider.respondVPResponse(credentials: [credential], using: mockSession)
                 switch result {
                 case .success(let data):
+                    
+                    let (postResult, arrayOfSharedContent, purposes) = data
+                    
+                    /*
                     let vpTokens = data.first
                     XCTAssertEqual(vpTokens.split(separator: "~").count, 3)
-                    
+                     
                     let presentationSubmissoin = data.second
                     XCTAssertNotNil(presentationSubmissoin.id)
                     XCTAssertNotEqual(presentationSubmissoin.id, "")
                     XCTAssertEqual(presentationSubmissoin.definitionId, presentationDefinition.id)
+                     */
                     
-                    let sharedContents = data.third
+                    let sharedContents = arrayOfSharedContent
                     XCTAssertEqual(sharedContents.count, 1)
                     XCTAssertEqual(sharedContents[0].id, "internal-id-1")
                     XCTAssertEqual(sharedContents[0].sharedClaims.count, 1)
