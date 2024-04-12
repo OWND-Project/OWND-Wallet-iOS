@@ -140,10 +140,10 @@ class KeyPairUtil {
     
     static func createPublicKey(jwk: [String: String]) throws -> SecKey {
         // Check if the necessary JWK components are present
-        guard let xBase64 = jwk["x"],
-              let yBase64 = jwk["y"],
-              let xData = Data(base64Encoded: xBase64),
-              let yData = Data(base64Encoded: yBase64) else {
+        guard let xBase64Url = jwk["x"],
+              let yBase64Url = jwk["y"],
+              let xData = xBase64Url.base64UrlDecoded(),
+              let yData = yBase64Url.base64UrlDecoded() else {
             throw JwkError.UnableToConversionError
         }
         
