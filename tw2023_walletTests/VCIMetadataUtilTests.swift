@@ -152,7 +152,7 @@ final class VCIMetadataUtilTests: XCTestCase {
             let deserialized = VCIMetadataUtil.deserializeDisplayByClaimMap(displayMapString: serialized)
 
             XCTAssertNotNil(deserialized)
-            XCTAssertEqual(deserialized.count, 5)
+            XCTAssertEqual(deserialized.count, 6)
 
             if let display1 = deserialized["given_name"] {
                 XCTAssertEqual(display1.count, 2)
