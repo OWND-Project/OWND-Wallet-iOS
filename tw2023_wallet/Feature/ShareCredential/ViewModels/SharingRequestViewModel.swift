@@ -232,7 +232,11 @@ class SharingRequestViewModel {
         print("get keypair")
         let keyBinding = KeyBindingImpl(keyAlias: Constants.Cryptography.KEY_BINDING)
         openIdProvider.setKeyBinding(keyBinding: keyBinding)
-        let result = await openIdProvider.respondVPResponse(credentials: credentials)
+        
+        let delegate = NoRedirectDelegate()
+        let configuration = URLSessionConfiguration.default
+        let session = URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
+        let result = await openIdProvider.respondVPResponse(credentials: credentials, using: session)
         switch result {
         case .success(let sharedResult):
             print("sharing sucess")

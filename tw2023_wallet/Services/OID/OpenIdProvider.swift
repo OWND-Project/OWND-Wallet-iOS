@@ -480,11 +480,7 @@ func sendRequest<T: Decodable>(
 
     request.httpBody = formBody.data(using: .utf8)
     request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-    
-    let delegate = NoRedirectDelegate()
-    let configuration = URLSessionConfiguration.default
-    let session = URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
-    
+        
     do {
         let (data, response) = try await session.data(for: request)
         
