@@ -6,6 +6,7 @@
 //
 
 import XCTest
+@testable import tw2023_wallet
 
 final class OpenIdProviderTests: XCTestCase {
     
@@ -146,6 +147,11 @@ final class OpenIdProviderTests: XCTestCase {
         
         let credential = SubmissionCredential(id: "internal-id-1", format: "vc+sd-jwt", types: [], credential: sdJwt, inputDescriptor: presentationDefinition.inputDescriptors[0])
         let idProvider = OpenIdProvider(ProviderOption())
+        
+        try KeyPairUtil.generateSignVerifyKeyPair(alias: Constants.Cryptography.KEY_BINDING)
+        let keyBinding = KeyBindingImpl(keyAlias: Constants.Cryptography.KEY_BINDING)
+        idProvider.setKeyBinding(keyBinding: keyBinding)
+        
         let presentationSubmission = try idProvider.createPresentationSubmissionSdJwtVc(
             credential: credential,
             presentationDefinition: presentationDefinition,
@@ -171,7 +177,8 @@ final class OpenIdProviderTests: XCTestCase {
             clientId: "https://rp.example.com",
             redirectUri: "https://rp.example.com/cb",
             nonce: "dummy-nonce",
-            responseMode: ResponseMode.directPost
+            responseMode: ResponseMode.directPost,
+            responseUri: "https://rp.example.com/cb"
         )
         
         let configuration = URLSessionConfiguration.ephemeral
@@ -203,32 +210,27 @@ final class OpenIdProviderTests: XCTestCase {
         runAsyncTest {
             let idProvider = OpenIdProvider(ProviderOption())
             idProvider.authRequestProcessedData = authRequestProcessedData
-            do {
-                let result = try await idProvider.respondVPResponse(credentials: [credential], using: mockSession)
-                switch result {
-                case .success(let data):
-                    
-                    let (postResult, arrayOfSharedContent, purposes) = data
-                    
-                    /*
-                    let vpTokens = data.first
-                    XCTAssertEqual(vpTokens.split(separator: "~").count, 3)
-                     
-                    let presentationSubmissoin = data.second
-                    XCTAssertNotNil(presentationSubmissoin.id)
-                    XCTAssertNotEqual(presentationSubmissoin.id, "")
-                    XCTAssertEqual(presentationSubmissoin.definitionId, presentationDefinition.id)
-                     */
-                    
-                    let sharedContents = arrayOfSharedContent
-                    XCTAssertEqual(sharedContents.count, 1)
-                    XCTAssertEqual(sharedContents[0].id, "internal-id-1")
-                    XCTAssertEqual(sharedContents[0].sharedClaims.count, 1)
-                    XCTAssertEqual(sharedContents[0].sharedClaims[0].name, "claim1")
-                case .failure(let error):
-                    XCTFail()
-                }
-            } catch {
+            
+            let requestObj = authRequestProcessedData.requestObject
+            let authRequest = authRequestProcessedData.authorizationRequest
+            idProvider.clientId = requestObj.clientId ?? authRequest.clientId
+            idProvider.responseMode = requestObj.responseMode ?? authRequest.responseMode
+            idProvider.nonce = requestObj.nonce ?? authRequest.nonce
+            idProvider.presentationDefinition = authRequestProcessedData.presentationDefinition
+            
+            try KeyPairUtil.generateSignVerifyKeyPair(alias: Constants.Cryptography.KEY_BINDING)
+            let keyBinding = KeyBindingImpl(keyAlias: Constants.Cryptography.KEY_BINDING)
+            idProvider.setKeyBinding(keyBinding: keyBinding)
+            let result = await idProvider.respondVPResponse(credentials: [credential], using: mockSession)
+            switch result {
+            case .success(let data):
+                let (_, arrayOfSharedContent, _) = data
+                let sharedContents = arrayOfSharedContent
+                XCTAssertEqual(sharedContents.count, 1)
+                XCTAssertEqual(sharedContents[0].id, "internal-id-1")
+                XCTAssertEqual(sharedContents[0].sharedClaims.count, 1)
+                XCTAssertEqual(sharedContents[0].sharedClaims[0].name, "claim1")
+            case .failure(let error):
                 XCTFail()
             }
         }
