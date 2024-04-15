@@ -23,7 +23,7 @@ enum JwkError: Error {
 
 class KeyPairUtil {
     
-    static func generateSignVerifyKeyPair(alias: String) throws -> (SecKey?, SecKey?) {
+    static func generateSignVerifyKeyPair(alias: String) throws {
         
         let access = SecAccessControlCreateWithFlags(
             kCFAllocatorDefault,
@@ -48,9 +48,6 @@ class KeyPairUtil {
             throw error!.takeRetainedValue() as Error
         }
         
-        let publicKey = SecKeyCopyPublicKey(privateKey)
-        
-        return (privateKey, publicKey)
     }
     
     static func isKeyPairExist(alias: String) -> Bool{
