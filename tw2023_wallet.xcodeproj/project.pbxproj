@@ -176,6 +176,7 @@
 		A89297622B3AF26F007315BE /* SwiftASN1 in Frameworks */ = {isa = PBXBuildFile; productRef = A89297612B3AF26F007315BE /* SwiftASN1 */; };
 		A89297652B3AF487007315BE /* ASN1Decoder in Frameworks */ = {isa = PBXBuildFile; productRef = A89297642B3AF487007315BE /* ASN1Decoder */; };
 		A89463E12B555C910069EF21 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89463E02B555C910069EF21 /* Constants.swift */; };
+		A8ADC6992BCE3CDA0077A0C4 /* IdTokenSharingHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8ADC6982BCE3CDA0077A0C4 /* IdTokenSharingHistory.swift */; };
 		A8C810422B82042300CF8CD6 /* SharingToViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C8103C2B82042200CF8CD6 /* SharingToViewModel.swift */; };
 		A8C810432B82042300CF8CD6 /* SharingToModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C8103E2B82042200CF8CD6 /* SharingToModel.swift */; };
 		A8C810442B82042300CF8CD6 /* SharingToRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C810402B82042200CF8CD6 /* SharingToRow.swift */; };
@@ -384,6 +385,7 @@
 		A89297532B3AA151007315BE /* ZipUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZipUtil.swift; sourceTree = "<group>"; };
 		A892975A2B3AA81C007315BE /* CertificateUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CertificateUtil.swift; sourceTree = "<group>"; };
 		A89463E02B555C910069EF21 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		A8ADC6982BCE3CDA0077A0C4 /* IdTokenSharingHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdTokenSharingHistory.swift; sourceTree = "<group>"; };
 		A8C810382B80951800CF8CD6 /* SharingToRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingToRow.swift; sourceTree = "<group>"; };
 		A8C8103C2B82042200CF8CD6 /* SharingToViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharingToViewModel.swift; sourceTree = "<group>"; };
 		A8C8103E2B82042200CF8CD6 /* SharingToModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharingToModel.swift; sourceTree = "<group>"; };
@@ -740,6 +742,7 @@
 				8B81E2E42B343E2900ED3B4E /* Dummy.swift */,
 				F699A8D22B3FEBB700F60B91 /* TempIssuerMetaData.swift */,
 				F6A239A32B4E284C00B09F17 /* ClientInfo.swift */,
+				A8ADC6982BCE3CDA0077A0C4 /* IdTokenSharingHistory.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1396,6 +1399,7 @@
 				8B81E2F02B3546BC00ED3B4E /* SharingRequest.swift in Sources */,
 				8B43AE2F2B3A5B2C0016CF83 /* MockURLProtocol.swift in Sources */,
 				8B81E2C82B33D6C500ED3B4E /* Home.swift in Sources */,
+				A8ADC6992BCE3CDA0077A0C4 /* IdTokenSharingHistory.swift in Sources */,
 				8B0E0AAF2B403D510080F6A3 /* PresentationExchange.swift in Sources */,
 				F6EECE522B6B820100011E12 /* RecipientListPreviewModel.swift in Sources */,
 				8B81E2CD2B33D86200ED3B4E /* CredentialList.swift in Sources */,

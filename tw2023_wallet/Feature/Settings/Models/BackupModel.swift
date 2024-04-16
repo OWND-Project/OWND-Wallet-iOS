@@ -6,13 +6,7 @@
 //
 
 import Foundation
-import SwiftUI
 
-struct IdTokenSharingHistory: Codable {
-    let rp: String
-    let accountIndex: Int
-    let createdAt: String
-}
 
 struct BackupData: Codable {
     let seed: String
