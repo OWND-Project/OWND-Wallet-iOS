@@ -14,9 +14,12 @@ class RecipientListViewModel: ObservableObject {
     @Published var hasLoadedData = false
     @Published var isLoading = false
     private var historyManager: CredentialSharingHistoryManager
+    private var idTokenHistoryManager: IdTokenSharingHistoryManager
 
-    init(historyManager: CredentialSharingHistoryManager = CredentialSharingHistoryManager(container: nil)) {
+    init(historyManager: CredentialSharingHistoryManager = CredentialSharingHistoryManager(container: nil),
+         idTokenHistoryManager: IdTokenSharingHistoryManager = IdTokenSharingHistoryManager(container: nil)) {
         self.historyManager = historyManager
+        self.idTokenHistoryManager = idTokenHistoryManager
     }
 
     func loadSharingHistories() {
