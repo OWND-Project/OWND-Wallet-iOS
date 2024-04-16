@@ -1,0 +1,17 @@
+[
+    {
+        "rp": "https://verifier.example.com/",
+        "accountIndex": 1,
+        "createdAt": "2023-12-23T12:00:00Z",
+    },
+    {
+        "rp": "https://verifier.example.jp/",
+        "accountIndex": 2,
+        "createdAt": "2023-12-25T12:00:00Z",
+    },
+    {
+        "rp": "https://messenger.ownd-project.com/",
+        "accountIndex": 3,
+        "createdAt": "2023-09-25T12:00:00Z",
+    }
+]

@@ -177,6 +177,7 @@
 		A89297652B3AF487007315BE /* ASN1Decoder in Frameworks */ = {isa = PBXBuildFile; productRef = A89297642B3AF487007315BE /* ASN1Decoder */; };
 		A89463E12B555C910069EF21 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89463E02B555C910069EF21 /* Constants.swift */; };
 		A8ADC6992BCE3CDA0077A0C4 /* IdTokenSharingHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8ADC6982BCE3CDA0077A0C4 /* IdTokenSharingHistory.swift */; };
+		A8ADC69B2BCEAD090077A0C4 /* idTokenSharingHistories.json in Resources */ = {isa = PBXBuildFile; fileRef = A8ADC69A2BCEAD090077A0C4 /* idTokenSharingHistories.json */; };
 		A8C810422B82042300CF8CD6 /* SharingToViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C8103C2B82042200CF8CD6 /* SharingToViewModel.swift */; };
 		A8C810432B82042300CF8CD6 /* SharingToModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C8103E2B82042200CF8CD6 /* SharingToModel.swift */; };
 		A8C810442B82042300CF8CD6 /* SharingToRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C810402B82042200CF8CD6 /* SharingToRow.swift */; };
@@ -386,6 +387,7 @@
 		A892975A2B3AA81C007315BE /* CertificateUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CertificateUtil.swift; sourceTree = "<group>"; };
 		A89463E02B555C910069EF21 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		A8ADC6982BCE3CDA0077A0C4 /* IdTokenSharingHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdTokenSharingHistory.swift; sourceTree = "<group>"; };
+		A8ADC69A2BCEAD090077A0C4 /* idTokenSharingHistories.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = idTokenSharingHistories.json; sourceTree = "<group>"; };
 		A8C810382B80951800CF8CD6 /* SharingToRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingToRow.swift; sourceTree = "<group>"; };
 		A8C8103C2B82042200CF8CD6 /* SharingToViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharingToViewModel.swift; sourceTree = "<group>"; };
 		A8C8103E2B82042200CF8CD6 /* SharingToModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharingToModel.swift; sourceTree = "<group>"; };
@@ -755,6 +757,7 @@
 				F6A239A52B4E2A6500B09F17 /* clientInfo.json */,
 				F699A8CE2B3FEB8000F60B91 /* tempIssureMetalData.json */,
 				F657D5C62B3C44F100901A6A /* sharingHistoryData.json */,
+				A8ADC69A2BCEAD090077A0C4 /* idTokenSharingHistories.json */,
 				8B81E2E12B34325D00ED3B4E /* credentialData.json */,
 			);
 			path = Resources;
@@ -1298,6 +1301,7 @@
 				8B0E0AAC2B3FD6660080F6A3 /* client_metadata.json in Resources */,
 				8B81E2A12B33CC4200ED3B4E /* Assets.xcassets in Resources */,
 				8B297C422B39760D00D2998D /* credential_supported_sd_jwt_vc.json in Resources */,
+				A8ADC69B2BCEAD090077A0C4 /* idTokenSharingHistories.json in Resources */,
 				8B81E2D82B34131C00ED3B4E /* Launch Screen.storyboard in Resources */,
 				F6D913D92B53D5EE001D804D /* jwtVcJsonClaim.json in Resources */,
 				8B43AE2A2B3A4FB30016CF83 /* credential_offer.json in Resources */,
