@@ -100,7 +100,7 @@ struct RecipientInfo: View {
 
 #Preview {
     let modelData = ModelData()
-    modelData.loadSharingHistories()
+    modelData.loadCredentialSharingHistories()
     return RecipientInfo(
-        sharingHistory: modelData.sharingHistories[0])
+        sharingHistory: modelData.credentialSharingHistories[0])
 }

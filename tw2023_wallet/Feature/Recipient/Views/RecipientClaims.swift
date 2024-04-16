@@ -59,8 +59,8 @@ struct RecipientClaims: View {
 
 #Preview {
     let modelData = ModelData()
-    modelData.loadSharingHistories()
+    modelData.loadCredentialSharingHistories()
     return RecipientClaims(
         viewModel: RecipientClaimsPreviewModel(),
-        sharingHistory: modelData.sharingHistories[0])
+        sharingHistory: modelData.credentialSharingHistories[0])
 }

@@ -85,16 +85,16 @@ struct HistoryRow: View {
 
 #Preview {
     let modelData = ModelData()
-    modelData.loadSharingHistories()
-    return HistoryRow(history: modelData.sharingHistories[0])
+    modelData.loadCredentialSharingHistories()
+    return HistoryRow(history: modelData.credentialSharingHistories[0])
 }
 
 #Preview("multi row") {
     let modelData = ModelData()
-    modelData.loadSharingHistories()
+    modelData.loadCredentialSharingHistories()
     return Group {
-        HistoryRow(history: modelData.sharingHistories[0])
-        HistoryRow(history: modelData.sharingHistories[1])
-        HistoryRow(history: modelData.sharingHistories[2])
+        HistoryRow(history: modelData.credentialSharingHistories[0])
+        HistoryRow(history: modelData.credentialSharingHistories[1])
+        HistoryRow(history: modelData.credentialSharingHistories[2])
     }
 }

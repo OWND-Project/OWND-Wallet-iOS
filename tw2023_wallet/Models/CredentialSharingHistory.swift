@@ -21,12 +21,15 @@ struct Histories {
     }
     
     func groupByRp() -> [String : [History]] {
-        return Dictionary(grouping: self.histories, by: { $0.rp })
+        let grouped = Dictionary(grouping: self.histories, by: { $0.rp })
+        return grouped.mapValues{ value in
+            return Histories.sortHistoriesByDate(histories: value)
+        }
     }
     func latestByRp() -> [History] {
         let grouped = self.groupByRp()
         return grouped.compactMap { group -> History? in
-            group.value.last
+            group.value.first
         }
     }
     static func sortHistoriesByDate(histories: [History]) -> [History] {

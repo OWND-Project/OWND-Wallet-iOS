@@ -14,7 +14,6 @@ class RecipientListPreviewModel: RecipientListViewModel {
         let modelData = ModelData()
         modelData.loadSharingHistories()
         
-        
         let histories = Histories(histories: modelData.sharingHistories)
         
         
