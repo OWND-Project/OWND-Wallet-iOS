@@ -36,8 +36,14 @@ class RecipientClaimsViewModel: ObservableObject {
             self.rpName = String(format: NSLocalizedString("credential_recipient", comment: ""),
                                  credential.rpName)
         case let idToken as IdTokenSharingHistory:
+            // let index = idToken.accountIndex
+            // let jwkThumbprint = ... // todo: get thumbprint for user_id from keyring
             self.claimsInfo = [
-                ClaimInfo(claimKey: "key for id token", claimValue: "value for id token", purpose: "利用者を識別するために提供しました")
+                ClaimInfo(claimKey: String(format: NSLocalizedString("user_id", comment: "")),
+                          claimValue: "value for id token",
+                          purpose:
+                            String.localizedStringWithFormat(NSLocalizedString("for_identifying_user", comment: ""))
+                         )
             ]
             self.title = String(format: NSLocalizedString("credential_sharing_time", comment: ""),
                                 idToken.createdAt)

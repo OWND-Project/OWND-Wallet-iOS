@@ -667,6 +667,23 @@
         }
       }
     },
+    "for_identifying_user" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " Provided for identification of the user."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "利用者を識別するために提供しました。"
+          }
+        }
+      }
+    },
     "gender" : {
       "extractionState" : "manual",
       "localizations" : {

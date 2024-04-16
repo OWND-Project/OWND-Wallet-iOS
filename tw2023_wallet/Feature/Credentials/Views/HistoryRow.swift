@@ -37,7 +37,7 @@ struct HistoryRow: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.top, 2)
                             .modifier(SubHeadLineGray())
-                        Text("1")
+                        Text(totalItemsLocalized(1))
                             .frame(maxWidth: .infinity, alignment: .trailing)
                             .padding(.bottom, 2)
                             .modifier(SubHeadLineGray())
