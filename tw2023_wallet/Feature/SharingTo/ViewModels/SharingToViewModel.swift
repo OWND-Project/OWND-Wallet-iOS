@@ -23,7 +23,7 @@ class SharingToViewModel {
         
         var histories: [CredentialSharingHistory] = []
         historyManager.getAll().forEach{rawHistory in
-            let converted = rawHistory.toSharingHistory()
+            let converted = rawHistory.toCredentialSharingHistory()
             histories.append(converted)
         }
         

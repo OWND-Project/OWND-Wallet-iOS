@@ -51,7 +51,7 @@ extension Datastore_ClaimInfo {
 }
 
 extension Datastore_CredentialSharingHistory {
-    func toSharingHistory() -> CredentialSharingHistory {
+    func toCredentialSharingHistory() -> CredentialSharingHistory {
         let result = CredentialSharingHistory(
             rp: self.rp,
             accountIndex: Int(self.accountIndex),
@@ -121,7 +121,7 @@ class CredentialSharingHistoryManager {
     
     func getAllGroupByRp() -> [String : [CredentialSharingHistory]] {
         let allHistories = getAll().map{
-            $0.toSharingHistory()
+            $0.toCredentialSharingHistory()
         }
         let grouped = Dictionary(grouping: allHistories, by: { $0.rp })
         return grouped

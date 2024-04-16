@@ -28,7 +28,7 @@ class RecipientListViewModel: ObservableObject {
 
         let datastoreHistories = self.historyManager.getAll()
         let mappedHistories = datastoreHistories.map { datastoreHistory in
-            datastoreHistory.toSharingHistory()
+            datastoreHistory.toCredentialSharingHistory()
         }
 
         let groupedSharingHistories = Dictionary(grouping: mappedHistories, by: { $0.rp })
