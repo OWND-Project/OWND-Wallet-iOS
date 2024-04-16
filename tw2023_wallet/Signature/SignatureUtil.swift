@@ -199,11 +199,11 @@ enum SignatureUtil {
         }
     }
     
-    static func getX509CertificatesFromUrl(url: String) -> [Certificate]? {
+    static func getX509CertificatesFromUrl(url: String, session: URLSession = URLSession.shared) -> [Certificate]? {
         var result: [Certificate]?
         let dispatchGroup = DispatchGroup()
         dispatchGroup.enter()
-        SignatureUtil.getX509CertificatesFromUrl_(url: url) { certificates, error in
+        SignatureUtil.getX509CertificatesFromUrl_(url: url, session: session) { certificates, error in
             defer {
                 dispatchGroup.leave()
             }
@@ -217,13 +217,13 @@ enum SignatureUtil {
         return result
     }
     
-    static func getX509CertificatesFromUrl_(url: String, completion: @escaping ([Certificate]?, Error?) -> Void) {
+    static func getX509CertificatesFromUrl_(url: String, session: URLSession = URLSession.shared, completion: @escaping ([Certificate]?, Error?) -> Void) {
         guard let requestURL = URL(string: url) else {
             completion(nil, NSError(domain: "Invalid URL", code: 0, userInfo: nil))
             return
         }
         
-        let task = URLSession.shared.dataTask(with: requestURL) { data, response, error in
+        let task = session.dataTask(with: requestURL) { data, response, error in
             if let error = error {
                 completion(nil, error)
                 return

@@ -16,9 +16,8 @@ final class KeyBindingTests: XCTestCase {
     override func setUpWithError() throws {
         super.setUp()
         // キーペアの生成
-        let keys = try KeyPairUtil.generateSignVerifyKeyPair(alias: keyAlias)
-        privateKey = keys.0
-        publicKey = keys.1
+        try KeyPairUtil.generateSignVerifyKeyPair(alias: keyAlias)
+        (privateKey, publicKey) = KeyPairUtil.getKeyPair(alias: keyAlias)!
     }
 
     override func tearDownWithError() throws {
@@ -33,6 +32,7 @@ final class KeyBindingTests: XCTestCase {
         let selectedDisclosures = [Disclosure(disclosure: "disclosureSample", key: "keySample", value: "valueSample")]
         let aud = "audSample"
         let nonce = "nonceSample"
+        
 
         // JWTの生成
         let keyBinding = KeyBindingImpl(keyAlias: keyAlias)

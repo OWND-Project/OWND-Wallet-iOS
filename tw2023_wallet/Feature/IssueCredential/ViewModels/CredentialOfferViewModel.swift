@@ -57,7 +57,7 @@ class CredentialOfferViewModel {
             let proofRequired = cNonce != nil
             let isKeyPairExist = KeyPairUtil.isKeyPairExist(alias: Constants.Cryptography.KEY_BINDING)
             if (!isKeyPairExist && proofRequired) {
-                _ = try KeyPairUtil.generateSignVerifyKeyPair(alias: Constants.Cryptography.KEY_BINDING)
+                try KeyPairUtil.generateSignVerifyKeyPair(alias: Constants.Cryptography.KEY_BINDING)
             }
             
             // proof generation

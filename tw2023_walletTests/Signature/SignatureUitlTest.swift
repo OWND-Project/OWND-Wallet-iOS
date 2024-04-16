@@ -44,37 +44,7 @@ class MockURLSession: URLSessionProtocol {
 
 
 
-final class SignatureUitlTests: XCTestCase {
-    
-    func testToJwkThumbprint() {
-        
-        let expected = "cn-I_WNMClehiVp51i_0VpOENW1upEerA8sEam5hn-s"
-        
-        let jwk = ECPublicJwk(kty: "EC", crv: "P-256", x: "MKBCTNIcKUSDii11ySs3526iDZ8AiTo7Tu6KPAqv7D4", y: "4Etl6SRW2YiLUrN5vfvVHuhp7x8PxltmWWlbbM4IFyM")
-        let thumbprint = SignatureUtil.toJwkThumbprint(jwk: jwk)
-        
-        XCTAssertTrue(expected == thumbprint)
-    }
-    
-    func testGenerateEcKeyPair(){
-        let expected = "M7yXCJjSzeJJ9NpBoMDg_fV1D9-cFeOm_IDHFvlcE_I"
-        let jwk = ECPrivateJwk(kty: "EC", crv: "secp256k1", x: "QlaZ81aj1A3HeCZw3rLU__Dha5hKjG2OBcI5V_zqSRU", y: "EgtAoZrao5R5S4ANOhXeuGFZT0zbEU-R8sniQSMIZgQ", d: "M7yXCJjSzeJJ9NpBoMDg_fV1D9-cFeOm_IDHFvlcE_I")
-        let (priv, _) = try! SignatureUtil.generateECKeyPair(jwk: jwk)
-        XCTAssertTrue(priv.base64URLEncodedString() == expected)
-    }
-    
-    func testGenerateCertificate() {
-        let privateKey = P256.Signing.PrivateKey()
-        let publicKey = privateKey.publicKey
-        
-        let cert = SignatureUtil.generateCertificate(subjectPublicKey: publicKey, issuerPrivateKey: privateKey, isCa: true)
-        XCTAssertTrue(cert.publicKey == Certificate.PublicKey(publicKey))
-        XCTAssertNoThrow(SignatureUtil.certificateToPem(certificate: cert))
-    }
-    
-    
-    func testConvertPemToX509Certificates() {
-        let pemChain = """
+let fullChain = """
 -----BEGIN CERTIFICATE-----
 MIIFUjCCBPegAwIBAgIRAO68a+XoD/PhST9Zr7Fq4b0wCgYIKoZIzj0EAwIwgZUx
 CzAJBgNVBAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNV
@@ -178,22 +148,60 @@ smPi9WIsgtRqAEFQ8TmDn5XpNpaYbg==
 -----END CERTIFICATE-----
 
 """
-        let result = try! SignatureUtil.convertPemToX509Certificates(pemChain: pemChain)
+
+
+
+final class SignatureUitlTests: XCTestCase {
+    
+    func testToJwkThumbprint() {
+        
+        let expected = "cn-I_WNMClehiVp51i_0VpOENW1upEerA8sEam5hn-s"
+        
+        let jwk = ECPublicJwk(kty: "EC", crv: "P-256", x: "MKBCTNIcKUSDii11ySs3526iDZ8AiTo7Tu6KPAqv7D4", y: "4Etl6SRW2YiLUrN5vfvVHuhp7x8PxltmWWlbbM4IFyM")
+        let thumbprint = SignatureUtil.toJwkThumbprint(jwk: jwk)
+        
+        XCTAssertTrue(expected == thumbprint)
+    }
+    
+    func testGenerateEcKeyPair(){
+        let expected = "M7yXCJjSzeJJ9NpBoMDg_fV1D9-cFeOm_IDHFvlcE_I"
+        let jwk = ECPrivateJwk(kty: "EC", crv: "secp256k1", x: "QlaZ81aj1A3HeCZw3rLU__Dha5hKjG2OBcI5V_zqSRU", y: "EgtAoZrao5R5S4ANOhXeuGFZT0zbEU-R8sniQSMIZgQ", d: "M7yXCJjSzeJJ9NpBoMDg_fV1D9-cFeOm_IDHFvlcE_I")
+        let (priv, _) = try! SignatureUtil.generateECKeyPair(jwk: jwk)
+        XCTAssertTrue(priv.base64URLEncodedString() == expected)
+    }
+    
+    func testGenerateCertificate() {
+        let privateKey = P256.Signing.PrivateKey()
+        let publicKey = privateKey.publicKey
+        
+        let cert = SignatureUtil.generateCertificate(subjectPublicKey: publicKey, issuerPrivateKey: privateKey, isCa: true)
+        XCTAssertTrue(cert.publicKey == Certificate.PublicKey(publicKey))
+        XCTAssertNoThrow(SignatureUtil.certificateToPem(certificate: cert))
+    }
+    
+    
+    func testConvertPemToX509Certificates() {
+        let result = try! SignatureUtil.convertPemToX509Certificates(pemChain: fullChain)
         XCTAssertTrue(result.count == 4)
     }
     
     func testGetX509CertificatesFromUrl_(){
         
-        // // // // // // // // // // // // // // //
-        // todo: 外部アクセスを適切にモックする
-        // // // // // // // // // // // // // // //
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [MockURLProtocol.self]
+        let mockSession = URLSession(configuration: configuration)
+         
+        let testURL = URL(string: "https://example.com/certificates")!
+        let mockData = fullChain.data(using: .utf8)
+        let response = HTTPURLResponse(url: testURL, statusCode: 200, httpVersion: nil, headerFields: nil)
+        MockURLProtocol.mockResponses[testURL] = (mockData, response)
 
-        let url = "http://localhost/pemChain"
+        let url = "https://example.com/certificates"
         let expectedCertificatesNumber = 4
         
         let dispatchGroup = DispatchGroup()
         dispatchGroup.enter()
-        SignatureUtil.getX509CertificatesFromUrl_(url: url) { certificates, error in
+        SignatureUtil.getX509CertificatesFromUrl_(url: url, session: mockSession) { certificates, error in
             defer {
                 dispatchGroup.leave()
             }
@@ -207,9 +215,20 @@ smPi9WIsgtRqAEFQ8TmDn5XpNpaYbg==
     }
     
     func testGetX509CertificatesFromUrl(){
-        let url = "http://localhost/pemChain"
+        
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [MockURLProtocol.self]
+        let mockSession = URLSession(configuration: configuration)
+         
+        let testURL = URL(string: "https://example.com/certificates")!
+        let mockData = fullChain.data(using: .utf8)
+        let response = HTTPURLResponse(url: testURL, statusCode: 200, httpVersion: nil, headerFields: nil)
+        MockURLProtocol.mockResponses[testURL] = (mockData, response)
+
+        
+        let url = "https://example.com/certificates"
         let expectedCertificatesNumber = 4
-        let result = SignatureUtil.getX509CertificatesFromUrl(url: url)
+        let result = SignatureUtil.getX509CertificatesFromUrl(url: url, session: mockSession)
         XCTAssertNotNil(result)
         if (result != nil){
             XCTAssertTrue(result?.count == expectedCertificatesNumber)
