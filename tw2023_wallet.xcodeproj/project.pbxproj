@@ -186,7 +186,7 @@
 		F621E1F52B6C6A610034BF95 /* RecipientDetailArgs.swift in Sources */ = {isa = PBXBuildFile; fileRef = F621E1F42B6C6A610034BF95 /* RecipientDetailArgs.swift */; };
 		F621E1F92B6CA6B20034BF95 /* RecipientInfoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F621E1F82B6CA6B20034BF95 /* RecipientInfoViewModel.swift */; };
 		F657D5C72B3C44F100901A6A /* sharingHistoryData.json in Resources */ = {isa = PBXBuildFile; fileRef = F657D5C62B3C44F100901A6A /* sharingHistoryData.json */; };
-		F657D5C92B3C450600901A6A /* SharingHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F657D5C82B3C450600901A6A /* SharingHistory.swift */; };
+		F657D5C92B3C450600901A6A /* CredentialSharingHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F657D5C82B3C450600901A6A /* CredentialSharingHistory.swift */; };
 		F657D5CB2B3C456600901A6A /* HistoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F657D5CA2B3C456600901A6A /* HistoryRow.swift */; };
 		F657D5CD2B3C457300901A6A /* DisclosureLow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F657D5CC2B3C457300901A6A /* DisclosureLow.swift */; };
 		F657D5CF2B3C469500901A6A /* CredentialDetailModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F657D5CE2B3C469500901A6A /* CredentialDetailModel.swift */; };
@@ -395,7 +395,7 @@
 		F621E1F42B6C6A610034BF95 /* RecipientDetailArgs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientDetailArgs.swift; sourceTree = "<group>"; };
 		F621E1F82B6CA6B20034BF95 /* RecipientInfoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientInfoViewModel.swift; sourceTree = "<group>"; };
 		F657D5C62B3C44F100901A6A /* sharingHistoryData.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = sharingHistoryData.json; sourceTree = "<group>"; };
-		F657D5C82B3C450600901A6A /* SharingHistory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharingHistory.swift; sourceTree = "<group>"; };
+		F657D5C82B3C450600901A6A /* CredentialSharingHistory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CredentialSharingHistory.swift; sourceTree = "<group>"; };
 		F657D5CA2B3C456600901A6A /* HistoryRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HistoryRow.swift; sourceTree = "<group>"; };
 		F657D5CC2B3C457300901A6A /* DisclosureLow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisclosureLow.swift; sourceTree = "<group>"; };
 		F657D5CE2B3C469500901A6A /* CredentialDetailModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialDetailModel.swift; sourceTree = "<group>"; };
@@ -734,7 +734,7 @@
 		8B81E2DD2B3420C500ED3B4E /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				F657D5C82B3C450600901A6A /* SharingHistory.swift */,
+				F657D5C82B3C450600901A6A /* CredentialSharingHistory.swift */,
 				8B81E2DE2B3420E900ED3B4E /* Credential.swift */,
 				8B81E2E22B34330D00ED3B4E /* ModelData.swift */,
 				8B81E2E42B343E2900ED3B4E /* Dummy.swift */,
@@ -1424,7 +1424,7 @@
 				A89108042B82D2880060DD71 /* RecipientClaimsPreviewModel.swift in Sources */,
 				F6BB10372B4FA56A0063DBBF /* CertificateLow.swift in Sources */,
 				F6BB10332B4F84970063DBBF /* RecipientInfo.swift in Sources */,
-				F657D5C92B3C450600901A6A /* SharingHistory.swift in Sources */,
+				F657D5C92B3C450600901A6A /* CredentialSharingHistory.swift in Sources */,
 				F6D913D72B53C5B4001D804D /* VerificationPreviewModel.swift in Sources */,
 				F6BB103A2B50B40E0063DBBF /* Verification.swift in Sources */,
 				F6CC76932B567BDF00FA26A8 /* QRReaderViewModel.swift in Sources */,
