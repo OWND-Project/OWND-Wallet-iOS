@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct HistoryRow: View {
-    var history: SharingHistory
+    var history: CredentialSharingHistory
 
     var body: some View {
         GeometryReader { geometry in

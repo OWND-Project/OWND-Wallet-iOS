@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct RecipientRow: View {
-    var sharingHistory: SharingHistory
+    var sharingHistory: CredentialSharingHistory
 
     var body: some View {
         HStack {
@@ -22,9 +22,8 @@ struct RecipientRow: View {
             .frame(width: 50, height: 50)
 
             VStack(alignment: .leading, spacing: 0) {
-                // オプショナルバインディングを使用して安全にアンラップ
-                if let rpName = sharingHistory.rpName {
-                    Text(rpName)
+                if (sharingHistory.rpName != "") {
+                    Text(sharingHistory.rpName)
                         .modifier(BodyBlack())
                 } else {
                     // rpNameがnilの場合に表示するデフォルトテキスト

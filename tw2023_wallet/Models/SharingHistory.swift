@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-struct ClaimInfo : Decodable{
+struct ClaimInfo : Codable{
     var claimKey: String
     var claimValue: String
     var purpose: String?
@@ -26,17 +26,17 @@ struct ClaimInfo : Decodable{
 }
 
 
-struct SharingHistory: Hashable, Decodable {
-    var rp: String
-    var accountIndex: Int
-    var createdAt: String
-    var credentialID: String
+struct CredentialSharingHistory: Codable, Hashable {
+    let rp: String
+    let accountIndex: Int
+    let createdAt: String
+    let credentialID: String
     var claims: [ClaimInfo]
-    var rpName: String?
-    var privacyPolicyUrl: String?
-    var logoUrl: String?
+    var rpName: String
+    var privacyPolicyUrl: String
+    var logoUrl: String
     
-    static func == (lhs: SharingHistory, rhs: SharingHistory) -> Bool {
+    static func == (lhs: CredentialSharingHistory, rhs: CredentialSharingHistory) -> Bool {
         for (lhsClaim, rhsClaim) in zip(lhs.claims, rhs.claims) {
             if !(lhsClaim == rhsClaim) {
                 return false
@@ -69,9 +69,6 @@ struct SharingHistory: Hashable, Decodable {
     }
 
     var logoImage: AnyView? {
-        if let url = logoUrl {
-            return ImageLoader.loadImage(from: url)
-        }
-        return nil
+        return ImageLoader.loadImage(from: logoUrl)
     }
 }

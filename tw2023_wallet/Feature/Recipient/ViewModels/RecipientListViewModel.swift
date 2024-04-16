@@ -9,8 +9,8 @@ import Combine
 import Foundation
 
 class RecipientListViewModel: ObservableObject {
-    @Published var sharingHistories: [SharingHistory] = []
-    @Published var groupedSharingHistories: [String : [SharingHistory]] = [:]
+    @Published var sharingHistories: [CredentialSharingHistory] = []
+    @Published var groupedSharingHistories: [String : [CredentialSharingHistory]] = [:]
     @Published var hasLoadedData = false
     @Published var isLoading = false
     private var historyManager: CredentialSharingHistoryManager
@@ -43,7 +43,7 @@ class RecipientListViewModel: ObservableObject {
         }
     }
 
-    func sortHistoriesByDate(histories: [SharingHistory]) -> [SharingHistory] {
+    func sortHistoriesByDate(histories: [CredentialSharingHistory]) -> [CredentialSharingHistory] {
         return histories.sorted { lhs, rhs in
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
@@ -53,8 +53,8 @@ class RecipientListViewModel: ObservableObject {
         }
     }
 
-    func findLatest(groupedHistories: [String : [SharingHistory]]) -> [SharingHistory] {
-        return groupedHistories.compactMap { group -> SharingHistory? in
+    func findLatest(groupedHistories: [String : [CredentialSharingHistory]]) -> [CredentialSharingHistory] {
+        return groupedHistories.compactMap { group -> CredentialSharingHistory? in
             group.value.last // 既にソートされているので、各グループの最初の要素が最新です。
         }
     }

@@ -11,7 +11,7 @@ import Foundation
 class ModelData {
 //    var credentials: [Credential] = load("credentialData.json")
     var credentials: [Credential] = []
-    var sharingHistories: [SharingHistory] = [] // 新しい配列
+    var sharingHistories: [CredentialSharingHistory] = [] // 新しい配列
     var issuerMetaDataList: [CredentialIssuerMetadata] = [] // IssureMetaDataを呼ぶため仮
     var clientInfoList: [ClientInfo] = []
     var presentationDefinitions: [PresentationDefinition] = []

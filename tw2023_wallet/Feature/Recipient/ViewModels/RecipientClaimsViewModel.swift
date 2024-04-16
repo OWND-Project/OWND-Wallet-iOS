@@ -23,7 +23,7 @@ class RecipientClaimsViewModel: ObservableObject {
         self.credentialManager = credentialManager
     }
 
-    func loadClaimsInfo(sharingHistory: SharingHistory) {
+    func loadClaimsInfo(sharingHistory: CredentialSharingHistory) {
         guard !self.hasLoadedData else { return }
         self.isLoading = true
         
@@ -33,7 +33,7 @@ class RecipientClaimsViewModel: ObservableObject {
         self.title = String(format: NSLocalizedString("credential_sharing_time", comment: ""),
                             sharingHistory.createdAt)
         self.rpName = String(format: NSLocalizedString("credential_recipient", comment: ""),
-                             sharingHistory.rpName ?? "Unknown")
+                             sharingHistory.rpName)
         
         self.isLoading = false
         self.hasLoadedData = true

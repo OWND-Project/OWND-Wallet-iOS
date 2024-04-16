@@ -11,7 +11,7 @@ struct RecipientInfo: View {
     @State private var showPrivacyPolicy = false
     @StateObject private var viewModel = RecipientInfoViewModel()
 
-    var sharingHistory: SharingHistory
+    var sharingHistory: CredentialSharingHistory
 
     var body: some View {
         Group {
@@ -30,8 +30,8 @@ struct RecipientInfo: View {
                             }
                         }
                         .frame(width: 70, height: 70)
-                        if let rpName = sharingHistory.rpName {
-                            Text(rpName)
+                        if (sharingHistory.rpName != "") {
+                            Text(sharingHistory.rpName)
                                 .modifier(BodyBlack())
                         } else {
                             Text("Unknown")
@@ -58,11 +58,11 @@ struct RecipientInfo: View {
                         Button(action: {
                             self.showPrivacyPolicy = true
                         }) {
-                            Text(sharingHistory.privacyPolicyUrl!)
+                            Text(sharingHistory.privacyPolicyUrl)
                                 .modifier(BodyBlack())
                                 .underline()
                                 .sheet(isPresented: $showPrivacyPolicy, content: {
-                                    SafariView(url: URL(string: sharingHistory.privacyPolicyUrl!)!)
+                                    SafariView(url: URL(string: sharingHistory.privacyPolicyUrl)!)
                                 })
                         }
                         .frame(maxWidth: .infinity, alignment: .leading) // 左寄せ
