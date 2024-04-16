@@ -15,9 +15,12 @@ class RecipientListPreviewModel: RecipientListViewModel {
         modelData.loadSharingHistories()
         
         
-        let groupedSharingHistories = Dictionary(grouping: modelData.sharingHistories, by: { $0.rp })
-        let latestHistories = self.findLatest(groupedHistories: groupedSharingHistories)
-        let sortedHistories = sortHistoriesByDate(histories: latestHistories)
+        let histories = Histories(histories: modelData.sharingHistories)
+        
+        
+        let groupedSharingHistories = histories.groupByRp()
+        let latestHistories = histories.latestByRp()
+        let sortedHistories = Histories.sortHistoriesByDate(histories: latestHistories)
 
         DispatchQueue.main.async {
             self.groupedSharingHistories = groupedSharingHistories

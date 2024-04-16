@@ -10,7 +10,7 @@ import SwiftUI
 
 struct RecipientClaims: View {
     @StateObject var viewModel = RecipientClaimsViewModel()
-    var sharingHistory: CredentialSharingHistory
+    var sharingHistory: History
     
     var body: some View {
         NavigationView {

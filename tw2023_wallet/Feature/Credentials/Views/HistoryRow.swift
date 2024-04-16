@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct HistoryRow: View {
-    var history: CredentialSharingHistory
+    var history: History
 
     var body: some View {
         GeometryReader { geometry in
@@ -16,20 +16,34 @@ struct HistoryRow: View {
                 Text(DateFormatterUtil.formatDate(history.createdAt))
                     .modifier(BodyBlack())
                 HStack {
-                    let historyClaims = history.claims
-                    let displayClaims = historyClaims.map{
-                        $0.claimKey
+                    switch history {
+                    case let credential as CredentialSharingHistory:
+                        let historyClaims = credential.claims
+                        let displayClaims = historyClaims.map{
+                            $0.claimKey
+                        }
+                        Text(localizedDisplayClaims(displayClaims, maxWidth: geometry.size.width))
+                            .lineLimit(1)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.top, 2)
+                            .modifier(SubHeadLineGray())
+                        Text(totalItemsLocalized(credential.claims.count))
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                            .padding(.bottom, 2)
+                            .modifier(SubHeadLineGray())
+                    case let idToken as IdTokenSharingHistory:
+                        Text("利用者ID")
+                            .lineLimit(1)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.top, 2)
+                            .modifier(SubHeadLineGray())
+                        Text("1")
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                            .padding(.bottom, 2)
+                            .modifier(SubHeadLineGray())
+                    default:
+                        let _ = print("Unexpected history type")
                     }
-                    Text(localizedDisplayClaims(displayClaims, maxWidth: geometry.size.width))
-                        .lineLimit(1)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.top, 2)
-                        .modifier(SubHeadLineGray())
-
-                    Text(totalItemsLocalized(history.claims.count))
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                        .padding(.bottom, 2)
-                        .modifier(SubHeadLineGray())
                 }
             }
         }

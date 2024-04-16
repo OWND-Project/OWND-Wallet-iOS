@@ -9,16 +9,16 @@ import Combine
 import Foundation
 
 class RecipientListViewModel: ObservableObject {
-    @Published var sharingHistories: [CredentialSharingHistory] = []
-    @Published var groupedSharingHistories: [String : [CredentialSharingHistory]] = [:]
+    @Published var sharingHistories: [History] = []
+    @Published var groupedSharingHistories: [String : [History]] = [:]
     @Published var hasLoadedData = false
     @Published var isLoading = false
-    private var historyManager: CredentialSharingHistoryManager
+    private var credentialHistoryManager: CredentialSharingHistoryManager
     private var idTokenHistoryManager: IdTokenSharingHistoryManager
 
-    init(historyManager: CredentialSharingHistoryManager = CredentialSharingHistoryManager(container: nil),
+    init(credentialHistoryManager: CredentialSharingHistoryManager = CredentialSharingHistoryManager(container: nil),
          idTokenHistoryManager: IdTokenSharingHistoryManager = IdTokenSharingHistoryManager(container: nil)) {
-        self.historyManager = historyManager
+        self.credentialHistoryManager = credentialHistoryManager
         self.idTokenHistoryManager = idTokenHistoryManager
     }
 
@@ -26,36 +26,27 @@ class RecipientListViewModel: ObservableObject {
         guard !self.hasLoadedData else { return }
         self.isLoading = true
 
-        let datastoreHistories = self.historyManager.getAll()
-        let mappedHistories = datastoreHistories.map { datastoreHistory in
+        let credentialHistories = self.credentialHistoryManager.getAll()
+        let mappedCredentialHistories = credentialHistories.map { datastoreHistory in
             datastoreHistory.toCredentialSharingHistory()
         }
+        
+        let idTokenSharingHistories = self.idTokenHistoryManager.getAll()
+        let mappedIdTokenSharingHistories = idTokenSharingHistories.map { datastoreHistory in
+            datastoreHistory.toIdTokenSharingHistory()
+        }
+        
+        let histories = Histories(histories: mappedCredentialHistories + mappedIdTokenSharingHistories)
 
-        let groupedSharingHistories = Dictionary(grouping: mappedHistories, by: { $0.rp })
-        let latestHistories = self.findLatest(groupedHistories: groupedSharingHistories)
-        let sortedHistories = self.sortHistoriesByDate(histories: latestHistories)
+        let groupedSharingHistories = histories.groupByRp()
+        let latestHistories = histories.latestByRp()
+        let sortedHistories = Histories.sortHistoriesByDate(histories: latestHistories)
 
         DispatchQueue.main.async {
             self.groupedSharingHistories = groupedSharingHistories
             self.sharingHistories = sortedHistories
             self.isLoading = false
             self.hasLoadedData = true
-        }
-    }
-
-    func sortHistoriesByDate(histories: [CredentialSharingHistory]) -> [CredentialSharingHistory] {
-        return histories.sorted { lhs, rhs in
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
-            let lhsDate = dateFormatter.date(from: lhs.createdAt) ?? Date.distantPast
-            let rhsDate = dateFormatter.date(from: rhs.createdAt) ?? Date.distantPast
-            return lhsDate > rhsDate
-        }
-    }
-
-    func findLatest(groupedHistories: [String : [CredentialSharingHistory]]) -> [CredentialSharingHistory] {
-        return groupedHistories.compactMap { group -> CredentialSharingHistory? in
-            group.value.last // 既にソートされているので、各グループの最初の要素が最新です。
         }
     }
 }

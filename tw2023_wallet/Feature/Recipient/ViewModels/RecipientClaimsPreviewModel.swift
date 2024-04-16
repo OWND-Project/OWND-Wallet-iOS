@@ -9,7 +9,7 @@ import Foundation
 
 
 class RecipientClaimsPreviewModel: RecipientClaimsViewModel {
-    override func loadClaimsInfo(sharingHistory: CredentialSharingHistory) {
+    override func loadClaimsInfo(sharingHistory: History) {
         guard !self.hasLoadedData else { return }
         self.isLoading = true
         print("RecipientClaimsPreviewModel load dummy data..")

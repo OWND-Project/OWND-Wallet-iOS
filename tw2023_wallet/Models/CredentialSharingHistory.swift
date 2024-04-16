@@ -8,6 +8,40 @@
 import Foundation
 import SwiftUI
 
+protocol History {
+    var rp: String { get }
+    var createdAt: String { get }
+}
+
+struct Histories {
+    var histories: [History]
+    
+    init(histories: [History]){
+        self.histories = histories
+    }
+    
+    func groupByRp() -> [String : [History]] {
+        return Dictionary(grouping: self.histories, by: { $0.rp })
+    }
+    func latestByRp() -> [History] {
+        let grouped = self.groupByRp()
+        return grouped.compactMap { group -> History? in
+            group.value.last
+        }
+    }
+    static func sortHistoriesByDate(histories: [History]) -> [History] {
+        return histories.sorted { lhs, rhs in
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+            let lhsDate = dateFormatter.date(from: lhs.createdAt) ?? Date.distantPast
+            let rhsDate = dateFormatter.date(from: rhs.createdAt) ?? Date.distantPast
+            return lhsDate > rhsDate
+        }
+    }
+
+}
+
+
 struct ClaimInfo : Codable{
     var claimKey: String
     var claimValue: String
@@ -26,7 +60,7 @@ struct ClaimInfo : Codable{
 }
 
 
-struct CredentialSharingHistory: Codable, Hashable {
+struct CredentialSharingHistory: Codable, Hashable, History {
     let rp: String
     let accountIndex: Int
     let createdAt: String

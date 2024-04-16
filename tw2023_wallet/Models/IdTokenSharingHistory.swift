@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct IdTokenSharingHistory: Codable {
+struct IdTokenSharingHistory: Codable, Hashable, History {
     let rp: String
     let accountIndex: Int
     let createdAt: String

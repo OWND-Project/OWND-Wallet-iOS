@@ -8,29 +8,42 @@
 import SwiftUI
 
 struct RecipientRow: View {
-    var sharingHistory: CredentialSharingHistory
+    var sharingHistory: History
 
     var body: some View {
         HStack {
             Group {
-                if let logoView = sharingHistory.logoImage {
-                    logoView
-                } else {
+                switch sharingHistory {
+                case let credential as CredentialSharingHistory:
+                    if let logoView = credential.logoImage {
+                        logoView
+                    } else {
+                        Color.clear
+                    }
+                case let idToken as IdTokenSharingHistory:
+                    Color.clear // todo: add `logoUri` to IdTokenSharingHistory
+                default:
                     Color.clear
                 }
             }
             .frame(width: 50, height: 50)
 
             VStack(alignment: .leading, spacing: 0) {
-                if (sharingHistory.rpName != "") {
-                    Text(sharingHistory.rpName)
+                let defaultText = Text("Unknown").modifier(BodyBlack())
+                switch sharingHistory {
+                case let credential as CredentialSharingHistory:
+                    if (credential.rpName != "") {
+                        Text(credential.rpName)
+                            .modifier(BodyBlack())
+                    } else {
+                        defaultText
+                    }
+                case let idToken as IdTokenSharingHistory:
+                    Text(idToken.rp) // todo: add `rpName` to IdTokenSharingHistory
                         .modifier(BodyBlack())
-                } else {
-                    // rpNameがnilの場合に表示するデフォルトテキスト
-                    Text("Unknown")
-                        .modifier(BodyBlack())
+                default:
+                    defaultText
                 }
-
                 HStack {
                     (Text(LocalizedStringKey("date_of_last_information")) + Text(" :"))
                         .modifier(BodyGray())
@@ -53,3 +66,4 @@ struct RecipientRow: View {
         sharingHistory: modelData.sharingHistories[0]
     )
 }
+

@@ -19,6 +19,17 @@ extension IdTokenSharingHistoryEntity {
     }
 }
 
+extension Datastore_IdTokenSharingHistory {
+    func toIdTokenSharingHistory() -> IdTokenSharingHistory {
+        let result = IdTokenSharingHistory(
+            rp: self.rp,
+            accountIndex: Int(self.accountIndex),
+            createdAt: self.createdAt.toString()
+        )
+        return result
+    }
+}
+
 class IdTokenSharingHistoryManager {
     let persistentContainer: NSPersistentContainer
     var context: NSManagedObjectContext
