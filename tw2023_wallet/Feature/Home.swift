@@ -21,11 +21,11 @@ struct Home: View {
                 .tag("Credential")
                 .environment(sharedArgs)
                 .environment(sharingRequestModel)
-//            RecipientList()
-//                .tabItem {
-//                    Label("SharingTo", systemImage: "house.fill")
-//                }
-//                .tag("Recipient")
+            RecipientList()
+                .tabItem {
+                    Label("SharingTo", systemImage: "house.fill")
+                }
+                .tag("Recipient")
             QRReaderViewLauncher(selectedTab: $selectedTab)
                 .tabItem {
                     Label("Reader", systemImage: "qrcode.viewfinder")

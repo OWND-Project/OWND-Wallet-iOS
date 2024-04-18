@@ -7,22 +7,6 @@
 
 import Foundation
 
-struct IdTokenSharingHistory: Codable {
-    let rp: String
-    let accountIndex: Int
-    let createdAt: String
-}
-
-struct CredentialSharingHistory: Codable {
-    let rp: String
-    let accountIndex: Int
-    let createdAt: String
-    let credentialID: String
-    var claims: [String]
-    var rpName: String
-    var privacyPolicyUrl: String
-    var logoUrl: String
-}
 
 struct BackupData: Codable {
     let seed: String

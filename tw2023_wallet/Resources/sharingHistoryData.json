@@ -177,6 +177,7 @@
         "purpose": "For determining if the user is older than 13"
       }
     ],
+    "rpName": "OtherVerifier2",
     "privacyPolicyUrl": "",
     "logoUrl": ""
   },
@@ -197,6 +198,7 @@
         "purpose": "For determining if the user is older than 18"
       }
     ],
+    "rpName": "OtherVerifier2",
     "privacyPolicyUrl": "",
     "logoUrl": ""
   },
@@ -242,6 +244,7 @@
         "purpose": "For determining if the user is older than 20"
       }
     ],
+    "rpName": "OtherVerifier2",
     "privacyPolicyUrl": "",
     "logoUrl": ""
   }

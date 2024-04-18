@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct RecipientDetail: View {
-    var sharingHistories: [SharingHistory]
+    var sharingHistories: [History]
 
     var body: some View {
         NavigationStack {
@@ -47,8 +47,8 @@ struct RecipientDetail: View {
 
 #Preview("1") {
     let modelData = ModelData()
-    modelData.loadSharingHistories()
+    modelData.loadCredentialSharingHistories()
     return RecipientDetail(
-        sharingHistories: modelData.sharingHistories
+        sharingHistories: modelData.credentialSharingHistories
     )
 }

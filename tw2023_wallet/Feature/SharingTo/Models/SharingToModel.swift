@@ -11,5 +11,5 @@ import Foundation
 class SharingToModel {
     var isLoading: Bool = false
     var hasLoadedData: Bool = false
-    var sharingHistories: [SharingHistory] = []
+    var sharingHistories: [CredentialSharingHistory] = []
 }

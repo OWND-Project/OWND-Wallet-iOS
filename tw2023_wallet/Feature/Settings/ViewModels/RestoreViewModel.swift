@@ -62,10 +62,9 @@ class RestoreViewModel {
             history.logoURL = it.logoUrl
             it.claims.forEach { claim in
                 var tmp = Datastore_ClaimInfo()
-                tmp.claimKey = claim
-                // todo: restore claimValue and purpose
-                // tmp.claimValue =
-                // tmp.purpose =
+                tmp.claimKey = claim.claimKey
+                tmp.claimValue = claim.claimValue
+                tmp.purpose = claim.purpose ?? ""
                 history.claims.append(tmp)
             }
             storeManager2.save(history: history)

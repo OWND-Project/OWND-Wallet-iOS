@@ -9,7 +9,7 @@ import Foundation
 
 @Observable
 class CredentialDetailModel {
-    var sharingHistories: [SharingHistory] = []
+    var sharingHistories: [CredentialSharingHistory] = []
     var isLoading = false
     var hasLoadedData = false
 }

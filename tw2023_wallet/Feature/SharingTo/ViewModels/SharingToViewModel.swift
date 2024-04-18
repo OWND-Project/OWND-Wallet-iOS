@@ -21,9 +21,9 @@ class SharingToViewModel {
         dataModel.isLoading = true
         print("load data..")
         
-        var histories: [SharingHistory] = []
+        var histories: [CredentialSharingHistory] = []
         historyManager.getAll().forEach{rawHistory in
-            let converted = rawHistory.toSharingHistory()
+            let converted = rawHistory.toCredentialSharingHistory()
             histories.append(converted)
         }
         

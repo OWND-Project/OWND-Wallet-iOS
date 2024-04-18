@@ -11,7 +11,7 @@ struct RecipientInfo: View {
     @State private var showPrivacyPolicy = false
     @StateObject private var viewModel = RecipientInfoViewModel()
 
-    var sharingHistory: SharingHistory
+    var sharingHistory: History
 
     var body: some View {
         Group {
@@ -23,21 +23,35 @@ struct RecipientInfo: View {
                 VStack(alignment: .leading, spacing: 0) {
                     HStack {
                         Group {
-                            if let logoView = sharingHistory.logoImage {
-                                logoView
-                            } else {
+                            switch sharingHistory {
+                            case let credential as CredentialSharingHistory:
+                                if let logoView = credential.logoImage {
+                                    logoView
+                                } else {
+                                    Color.clear
+                                }
+                            case let idToken as IdTokenSharingHistory:
+                                Color.clear // todo: add `logoUri` to IdTokenSharingHistory
+                            default:
                                 Color.clear
                             }
                         }
                         .frame(width: 70, height: 70)
-                        if let rpName = sharingHistory.rpName {
-                            Text(rpName)
+                        let defaultText = Text("Unknown").modifier(BodyBlack())
+                        switch sharingHistory {
+                        case let credential as CredentialSharingHistory:
+                            if (credential.rpName != "") {
+                                Text(credential.rpName)
+                                    .modifier(BodyBlack())
+                            } else {
+                                defaultText
+                            }
+                        case let idToken as IdTokenSharingHistory:
+                            Text(idToken.rp) // todo: add `rpName` to IdTokenSharingHistory
                                 .modifier(BodyBlack())
-                        } else {
-                            Text("Unknown")
-                                .modifier(BodyBlack())
+                        default:
+                            defaultText
                         }
-                        
                     }
                     .padding(.vertical, 16)
                     .frame(maxWidth: .infinity, alignment: .leading) // 左寄せ
@@ -58,12 +72,19 @@ struct RecipientInfo: View {
                         Button(action: {
                             self.showPrivacyPolicy = true
                         }) {
-                            Text(sharingHistory.privacyPolicyUrl!)
+                            switch sharingHistory {
+                            case let credential as CredentialSharingHistory:
+                            Text(credential.privacyPolicyUrl)
                                 .modifier(BodyBlack())
                                 .underline()
                                 .sheet(isPresented: $showPrivacyPolicy, content: {
-                                    SafariView(url: URL(string: sharingHistory.privacyPolicyUrl!)!)
+                                    SafariView(url: URL(string: credential.privacyPolicyUrl)!)
                                 })
+                            case let idToken as IdTokenSharingHistory:
+                                Text("")
+                            default:
+                                Text("")
+                            }
                         }
                         .frame(maxWidth: .infinity, alignment: .leading) // 左寄せ
                     }
@@ -79,7 +100,7 @@ struct RecipientInfo: View {
 
 #Preview {
     let modelData = ModelData()
-    modelData.loadSharingHistories()
+    modelData.loadCredentialSharingHistories()
     return RecipientInfo(
-        sharingHistory: modelData.sharingHistories[0])
+        sharingHistory: modelData.credentialSharingHistories[0])
 }

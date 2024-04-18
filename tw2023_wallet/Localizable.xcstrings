@@ -10,6 +10,9 @@
     "#%@" : {
 
     },
+    "1" : {
+
+    },
     "2024/02/17" : {
 
     },
@@ -660,6 +663,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "名"
+          }
+        }
+      }
+    },
+    "for_identifying_user" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " Provided for identification of the user."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "利用者を識別するために提供しました。"
           }
         }
       }
@@ -2004,6 +2024,9 @@
 
     },
     "最終情報提供日:" : {
+
+    },
+    "利用者ID" : {
 
     },
     "安全にお使いいただくために、デバイスに生体認証やパスコード認証を設定して利用いただくことを推奨します" : {

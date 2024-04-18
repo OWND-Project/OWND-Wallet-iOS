@@ -24,7 +24,7 @@ struct RecipientList: View {
                 } else {
                     ScrollView {
                         VStack {
-                            ForEach(viewModel.sharingHistories, id: \.self) { sharingHistory in
+                            ForEach(viewModel.sharingHistories, id: \.rp) { sharingHistory in
                                 if let data = viewModel.groupedSharingHistories[sharingHistory.rp] {
                                     NavigationLink(destination: RecipientDetail(sharingHistories: data)) {
                                         RecipientRow(sharingHistory: sharingHistory)
