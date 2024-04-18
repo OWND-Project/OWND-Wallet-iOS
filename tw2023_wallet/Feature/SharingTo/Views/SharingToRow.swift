@@ -9,7 +9,7 @@ import SwiftUI
 
 
 struct SharingToRow: View {
-    var sharingHistory: SharingHistory
+    var sharingHistory: CredentialSharingHistory
     var body: some View {
  HStack {
                         VStack{

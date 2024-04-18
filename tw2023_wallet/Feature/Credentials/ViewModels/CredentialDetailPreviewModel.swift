@@ -16,8 +16,8 @@ class DetailPreviewModel: CredentialDetailViewModel {
         dataModel.isLoading = true
         print("load dummy data..")
         let modelData = ModelData()
-        modelData.loadSharingHistories()
-        self.dataModel.sharingHistories = modelData.sharingHistories
+        modelData.loadCredentialSharingHistories()
+        self.dataModel.sharingHistories = modelData.credentialSharingHistories
         print("done")
         dataModel.isLoading = false
     }

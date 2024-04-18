@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct HistoryRow: View {
-    var history: SharingHistory
+    var history: History
 
     var body: some View {
         GeometryReader { geometry in
@@ -16,20 +16,34 @@ struct HistoryRow: View {
                 Text(DateFormatterUtil.formatDate(history.createdAt))
                     .modifier(BodyBlack())
                 HStack {
-                    let historyClaims = history.claims
-                    let displayClaims = historyClaims.map{
-                        $0.claimKey
+                    switch history {
+                    case let credential as CredentialSharingHistory:
+                        let historyClaims = credential.claims
+                        let displayClaims = historyClaims.map{
+                            $0.claimKey
+                        }
+                        Text(localizedDisplayClaims(displayClaims, maxWidth: geometry.size.width))
+                            .lineLimit(1)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.top, 2)
+                            .modifier(SubHeadLineGray())
+                        Text(totalItemsLocalized(credential.claims.count))
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                            .padding(.bottom, 2)
+                            .modifier(SubHeadLineGray())
+                    case let idToken as IdTokenSharingHistory:
+                        Text("利用者ID")
+                            .lineLimit(1)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.top, 2)
+                            .modifier(SubHeadLineGray())
+                        Text(totalItemsLocalized(1))
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                            .padding(.bottom, 2)
+                            .modifier(SubHeadLineGray())
+                    default:
+                        let _ = print("Unexpected history type")
                     }
-                    Text(localizedDisplayClaims(displayClaims, maxWidth: geometry.size.width))
-                        .lineLimit(1)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.top, 2)
-                        .modifier(SubHeadLineGray())
-
-                    Text(totalItemsLocalized(history.claims.count))
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                        .padding(.bottom, 2)
-                        .modifier(SubHeadLineGray())
                 }
             }
         }
@@ -71,16 +85,16 @@ struct HistoryRow: View {
 
 #Preview {
     let modelData = ModelData()
-    modelData.loadSharingHistories()
-    return HistoryRow(history: modelData.sharingHistories[0])
+    modelData.loadCredentialSharingHistories()
+    return HistoryRow(history: modelData.credentialSharingHistories[0])
 }
 
 #Preview("multi row") {
     let modelData = ModelData()
-    modelData.loadSharingHistories()
+    modelData.loadCredentialSharingHistories()
     return Group {
-        HistoryRow(history: modelData.sharingHistories[0])
-        HistoryRow(history: modelData.sharingHistories[1])
-        HistoryRow(history: modelData.sharingHistories[2])
+        HistoryRow(history: modelData.credentialSharingHistories[0])
+        HistoryRow(history: modelData.credentialSharingHistories[1])
+        HistoryRow(history: modelData.credentialSharingHistories[2])
     }
 }

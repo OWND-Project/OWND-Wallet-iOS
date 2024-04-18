@@ -85,9 +85,7 @@ class BackupViewModel {
                 createdAt: it.createdAt.toDate().toISO8601String(),
                 credentialID: it.credentialID,
                 
-                // workaround.
-                // todo: We need to be able to back up `ClaimInfo` types, not just strings.
-                claims: it.claims.map{$0.claimKey},
+                claims: it.claims.map{$0.toClaimInfo()},
                 
                 rpName: it.rpName,
                 privacyPolicyUrl: it.privacyPolicyURL,

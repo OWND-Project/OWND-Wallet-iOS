@@ -8,7 +8,44 @@
 import Foundation
 import SwiftUI
 
-struct ClaimInfo : Decodable{
+protocol History {
+    var rp: String { get }
+    var createdAt: String { get }
+}
+
+struct Histories {
+    var histories: [History]
+    
+    init(histories: [History]){
+        self.histories = histories
+    }
+    
+    func groupByRp() -> [String : [History]] {
+        let grouped = Dictionary(grouping: self.histories, by: { $0.rp })
+        return grouped.mapValues{ value in
+            return Histories.sortHistoriesByDate(histories: value)
+        }
+    }
+    func latestByRp() -> [History] {
+        let grouped = self.groupByRp()
+        return grouped.compactMap { group -> History? in
+            group.value.first
+        }
+    }
+    static func sortHistoriesByDate(histories: [History]) -> [History] {
+        return histories.sorted { lhs, rhs in
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+            let lhsDate = dateFormatter.date(from: lhs.createdAt) ?? Date.distantPast
+            let rhsDate = dateFormatter.date(from: rhs.createdAt) ?? Date.distantPast
+            return lhsDate > rhsDate
+        }
+    }
+
+}
+
+
+struct ClaimInfo : Codable{
     var claimKey: String
     var claimValue: String
     var purpose: String?
@@ -26,17 +63,17 @@ struct ClaimInfo : Decodable{
 }
 
 
-struct SharingHistory: Hashable, Decodable {
-    var rp: String
-    var accountIndex: Int
-    var createdAt: String
-    var credentialID: String
+struct CredentialSharingHistory: Codable, Hashable, History {
+    let rp: String
+    let accountIndex: Int
+    let createdAt: String
+    let credentialID: String
     var claims: [ClaimInfo]
-    var rpName: String?
-    var privacyPolicyUrl: String?
-    var logoUrl: String?
+    var rpName: String
+    var privacyPolicyUrl: String
+    var logoUrl: String
     
-    static func == (lhs: SharingHistory, rhs: SharingHistory) -> Bool {
+    static func == (lhs: CredentialSharingHistory, rhs: CredentialSharingHistory) -> Bool {
         for (lhsClaim, rhsClaim) in zip(lhs.claims, rhs.claims) {
             if !(lhsClaim == rhsClaim) {
                 return false
@@ -69,9 +106,6 @@ struct SharingHistory: Hashable, Decodable {
     }
 
     var logoImage: AnyView? {
-        if let url = logoUrl {
-            return ImageLoader.loadImage(from: url)
-        }
-        return nil
+        return ImageLoader.loadImage(from: logoUrl)
     }
 }

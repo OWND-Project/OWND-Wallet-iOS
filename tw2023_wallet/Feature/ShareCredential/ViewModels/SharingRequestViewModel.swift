@@ -202,7 +202,12 @@ class SharingRequestViewModel {
         
         let keyPair = KeyPairData(publicKey: publicKey, privateKey: privateKey)
         openIdProvider.setSecp256k1KeyPair(keyPair: keyPair)
-        let result = await openIdProvider.respondSIOPResponse()
+        
+        let delegate = NoRedirectDelegate()
+        let configuration = URLSessionConfiguration.default
+        let session = URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
+        
+        let result = await openIdProvider.respondSIOPResponse(using: session)
         switch result {
         case .success(let postResult):
             print("save history")

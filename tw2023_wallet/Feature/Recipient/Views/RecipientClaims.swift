@@ -10,7 +10,7 @@ import SwiftUI
 
 struct RecipientClaims: View {
     @StateObject var viewModel = RecipientClaimsViewModel()
-    var sharingHistory: SharingHistory
+    var sharingHistory: History
     
     var body: some View {
         NavigationView {
@@ -59,8 +59,8 @@ struct RecipientClaims: View {
 
 #Preview {
     let modelData = ModelData()
-    modelData.loadSharingHistories()
+    modelData.loadCredentialSharingHistories()
     return RecipientClaims(
         viewModel: RecipientClaimsPreviewModel(),
-        sharingHistory: modelData.sharingHistories[0])
+        sharingHistory: modelData.credentialSharingHistories[0])
 }
