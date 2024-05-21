@@ -1,0 +1,18 @@
+name: test
+run-name: Initiated by ${{ github.actor }} for commit ${{ github.sha }}
+on:
+  pull_request:
+    types:
+      - synchronize
+      - reopened
+      - opened
+jobs:
+  test-job:
+    runs-on: macOS-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '15.4.0'
+      - name: UnitTest
+        run: xdebuild test -project tw2023_wallet.xcodeproj -scheme tw2023_wallet
