@@ -10,10 +10,6 @@ import XCTest
 
 class ZipUtilTests: XCTestCase {
     
-    func testFail() {
-        XCTFail("fail")
-    }
-    
     func testCompressionAndDecompression() {
         let inputString = "test string"
         
