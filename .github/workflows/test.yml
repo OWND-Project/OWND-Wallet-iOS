@@ -15,4 +15,4 @@ jobs:
         with:
           xcode-version: '15.4.0'
       - name: UnitTest
-        run: xcodebuild test -project tw2023_wallet.xcodeproj -scheme tw2023_wallet -only-testing:tw2023_walletTests
+        run: xcodebuild test -project tw2023_wallet.xcodeproj -scheme tw2023_wallet -destination 'platform=iOS Simulator,name=iPhone 14,OS=latest' -only-testing:tw2023_walletTests
