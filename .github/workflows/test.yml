@@ -15,4 +15,4 @@ jobs:
         with:
           xcode-version: '15.4.0'
       - name: UnitTest
-        run: xdebuild test -project tw2023_wallet.xcodeproj -scheme tw2023_wallet
+        run: xcodebuild test -project tw2023_wallet.xcodeproj -scheme tw2023_wallet
