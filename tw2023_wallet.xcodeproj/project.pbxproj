@@ -393,6 +393,8 @@
 		A8C8103E2B82042200CF8CD6 /* SharingToModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharingToModel.swift; sourceTree = "<group>"; };
 		A8C810402B82042200CF8CD6 /* SharingToRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharingToRow.swift; sourceTree = "<group>"; };
 		A8C810412B82042200CF8CD6 /* SharingTo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharingTo.swift; sourceTree = "<group>"; };
+		A8CE83AC2C0464720061915C /* tw2023_wallet.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = tw2023_wallet.entitlements; sourceTree = "<group>"; };
+		A8CE83AD2C0465040061915C /* tw2023_wallet.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = tw2023_wallet.entitlements; sourceTree = "<group>"; };
 		A8E8922F2B3A705D009F3755 /* SerializeUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SerializeUtil.swift; sourceTree = "<group>"; };
 		F613F85F2B55FEF800DA4B9E /* PinCodeInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinCodeInput.swift; sourceTree = "<group>"; };
 		F621E1F22B6C654D0034BF95 /* RecipientDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientDetail.swift; sourceTree = "<group>"; };
@@ -596,6 +598,7 @@
 		8B81E2902B33CC4000ED3B4E = {
 			isa = PBXGroup;
 			children = (
+				A8CE83AC2C0464720061915C /* tw2023_wallet.entitlements */,
 				8B81E29B2B33CC4000ED3B4E /* tw2023_wallet */,
 				8B81E2AC2B33CC4300ED3B4E /* tw2023_walletTests */,
 				8B81E2B62B33CC4300ED3B4E /* tw2023_walletUITests */,
@@ -617,6 +620,7 @@
 		8B81E29B2B33CC4000ED3B4E /* tw2023_wallet */ = {
 			isa = PBXGroup;
 			children = (
+				A8CE83AD2C0465040061915C /* tw2023_wallet.entitlements */,
 				A84AB6CF2B4F7C4D00E8C88B /* datastore */,
 				A83039C52B4E6E1A004139A7 /* proto */,
 				A81087102B3B0694004425DE /* Signature */,
@@ -1710,6 +1714,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = tw2023_wallet/tw2023_wallet.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"tw2023_wallet/Preview Content\"";
@@ -1745,6 +1750,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = tw2023_wallet/tw2023_wallet.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"tw2023_wallet/Preview Content\"";
