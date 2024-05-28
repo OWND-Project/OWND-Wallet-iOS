@@ -170,7 +170,7 @@ final class OpenIdProviderTests: XCTestCase {
         XCTAssertEqual(disclosedClaims[0].name, "claim1")
     }
     
-    func testRespondVPResponse() throws {
+    func testRespondVPResponseDirectPost() throws {
         // mock up
         decodeDisclosureFunction = mockDecodeDisclosure2Records
         let requestObject = RequestObjectPayloadImpl(
@@ -185,10 +185,11 @@ final class OpenIdProviderTests: XCTestCase {
         configuration.protocolClasses = [MockURLProtocol.self]
         let mockSession = URLSession(configuration: configuration)
         
-        let testURL = URL(string: "https://rp.example.com/cb")!
+        let urlString = "https://rp.example.com/cb"
+        let testURL = URL(string: urlString)!
         let mockData = "dummy response".data(using: .utf8)
         let response = HTTPURLResponse(url: testURL, statusCode: 200, httpVersion: nil, headerFields: nil)
-        MockURLProtocol.mockResponses[testURL] = (mockData, response)
+        MockURLProtocol.mockResponses[testURL.absoluteString] = (mockData, response)
         
         
         let sdJwt = "issuer-jwt~dummy-claim1~dummy-claim2~"
@@ -230,11 +231,94 @@ final class OpenIdProviderTests: XCTestCase {
                 XCTAssertEqual(sharedContents[0].id, "internal-id-1")
                 XCTAssertEqual(sharedContents[0].sharedClaims.count, 1)
                 XCTAssertEqual(sharedContents[0].sharedClaims[0].name, "claim1")
+                
+                if let lastRequest = MockURLProtocol.lastRequest {
+                    XCTAssertEqual(lastRequest.httpMethod, "POST")
+                    XCTAssertEqual(lastRequest.url, testURL)
+                } else {
+                    XCTFail("No request was made")
+                }
             case .failure(let error):
                 XCTFail()
             }
         }
     }
+    
+    func testRespondVPResponseFragment() throws {
+        // mock up
+        decodeDisclosureFunction = mockDecodeDisclosure2Records
+        let requestObject = RequestObjectPayloadImpl(
+            clientId: "https://rp.example.com",
+            redirectUri: "https://rp.example.com/cb",
+            nonce: "dummy-nonce",
+            responseMode: ResponseMode.fragment,
+            responseUri: "https://rp.example.com/cb"
+        )
+        
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [MockURLProtocol.self]
+        let mockSession = URLSession(configuration: configuration)
+        
+        let testURL = URL(string: "https://rp.example.com/cb")!
+        let mockData = "dummy response".data(using: .utf8)
+        let response = HTTPURLResponse(url: testURL, statusCode: 200, httpVersion: nil, headerFields: nil)
+        MockURLProtocol.mockResponses["https://rp.example.com/.*"] = (mockData, response)
+        
+        
+        let sdJwt = "issuer-jwt~dummy-claim1~dummy-claim2~"
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        let presentationDefinition = try decoder.decode(PresentationDefinition.self, from: presentationDefinition1.data(using: .utf8)!)
+        
+        let credential = SubmissionCredential(id: "internal-id-1", format: "vc+sd-jwt", types: [], credential: sdJwt, inputDescriptor: presentationDefinition.inputDescriptors[0])
+        
+        let authRequestProcessedData = ProcessedRequestData(
+            authorizationRequest: AuthorizationRequestPayloadImpl(),
+            requestObjectJwt: "dummy-jwt",
+            requestObject: requestObject,
+            clientMetadata: RPRegistrationMetadataPayload(),
+            presentationDefinition: presentationDefinition,
+            requestIsSigned: false
+        )
+        
+        runAsyncTest {
+            let idProvider = OpenIdProvider(ProviderOption())
+            idProvider.authRequestProcessedData = authRequestProcessedData
+            
+            let requestObj = authRequestProcessedData.requestObject
+            let authRequest = authRequestProcessedData.authorizationRequest
+            idProvider.clientId = requestObj.clientId ?? authRequest.clientId
+            idProvider.responseMode = requestObj.responseMode ?? authRequest.responseMode
+            idProvider.nonce = requestObj.nonce ?? authRequest.nonce
+            idProvider.presentationDefinition = authRequestProcessedData.presentationDefinition
+            
+            try KeyPairUtil.generateSignVerifyKeyPair(alias: Constants.Cryptography.KEY_BINDING)
+            let keyBinding = KeyBindingImpl(keyAlias: Constants.Cryptography.KEY_BINDING)
+            idProvider.setKeyBinding(keyBinding: keyBinding)
+            let result = await idProvider.respondVPResponse(credentials: [credential], using: mockSession)
+            switch result {
+            case .success(let data):
+                let (_, arrayOfSharedContent, _) = data
+                let sharedContents = arrayOfSharedContent
+                XCTAssertEqual(sharedContents.count, 1)
+                XCTAssertEqual(sharedContents[0].id, "internal-id-1")
+                XCTAssertEqual(sharedContents[0].sharedClaims.count, 1)
+                XCTAssertEqual(sharedContents[0].sharedClaims[0].name, "claim1")
+                if let lastRequest = MockURLProtocol.lastRequest {
+                    XCTAssertEqual(lastRequest.httpMethod, "GET")
+                    
+                    let url = lastRequest.url!.absoluteString
+                    XCTAssertTrue(url.hasPrefix("https://rp.example.com/cb#vp_token=") || url.hasPrefix("https://rp.example.com/cb#presentation_submission="))
+                } else {
+                    XCTFail("No request was made")
+                }
+            case .failure(let error):
+                print(error)
+                XCTFail()
+            }
+        }
+    }
+
     
     func testPerformanceExample() throws {
         // This is an example of a performance test case.
