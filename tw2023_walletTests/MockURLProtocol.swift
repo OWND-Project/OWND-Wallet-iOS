@@ -8,7 +8,8 @@
 import Foundation
 
 class MockURLProtocol: URLProtocol {
-    static var mockResponses: [URL: (Data?, HTTPURLResponse?)] = [:]
+    static var mockResponses: [String: (Data?, HTTPURLResponse?)] = [:]
+    static var lastRequest: URLRequest?
     
     override class func canInit(with request: URLRequest) -> Bool {
         return true
@@ -20,7 +21,10 @@ class MockURLProtocol: URLProtocol {
     
     override func startLoading() {
         if let url = request.url,
-           let (data, response) = MockURLProtocol.mockResponses[url] {
+           let (data, response) = matchMockResponse(for: url.absoluteString) {
+            
+            MockURLProtocol.lastRequest = request
+            
             if let response = response {
                 self.client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
             }
@@ -31,6 +35,18 @@ class MockURLProtocol: URLProtocol {
         } else {
             self.client?.urlProtocol(self, didFailWithError: URLError(.unsupportedURL))
         }
+    }
+    
+    private func matchMockResponse(for urlString: String) -> (Data?, HTTPURLResponse?)? {
+        for (pattern, response) in MockURLProtocol.mockResponses {
+            if let regex = try? NSRegularExpression(pattern: pattern, options: []) {
+                let range = NSRange(location: 0, length: urlString.utf16.count)
+                if regex.firstMatch(in: urlString, options: [], range: range) != nil {
+                    return response
+                }
+            }
+        }
+        return nil
     }
     
     override func stopLoading() {

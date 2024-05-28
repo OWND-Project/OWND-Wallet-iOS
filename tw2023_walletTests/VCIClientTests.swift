@@ -48,7 +48,7 @@ final class VCIClientTests: XCTestCase {
                 return
             }
             let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)
-            MockURLProtocol.mockResponses[testURL] = (mockData, response)
+            MockURLProtocol.mockResponses[testURL.absoluteString] = (mockData, response)
             do {
                 let parameters: [String: String] = [
                     "grant_type": "urn:ietf:params:oauth:grant-type:pre-authorized_code",
@@ -78,7 +78,7 @@ final class VCIClientTests: XCTestCase {
                 return
             }
             let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)
-            MockURLProtocol.mockResponses[testURL] = (mockData, response)
+            MockURLProtocol.mockResponses[testURL.absoluteString] = (mockData, response)
 
             // CredentialRequestのインスタンスを作成
             let credentialRequest = CredentialRequestSdJwtVc(
@@ -117,9 +117,9 @@ final class VCIClientTests: XCTestCase {
                 return
             }
             let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)
-            MockURLProtocol.mockResponses[testURL1] = (mockData1, response)
-            MockURLProtocol.mockResponses[testURL2] = (mockData2, response)
-            MockURLProtocol.mockResponses[testURL3] = (mockData3, response)
+            MockURLProtocol.mockResponses[testURL1.absoluteString] = (mockData1, response)
+            MockURLProtocol.mockResponses[testURL2.absoluteString] = (mockData2, response)
+            MockURLProtocol.mockResponses[testURL3.absoluteString] = (mockData3, response)
 
             do {
                 // TokenIssuerのインスタンス生成とissueTokenのテスト
@@ -153,9 +153,9 @@ final class VCIClientTests: XCTestCase {
                 return
             }
             let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)
-            MockURLProtocol.mockResponses[testURL1] = (mockData1, response)
-            MockURLProtocol.mockResponses[testURL2] = (mockData2, response)
-            MockURLProtocol.mockResponses[testURL3] = (mockData3, response)
+            MockURLProtocol.mockResponses[testURL1.absoluteString] = (mockData1, response)
+            MockURLProtocol.mockResponses[testURL2.absoluteString] = (mockData2, response)
+            MockURLProtocol.mockResponses[testURL3.absoluteString] = (mockData3, response)
 
             let proof = Proof(proofType: "jwt", jwt: "dummy-proof")
             let payload = createCredentialRequest(formatValue: "vc+sd-jwt", vctValue: "UniversityDegreeCredential", proof: proof)

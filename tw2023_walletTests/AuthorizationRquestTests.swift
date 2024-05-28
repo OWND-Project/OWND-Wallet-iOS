@@ -68,7 +68,7 @@ final class AuthorizationRquestTests: XCTestCase {
         let testJWT = "eyJraWQiOiJ0ZXN0LWtpZCIsImFsZyI6IlJTMjU2IiwidHlwIjoiSldUIn0.eyJpc3MiOiJodHRwczovL2NsaWVudC5leGFtcGxlLm9yZy9jYiIsImF1ZCI6Imh0dHBzOi8vc2VydmVyLmV4YW1wbGUuY29tIiwicmVzcG9uc2VfdHlwZSI6ImNvZGUgaWRfdG9rZW4iLCJjbGllbnRfaWQiOiJodHRwczovL2NsaWVudC5leGFtcGxlLm9yZy9jYiIsInJlZGlyZWN0X3VyaSI6Imh0dHBzOi8vY2xpZW50LmV4YW1wbGUub3JnL2NiIiwic2NvcGUiOiJvcGVuaWQiLCJzdGF0ZSI6ImFmMGlmanNsZGtqIiwibm9uY2UiOiJuLTBTNl9XekEyTWoiLCJtYXhfYWdlIjo4NjQwMCwiaWF0IjoxNzAwNDU2MTIwfQ.oQ2EGIC130J0ztO3mN9qpOsQIL6Wowh-2Xd0I-in2LNEybtab7tSNJP4mi58BtkLIVBZGp_BZxk2vSJkSvqTbjnzvaeO3O6mlonjZPQF0-1Af6yB8kHZar2PzggV1ct2RUppndpIFmlTKzSx1jy4diYTrWAAFKcQqlugyRAwlt-VkWBnylkBe6QaetoMCkPPwlz-XYIiJ1lRo8i4N0vt-DY_p89uHnP3R9KeiVzoNDqyNpdooU63DPlfwRSLKw2rYd8UjPxiB-tWKLuPlxz1vR82Lt0X5ofhdN3hUD93c5f15z_88Cj5uYPW9mBVWgueeK0TvzePq40UYUnbaw_z6w"
         let response = HTTPURLResponse(url: testURL, statusCode: 200, httpVersion: nil, headerFields: nil)!
 
-        MockURLProtocol.mockResponses[testURL] = (testJWT.data(using: .utf8), response)
+        MockURLProtocol.mockResponses[testURL.absoluteString] = (testJWT.data(using: .utf8), response)
         let configuration = URLSessionConfiguration.ephemeral
         configuration.protocolClasses = [MockURLProtocol.self]
         let mockSession = URLSession(configuration: configuration)
@@ -95,7 +95,7 @@ final class AuthorizationRquestTests: XCTestCase {
             return
         }
         let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)
-        MockURLProtocol.mockResponses[testURL] = (mockData, response)
+        MockURLProtocol.mockResponses[testURL.absoluteString] = (mockData, response)
         
         let authorizationRequest = AuthorizationRequestPayloadImpl(
             clientMetadata: nil
@@ -126,7 +126,7 @@ final class AuthorizationRquestTests: XCTestCase {
             return
         }
         let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)
-        MockURLProtocol.mockResponses[testURL] = (mockData, response)
+        MockURLProtocol.mockResponses[testURL.absoluteString] = (mockData, response)
         
         let authorizationRequest = AuthorizationRequestPayloadImpl(
             presentationDefinition: nil
@@ -164,7 +164,7 @@ final class AuthorizationRquestTests: XCTestCase {
         
         let testURL = URL(string: "https://example.com/presentation_definition.json")!
         let response = HTTPURLResponse(url: testURL, statusCode: 200, httpVersion: nil, headerFields: nil)
-        MockURLProtocol.mockResponses[testURL] = (data, response)
+        MockURLProtocol.mockResponses[testURL.absoluteString] = (data, response)
 
         // RSA
         var convertedKey = try await fetchAndConvertJWK(from: testURL, withKeyId: rsaKeyId, using: mockSession)
