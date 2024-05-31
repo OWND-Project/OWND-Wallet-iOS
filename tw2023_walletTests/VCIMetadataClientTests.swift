@@ -31,7 +31,7 @@ final class CredentialIssuerMetadataTests: XCTestCase {
                 return
             }
             let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)
-            MockURLProtocol.mockResponses[testURL] = (mockData, response)
+            MockURLProtocol.mockResponses[testURL.absoluteString] = (mockData, response)
             
             do {
                 let metadata = try await fetchCredentialIssuerMetadata(from: testURL, using: mockSession)
@@ -55,7 +55,7 @@ final class CredentialIssuerMetadataTests: XCTestCase {
                 return
             }
             let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)
-            MockURLProtocol.mockResponses[testURL] = (mockData, response)
+            MockURLProtocol.mockResponses[testURL.absoluteString] = (mockData, response)
             do {
                 let metadata = try await fetchAuthServerMetadata(from: testURL, using: mockSession)
                 XCTAssertEqual(metadata.tokenEndpoint, "https://datasign-demo-vci.tunnelto.dev/token")
@@ -85,8 +85,8 @@ final class CredentialIssuerMetadataTests: XCTestCase {
                 return
             }
             let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)
-            MockURLProtocol.mockResponses[testURL1] = (mockData1, response)
-            MockURLProtocol.mockResponses[testURL2] = (mockData2, response)
+            MockURLProtocol.mockResponses[testURL1.absoluteString] = (mockData1, response)
+            MockURLProtocol.mockResponses[testURL2.absoluteString] = (mockData2, response)
             do {
                 let metadata = try await retrieveAllMetadata(issuer: issuer, using: mockSession)
                 XCTAssertEqual(metadata.credentialIssuer, issuer)

@@ -13,6 +13,7 @@ enum ResponseMode: String, Codable {
     case directPost = "direct_post"
     case directPostJwt = "direct_post.jwt"
     case post = "post"
+    case query = "query"
     
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()

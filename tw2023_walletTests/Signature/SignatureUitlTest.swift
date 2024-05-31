@@ -194,7 +194,7 @@ final class SignatureUitlTests: XCTestCase {
         let testURL = URL(string: "https://example.com/certificates")!
         let mockData = fullChain.data(using: .utf8)
         let response = HTTPURLResponse(url: testURL, statusCode: 200, httpVersion: nil, headerFields: nil)
-        MockURLProtocol.mockResponses[testURL] = (mockData, response)
+        MockURLProtocol.mockResponses[testURL.absoluteString] = (mockData, response)
 
         let url = "https://example.com/certificates"
         let expectedCertificatesNumber = 4
@@ -223,7 +223,7 @@ final class SignatureUitlTests: XCTestCase {
         let testURL = URL(string: "https://example.com/certificates")!
         let mockData = fullChain.data(using: .utf8)
         let response = HTTPURLResponse(url: testURL, statusCode: 200, httpVersion: nil, headerFields: nil)
-        MockURLProtocol.mockResponses[testURL] = (mockData, response)
+        MockURLProtocol.mockResponses[testURL.absoluteString] = (mockData, response)
 
         
         let url = "https://example.com/certificates"

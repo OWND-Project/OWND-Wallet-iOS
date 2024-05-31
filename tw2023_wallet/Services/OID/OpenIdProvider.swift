@@ -199,6 +199,7 @@ func respondSIOPResponse(using session: URLSession = URLSession.shared) async ->
             let postResult = try await sendRequest(
                 formData: formData,
                 url: URL(string: redirectUri)!,
+                responseMode: ResponseMode.directPost, // todo: change to appropriate value.
                 convert: convertIdTokenResponseResponse,
                 using: session
             )
@@ -310,8 +311,7 @@ func respondSIOPResponse(using session: URLSession = URLSession.shared) async ->
                     credential.id,
                     try createPresentationSubmissionJwtVc(
                         credential: credential,
-                        presentationDefinition: presentationDefinition,
-                        responseMode: responseMode
+                        presentationDefinition: presentationDefinition
                     )
                 )
 
@@ -357,6 +357,7 @@ func respondSIOPResponse(using session: URLSession = URLSession.shared) async ->
             let postResult = try await sendRequest(
                 formData: formData,
                 url: URL(string: responseUri)!,
+                responseMode: responseMode,
                 convert: convertVpTokenResponseResponse,
                 using: session
             )
@@ -419,39 +420,30 @@ func respondSIOPResponse(using session: URLSession = URLSession.shared) async ->
 
     func createPresentationSubmissionJwtVc(
         credential: SubmissionCredential,
-        presentationDefinition: PresentationDefinition,
-        responseMode: ResponseMode
+        presentationDefinition: PresentationDefinition
     ) throws -> (String, DescriptorMap, [DisclosedClaim], String?) {
-        switch responseMode {
-        case .directPost:
-                do {
-                    let (_, payload, _) = try JWTUtil.decodeJwt(jwt: credential.credential)
-                    
-                    if let vcDictionary = payload["vc"] as? [String: Any],
-                       let credentialSubject = vcDictionary["credentialSubject"] as? [String: Any] {
-                        let disclosedClaims = credentialSubject.map{ key, value in
-                            return DisclosedClaim(id: credential.id, types: credential.types, name: key, value: value as? String)
-                        }
-                        return (
-                            credential.credential,
-                            DescriptorMap(
-                                id: credential.inputDescriptor.id,
-                                format: credential.format,
-                                path: "$",
-                                pathNested: nil),
-                            disclosedClaims,
-                            nil
-                        )
-                    } else {
-                        throw OpenIdProviderIllegalInputException.illegalCredentialInput
-                    }
-                }catch{
-                    throw error
+        do {
+            let (_, payload, _) = try JWTUtil.decodeJwt(jwt: credential.credential)
+            if let vcDictionary = payload["vc"] as? [String: Any],
+               let credentialSubject = vcDictionary["credentialSubject"] as? [String: Any] {
+                let disclosedClaims = credentialSubject.map{ key, value in
+                    return DisclosedClaim(id: credential.id, types: credential.types, name: key, value: value as? String)
                 }
-        default:
-            // TODO: ここに実装を追加します
-            print("Unsupported response mode")
-            throw OpenIdProviderIllegalStateException.illegalResponseModeState
+                return (
+                    credential.credential,
+                    DescriptorMap(
+                        id: credential.inputDescriptor.id,
+                        format: credential.format,
+                        path: "$",
+                        pathNested: nil),
+                    disclosedClaims,
+                    nil
+                )
+            } else {
+                throw OpenIdProviderIllegalInputException.illegalCredentialInput
+            }
+        }catch{
+            throw error
         }
     }
 }
@@ -466,21 +458,31 @@ enum NetworkError: Error {
 func sendRequest<T: Decodable>(
     formData: [String: String],
     url: URL,
+    responseMode: ResponseMode,
     convert: ((Data, HTTPURLResponse, URL) throws -> T)? = nil,
     using session: URLSession = URLSession.shared
 ) async throws -> T {
-    var request = URLRequest(url: url)
-    request.httpMethod = "POST"
     
-    let formBody = formData.map { key, value in
-        let encodedKey = key.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-        let encodedValue = value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-        return "\(encodedKey)=\(encodedValue.replacingOccurrences(of: "+", with: "%2B"))"
-    }.joined(separator: "&")
+    var request: URLRequest
+    
+    switch responseMode {
+        case .directPost:
+            request = URLRequest(url: url)
+            request.httpMethod = "POST"
+    
+            let formBody = formData.map { key, value in
+                let encodedKey = key.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+                let encodedValue = value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+                return "\(encodedKey)=\(encodedValue.replacingOccurrences(of: "+", with: "%2B"))"
+            }.joined(separator: "&")
 
-    request.httpBody = formBody.data(using: .utf8)
-    request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-        
+            request.httpBody = formBody.data(using: .utf8)
+            request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        default:
+            print("Unsupported responseMode : \(responseMode)")
+            throw OpenIdProviderIllegalStateException.illegalResponseModeState
+    }
+            
     do {
         let (data, response) = try await session.data(for: request)
         

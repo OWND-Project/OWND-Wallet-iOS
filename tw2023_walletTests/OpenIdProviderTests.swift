@@ -170,7 +170,7 @@ final class OpenIdProviderTests: XCTestCase {
         XCTAssertEqual(disclosedClaims[0].name, "claim1")
     }
     
-    func testRespondVPResponse() throws {
+    func testRespondVPResponseDirectPost() throws {
         // mock up
         decodeDisclosureFunction = mockDecodeDisclosure2Records
         let requestObject = RequestObjectPayloadImpl(
@@ -185,10 +185,11 @@ final class OpenIdProviderTests: XCTestCase {
         configuration.protocolClasses = [MockURLProtocol.self]
         let mockSession = URLSession(configuration: configuration)
         
-        let testURL = URL(string: "https://rp.example.com/cb")!
+        let urlString = "https://rp.example.com/cb"
+        let testURL = URL(string: urlString)!
         let mockData = "dummy response".data(using: .utf8)
         let response = HTTPURLResponse(url: testURL, statusCode: 200, httpVersion: nil, headerFields: nil)
-        MockURLProtocol.mockResponses[testURL] = (mockData, response)
+        MockURLProtocol.mockResponses[testURL.absoluteString] = (mockData, response)
         
         
         let sdJwt = "issuer-jwt~dummy-claim1~dummy-claim2~"
@@ -230,11 +231,19 @@ final class OpenIdProviderTests: XCTestCase {
                 XCTAssertEqual(sharedContents[0].id, "internal-id-1")
                 XCTAssertEqual(sharedContents[0].sharedClaims.count, 1)
                 XCTAssertEqual(sharedContents[0].sharedClaims[0].name, "claim1")
+                
+                if let lastRequest = MockURLProtocol.lastRequest {
+                    XCTAssertEqual(lastRequest.httpMethod, "POST")
+                    XCTAssertEqual(lastRequest.url, testURL)
+                } else {
+                    XCTFail("No request was made")
+                }
             case .failure(let error):
                 XCTFail()
             }
         }
     }
+    
     
     func testPerformanceExample() throws {
         // This is an example of a performance test case.
