@@ -365,7 +365,6 @@ func respondSIOPResponse(using session: URLSession = URLSession.shared) async ->
             let purposes = vpTokens.map{$0.1.3}
             return .success((postResult, sharedContents, purposes))
         } catch {
-            print("An error occurred!!! : \(error)")
             return .failure(error)
         }
     }
@@ -479,26 +478,9 @@ func sendRequest<T: Decodable>(
 
             request.httpBody = formBody.data(using: .utf8)
             request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-
-    case .fragment, .query:
-            var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)!
-            var queryItems = [URLQueryItem]()
-            formData.forEach { key, value in
-                queryItems.append(URLQueryItem(name: key, value: value))
-            }
-        
-            if responseMode == .query {
-                urlComponents.queryItems = queryItems
-            } else {
-                let fragment = queryItems.map { "\($0.name)=\($0.value ?? "")" }.joined(separator: "&")
-                urlComponents.fragment = fragment
-            }
-        
-            request = URLRequest(url: urlComponents.url!)
-            request.httpMethod = "GET"
-    default:
-        print("Unsupported responseMode : \(responseMode)")
-        throw OpenIdProviderIllegalStateException.illegalResponseModeState
+        default:
+            print("Unsupported responseMode : \(responseMode)")
+            throw OpenIdProviderIllegalStateException.illegalResponseModeState
     }
             
     do {
