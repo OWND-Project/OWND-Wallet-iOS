@@ -117,10 +117,8 @@ extension Datastore_CredentialData {
     }
 
     private func getBackgroundImage() -> String? {
-        guard let metaData = self.parsedMetaData() else {
-            return nil
-        }
-        guard let supportedName = metaData.credentialsSupported.keys.first,  // todo: 1つめを前提としている
+        guard let metaData = self.parsedMetaData(),
+            let supportedName = metaData.credentialsSupported.keys.first,  // todo: 1つめを前提としている
             let supported = metaData.credentialsSupported[supportedName],
             let displays = supported.display,
             let firstDisplay = displays.first,  // todo: 1つめを前提としている
@@ -141,17 +139,16 @@ extension Datastore_CredentialData {
     }
 
     func toCredential() -> Credential? {
-        guard let metaData = self.parsedMetaData() else {
+        guard let metaData = self.parsedMetaData(),
+            let disclosure = self.getDisclosure()
+        else {
             return nil
         }
+
         let issuer = metaData.credentialIssuer
         let display = metaData.display?.first
         let issuerName = display?.name ?? "Unknown Issuer"
         let iat = self.convertUnixTimestampToDate(unixTimestamp: self.iat)
-
-        guard let disclosure = getDisclosure() else {
-            return nil
-        }
 
         // 最低限のデータのみ詰めている。必要があれば追加する。
         let result = Credential(
