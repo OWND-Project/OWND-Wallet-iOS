@@ -170,7 +170,7 @@ extension Datastore_CredentialData {
 }
 
 extension CredentialDataEntity {
-    func toCredentialData() -> Datastore_CredentialData {
+    func toDatastore_CredentialData() -> Datastore_CredentialData {
         let helper = EncryptionHelper()
         var credentialData = Datastore_CredentialData()
         credentialData.id = self.id!
@@ -274,7 +274,7 @@ class CredentialDataManager {
             let credentialEntities = try context.fetch(fetchRequest)
 
             for credentialEntity in credentialEntities {
-                let credentialData = credentialEntity.toCredentialData()
+                let credentialData = credentialEntity.toDatastore_CredentialData()
                 credentials.append(credentialData)
             }
         }
@@ -294,7 +294,7 @@ class CredentialDataManager {
             let credentialEntities = try context.fetch(fetchRequest)
 
             if let credentialEntity = credentialEntities.first {
-                return credentialEntity.toCredentialData()
+                return credentialEntity.toDatastore_CredentialData()
             }
             else {
                 return nil
