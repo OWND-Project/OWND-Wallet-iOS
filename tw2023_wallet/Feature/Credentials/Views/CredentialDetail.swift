@@ -14,7 +14,7 @@ struct CredentialDetail: View {
     var credential: Credential
     var viewModel: CredentialDetailViewModel
     var deleteAction: (() -> Void)?
-    
+
     @State var vpMode: Bool = false
     @State private var showingQRCodeModal: Bool = false
     @State private var navigateToIssuerDetail: Bool = false
@@ -39,16 +39,19 @@ struct CredentialDetail: View {
             if viewModel.dataModel.isLoading {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle())
-            } else {
+            }
+            else {
                 ScrollView {
                     VStack {
                         // ------------------------- card section -------------------------
                         CredentialRow(credential: self.credential)
                             .aspectRatio(1.6, contentMode: .fit)
                             .frame(maxWidth: .infinity)
-                        
+
                         // ------------------------- issuer section -------------------------
-                        let issuedByText = String(format: NSLocalizedString("IssuedBy", comment: ""), credential.issuerDisplayName)
+                        let issuedByText = String(
+                            format: NSLocalizedString("IssuedBy", comment: ""),
+                            credential.issuerDisplayName)
                         Text(issuedByText)
                             .underline()
                             .modifier(BodyGray())
@@ -56,9 +59,9 @@ struct CredentialDetail: View {
                                 self.navigateToIssuerDetail = true
                             }
                             .padding(.vertical, 8)
-                        
+
                         // ------------------------- QR code section -------------------------
-                        if (!vpMode) {
+                        if !vpMode {
                             // QR表示画面のリンク
                             if self.credential.format == "jwt_vc_json" {
                                 Text("display_qr_code")
@@ -71,20 +74,22 @@ struct CredentialDetail: View {
                                     .padding(.vertical, 8)
                             }
                         }
-                        
+
                         // ------------------------- claims section -------------------------
-                        if (!vpMode) {
+                        if !vpMode {
                             Text("Contents of this certificate")
                                 .padding(.vertical, 16)
-                                .frame(maxWidth: .infinity, alignment: .leading) // 左寄せ
+                                .frame(maxWidth: .infinity, alignment: .leading)  // 左寄せ
                                 .modifier(BodyGray())
-                            
+
                             if let disclosureDict = credential.disclosure {
-                                ForEach(disclosureDict.sorted(by: { $0.key < $1.key }), id: \.key) { key, value in
+                                ForEach(disclosureDict.sorted(by: { $0.key < $1.key }), id: \.key) {
+                                    key, value in
                                     DisclosureLow(disclosure: (key: key, value: value))
                                 }
                             }
-                        } else {
+                        }
+                        else {
                             // sharing claims
                             Text("Sharing Contents of this certificate")
                                 .padding(.vertical, 16)
@@ -93,7 +98,7 @@ struct CredentialDetail: View {
                             ForEach(viewModel.claimsToDisclose, id: \.self.id) { it in
                                 DisclosureLow(disclosure: (key: it.key!, value: it.value!))
                             }
-                            
+
                             // not sharing claims
                             Text("Not Sharing Contents of this certificate")
                                 .padding(.vertical, 16)
@@ -102,37 +107,42 @@ struct CredentialDetail: View {
                             ForEach(viewModel.claimsNotToDisclosed, id: \.self.id) { it in
                                 DisclosureLow(disclosure: (key: it.key!, value: it.value!))
                             }
-                            
+
                         }
-                        
+
                         // ------------------------- history section -------------------------
-                        if (!vpMode) {
+                        if !vpMode {
                             Text("History of information provided")
                                 .padding(.vertical, 16)
-                                .frame(maxWidth: .infinity, alignment: .leading) // 左寄せ
+                                .frame(maxWidth: .infinity, alignment: .leading)  // 左寄せ
                                 .modifier(BodyGray())
                             LazyVStack(spacing: 16) {
-                                ForEach(self.viewModel.dataModel.sharingHistories, id: \.createdAt) { history in
+                                ForEach(self.viewModel.dataModel.sharingHistories, id: \.createdAt)
+                                { history in
                                     HistoryRow(history: history)
                                         .padding(.vertical, 6)
                                 }
                             }
                         }
-                        
+
                         // ------------------------- button section -------------------------
-                        if (vpMode) {
-                            ActionButtonBlack(title: "Select This Credential", action: {
-                                let submissionCredential = viewModel.getSubmissionCredential(credential: credential)
-                                sharingRequestModel?.setSelectedCredential(
-                                    data: submissionCredential,
-                                    metadata: credential.metaData
-                                )
-                                path.removeLast(2)
-                            })
+                        if vpMode {
+                            ActionButtonBlack(
+                                title: "Select This Credential",
+                                action: {
+                                    let submissionCredential = viewModel.getSubmissionCredential(
+                                        credential: credential)
+                                    sharingRequestModel?.setSelectedCredential(
+                                        data: submissionCredential,
+                                        metadata: credential.metaData
+                                    )
+                                    path.removeLast(2)
+                                }
+                            )
                             .padding(.vertical, 16)
                         }
                     }
-                    .padding(.horizontal, 16) // 左右に16dpのパディング
+                    .padding(.horizontal, 16)  // 左右に16dpのパディング
                     .padding(.vertical, 16)
                 }
                 .navigationTitle(LocalizedStringKey(self.credential.credentialType.rawValue))
@@ -140,34 +150,40 @@ struct CredentialDetail: View {
                 .navigationDestination(isPresented: $navigateToIssuerDetail) {
                     IssuerDetail(credential: credential)
                 }
-                .sheet(isPresented: $showingQRCodeModal, content: {
-                    DisplayQRCode(credential: credential)
-                })
+                .sheet(
+                    isPresented: $showingQRCodeModal,
+                    content: {
+                        DisplayQRCode(credential: credential)
+                    }
+                )
                 .toolbar {
-                    if (deleteAction != nil) {
+                    if deleteAction != nil {
                         ToolbarItem(placement: .navigationBarTrailing) {
-                            Menu(content: {
-                                Button(action: {
-                                    showAlert = true
-                                }) {
-                                    Text("Delete")
-                                }
-                            }, label: {
-                                Image(systemName: "ellipsis")
-                            })
+                            Menu(
+                                content: {
+                                    Button(action: {
+                                        showAlert = true
+                                    }) {
+                                        Text("Delete")
+                                    }
+                                },
+                                label: {
+                                    Image(systemName: "ellipsis")
+                                })
                         }
                     }
                 }
                 .alert(isPresented: $showAlert) {
-                    Alert(title: Text("Confirm To Delete"),
-                          message: Text("Are you sure to delete this credential?"),
-                          primaryButton: .destructive(Text("Delete")) {
-                        if let action = deleteAction {
-                            action()
-                        }
+                    Alert(
+                        title: Text("Confirm To Delete"),
+                        message: Text("Are you sure to delete this credential?"),
+                        primaryButton: .destructive(Text("Delete")) {
+                            if let action = deleteAction {
+                                action()
+                            }
                             presentationMode.wrappedValue.dismiss()
-                    },
-                          secondaryButton: .cancel()
+                        },
+                        secondaryButton: .cancel()
                     )
                 }
             }
@@ -178,7 +194,8 @@ struct CredentialDetail: View {
                 if let model = sharingRequestModel, let pd = model.presentationDefinition {
                     self.vpMode = true
                     await viewModel.loadData(credential: credential, presentationDefinition: pd)
-                } else {
+                }
+                else {
                     await viewModel.loadData(credential: credential)
                 }
             }

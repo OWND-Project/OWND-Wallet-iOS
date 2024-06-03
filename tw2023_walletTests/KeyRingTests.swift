@@ -24,14 +24,16 @@ class KeyRingTests: XCTestCase {
         if let keyRing = HDKeyRing() {
             let mnemonicWords = keyRing.getMnemonicString()
             print("mnemonick: \(mnemonicWords!)")
-            
+
             let (x1, _) = keyRing.getPublicKey(index: 0)
             let (x2, _) = keyRing.getPublicKey(index: 1)
             let (x100, _) = keyRing.getPublicKey(index: 99)
-            
-            if let mnemonicWords = mnemonicWords, let keyRingRecovered = HDKeyRing(mnemonicWords: mnemonicWords) {
+
+            if let mnemonicWords = mnemonicWords,
+                let keyRingRecovered = HDKeyRing(mnemonicWords: mnemonicWords)
+            {
                 print("mnemonick: \(mnemonicWords)")
-                
+
                 let (x1Recovered, _) = keyRingRecovered.getPublicKey(index: 0)
                 let (x2Recovered, _) = keyRingRecovered.getPublicKey(index: 1)
                 let (x100Recovered, _) = keyRingRecovered.getPublicKey(index: 99)
@@ -41,7 +43,7 @@ class KeyRingTests: XCTestCase {
             }
         }
     }
-    
+
     func testRestoreFromMnemonicGeneratedByKotlinImplementaion() {
         let mnemonicWords = "polar write glimpse live earn ball awake cancel math oil casino lab"
         if let keyRing = HDKeyRing(mnemonicWords: mnemonicWords) {

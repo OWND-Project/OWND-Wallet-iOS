@@ -8,26 +8,27 @@
 import SwiftUI
 
 struct SharingTo: View {
-    
+
     var viewModel: SharingToViewModel
-    
+
     init(viewModel: SharingToViewModel = SharingToViewModel()) {
         self.viewModel = viewModel
     }
-    
+
     var body: some View {
         NavigationStack {
-            if (viewModel.dataModel.isLoading){
+            if viewModel.dataModel.isLoading {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle())
-            }else{
-                Group {
-                List(viewModel.dataModel.sharingHistories, id: \.self) { history in
-                    SharingToRow(sharingHistory: history).listRowSeparator(.hidden)
-                }
-                .scrollContentBackground(.hidden)
-                 .background(Color.clear)
             }
+            else {
+                Group {
+                    List(viewModel.dataModel.sharingHistories, id: \.self) { history in
+                        SharingToRow(sharingHistory: history).listRowSeparator(.hidden)
+                    }
+                    .scrollContentBackground(.hidden)
+                    .background(Color.clear)
+                }
             }
         }
     }

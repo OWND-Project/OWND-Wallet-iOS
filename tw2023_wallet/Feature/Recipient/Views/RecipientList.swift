@@ -16,17 +16,21 @@ struct RecipientList: View {
                 if viewModel.isLoading {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle())
-                } else if viewModel.sharingHistories.isEmpty {
+                }
+                else if viewModel.sharingHistories.isEmpty {
                     // 提供履歴が0件の場合の処理
                     Text("提供履歴はありません")
                         .padding()
                         .modifier(TitleBlack())
-                } else {
+                }
+                else {
                     ScrollView {
                         VStack {
                             ForEach(viewModel.sharingHistories, id: \.rp) { sharingHistory in
                                 if let data = viewModel.groupedSharingHistories[sharingHistory.rp] {
-                                    NavigationLink(destination: RecipientDetail(sharingHistories: data)) {
+                                    NavigationLink(
+                                        destination: RecipientDetail(sharingHistories: data)
+                                    ) {
                                         RecipientRow(sharingHistory: sharingHistory)
                                     }
                                 }

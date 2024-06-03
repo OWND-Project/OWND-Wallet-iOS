@@ -8,14 +8,14 @@
 import SwiftUI
 
 struct Restore: View {
-    @State private var navigateToCredentialList = false // 追加
+    @State private var navigateToCredentialList = false  // 追加
     @State private var isImporterPresented = false
     @State var showAlert = false
     @State var alertTitle = ""
     @State var success = false
-//    @State private var importedDocumentUrl: String?
+    //    @State private var importedDocumentUrl: String?
     @State private var importedContents: String?
-    
+
     var viewModel = RestoreViewModel()
     var body: some View {
         VStack {
@@ -24,35 +24,36 @@ struct Restore: View {
                 .padding(.vertical, 16)
                 .padding(.horizontal, 16)
             if let url = viewModel.importedDocumentUrl {
-                /*
-                 ファイル選択状態
-                 */
+                // ファイル選択状態
                 Image(systemName: "doc")
                     .modifier(TitleGray())
                 Text(url.lastPathComponent)
                     .modifier(BodyGray())
                     .padding(.bottom, 16)
                 // リストア実行ボタン
-                ActionButtonBlack(title: "load_backup_file", action: {
-                    print("restore")
-                    let result = viewModel.selectFile()
-                    switch result {
-                    case .success:
-                        success = true
-                        showAlert = true
-                        alertTitle = String(localized: "restored data")
-                    case .failure(let error):
-                        switch error {
-                        case RestoreError.invalidBackupFile:
-                            showAlert = true
-                            alertTitle = String(localized: "select_invalid_backup_file")
-                        default:
-                            showAlert = true
-                            alertTitle = String(localized: "unable_to_process_request")
-                            print(error)
+                ActionButtonBlack(
+                    title: "load_backup_file",
+                    action: {
+                        print("restore")
+                        let result = viewModel.selectFile()
+                        switch result {
+                            case .success:
+                                success = true
+                                showAlert = true
+                                alertTitle = String(localized: "restored data")
+                            case .failure(let error):
+                                switch error {
+                                    case RestoreError.invalidBackupFile:
+                                        showAlert = true
+                                        alertTitle = String(localized: "select_invalid_backup_file")
+                                    default:
+                                        showAlert = true
+                                        alertTitle = String(localized: "unable_to_process_request")
+                                        print(error)
+                                }
                         }
                     }
-                })
+                )
                 .padding(.horizontal, 16)
                 Text("change_credential")
                     .modifier(BodyBlack())
@@ -63,19 +64,21 @@ struct Restore: View {
                         viewModel.importedDocumentUrl = nil
                         importedContents = nil
                     }
-            } else {
-                /*
-                 ファイル未選択
-                 */
+            }
+            else {
+                // ファイル未選択
                 StatusBox(displayText: .constant("no_file_selected"), status: .warning)
                     .padding(.horizontal, 16)
                 // ファイル選択ボタン
-                ActionButtonBlack(title: "select_backup_file", action: {
-                    print("select file")
-                    isImporterPresented = true
-                })
+                ActionButtonBlack(
+                    title: "select_backup_file",
+                    action: {
+                        print("select file")
+                        isImporterPresented = true
+                    }
+                )
                 .padding(.horizontal, 16)
-                
+
                 VStack {
                     Text("notation_of_filename1").modifier(SubHeadLineGray())
                     HStack {
@@ -95,13 +98,13 @@ struct Restore: View {
             allowsMultipleSelection: false
         ) { result in
             switch result {
-            case .success(let urls):
-                guard let url = urls.first else { return }
-                viewModel.importedDocumentUrl = url
-            case .failure(let error):
-                showAlert = true
-                alertTitle = "Import Error"
-                print("インポートエラー: \(error)")
+                case .success(let urls):
+                    guard let url = urls.first else { return }
+                    viewModel.importedDocumentUrl = url
+                case .failure(let error):
+                    showAlert = true
+                    alertTitle = "Import Error"
+                    print("インポートエラー: \(error)")
             }
         }
         .navigationTitle("restore_from_backup_file")
@@ -112,7 +115,7 @@ struct Restore: View {
             Alert(
                 title: Text(alertTitle),
                 dismissButton: .default(Text("OK")) {
-                    if (success) {
+                    if success {
                         self.navigateToCredentialList = true
                     }
                 }

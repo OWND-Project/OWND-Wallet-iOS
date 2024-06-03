@@ -15,14 +15,10 @@ protocol History {
 
 struct Histories {
     var histories: [History]
-    
-    init(histories: [History]){
-        self.histories = histories
-    }
-    
-    func groupByRp() -> [String : [History]] {
+
+    func groupByRp() -> [String: [History]] {
         let grouped = Dictionary(grouping: self.histories, by: { $0.rp })
-        return grouped.mapValues{ value in
+        return grouped.mapValues { value in
             return Histories.sortHistoriesByDate(histories: value)
         }
     }
@@ -44,24 +40,23 @@ struct Histories {
 
 }
 
-
-struct ClaimInfo : Codable{
+struct ClaimInfo: Codable {
     var claimKey: String
     var claimValue: String
     var purpose: String?
-    
+
     enum CodingKeys: String, CodingKey {
         case claimKey
         case claimValue
         case purpose
     }
-    
+
     static func == (lhs: ClaimInfo, rhs: ClaimInfo) -> Bool {
         // ここで比較ロジックを実装する
-        return lhs.claimKey == rhs.claimKey && lhs.claimValue == rhs.claimValue && lhs.purpose == rhs.purpose
+        return lhs.claimKey == rhs.claimKey && lhs.claimValue == rhs.claimValue
+            && lhs.purpose == rhs.purpose
     }
 }
-
 
 struct CredentialSharingHistory: Codable, Hashable, History {
     let rp: String
@@ -72,22 +67,19 @@ struct CredentialSharingHistory: Codable, Hashable, History {
     var rpName: String
     var privacyPolicyUrl: String
     var logoUrl: String
-    
+
     static func == (lhs: CredentialSharingHistory, rhs: CredentialSharingHistory) -> Bool {
         for (lhsClaim, rhsClaim) in zip(lhs.claims, rhs.claims) {
             if !(lhsClaim == rhsClaim) {
                 return false
             }
         }
-        return lhs.rp == rhs.rp &&
-               lhs.accountIndex == rhs.accountIndex &&
-               lhs.createdAt == rhs.createdAt &&
-               lhs.credentialID == rhs.credentialID &&
-               lhs.rpName == rhs.rpName &&
-               lhs.privacyPolicyUrl == rhs.privacyPolicyUrl &&
-               lhs.logoUrl == rhs.logoUrl
+        return lhs.rp == rhs.rp && lhs.accountIndex == rhs.accountIndex
+            && lhs.createdAt == rhs.createdAt && lhs.credentialID == rhs.credentialID
+            && lhs.rpName == rhs.rpName && lhs.privacyPolicyUrl == rhs.privacyPolicyUrl
+            && lhs.logoUrl == rhs.logoUrl
     }
-    
+
     func hash(into hasher: inout Hasher) {
         hasher.combine(rp)
         hasher.combine(accountIndex)

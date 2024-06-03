@@ -9,7 +9,7 @@ import SwiftUI
 
 struct FloatingActionButton: View {
     var onButtonTap: () -> Void
-    
+
     var body: some View {
         Button(action: onButtonTap) {
             Image(systemName: "plus")

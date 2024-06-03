@@ -15,7 +15,7 @@ struct CredentialSubjectLow: View {
                 .padding(.bottom, 2)
                 .modifier(BodyBlack())
         }
-        .padding(.vertical, 6) // 上下のpaddingに対応
+        .padding(.vertical, 6)  // 上下のpaddingに対応
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
@@ -23,7 +23,9 @@ struct CredentialSubjectLow: View {
 #Preview {
     let modelData = ModelData()
     modelData.loadIssuerMetaDataList()
-    let credSupported = modelData.issuerMetaDataList[2].credentialsSupported["ParticipationCertificate"] as! CredentialSupportedJwtVcJson
+    let credSupported =
+        modelData.issuerMetaDataList[2].credentialsSupported["ParticipationCertificate"]
+        as! CredentialSupportedJwtVcJson
     let displayNames = Array(credSupported.credentialDefinition.credentialSubject!.keys)
     return CredentialSubjectLow(item: displayNames.first!)
 }

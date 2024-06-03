@@ -20,12 +20,14 @@ struct RecipientOrgInfo: View {
                     Group {
                         if let logoView = clientInfo.logoImage {
                             logoView
-                        } else {
+                        }
+                        else {
                             Color.clear
                         }
                     }
                     .frame(width: 70, height: 70)
-                    Text(clientInfo.certificateInfo!.organization ?? clientInfo.name).modifier(TitleBlack())
+                    Text(clientInfo.certificateInfo!.organization ?? clientInfo.name).modifier(
+                        TitleBlack())
                 }
                 if let issuer = clientInfo.certificateInfo?.issuer {
                     if clientInfo.verified {
@@ -38,7 +40,7 @@ struct RecipientOrgInfo: View {
                 }
             }
             .padding(.vertical, 16)
-            .frame(maxWidth: .infinity, alignment: .leading) // 左寄せ
+            .frame(maxWidth: .infinity, alignment: .leading)  // 左寄せ
 
             if let certificateInfo = clientInfo.certificateInfo {
                 VStack(alignment: .leading, spacing: 0) {
@@ -51,8 +53,8 @@ struct RecipientOrgInfo: View {
                 VStack(alignment: .leading, spacing: 0) {
                     Text("cert_location")
                         .modifier(SubHeadLineGray())
-//                    Text(certificateInfo.domain!)
-//                        .modifier(BodyBlack())
+                    //                    Text(certificateInfo.domain!)
+                    //                        .modifier(BodyBlack())
                     HStack {
                         Text(certificateInfo.state ?? "")
                         Text(certificateInfo.locality ?? "")
@@ -85,9 +87,11 @@ struct RecipientOrgInfo: View {
                         Text(clientInfo.tosUrl)
                             .modifier(BodyBlack())
                             .underline()
-                            .sheet(isPresented: $showTermsOfUse, content: {
-                                SafariView(url: URL(string: clientInfo.tosUrl)!)
-                            })
+                            .sheet(
+                                isPresented: $showTermsOfUse,
+                                content: {
+                                    SafariView(url: URL(string: clientInfo.tosUrl)!)
+                                })
                     }
                 }
                 .padding(.vertical, 16)
@@ -101,14 +105,17 @@ struct RecipientOrgInfo: View {
                         Text(clientInfo.policyUrl)
                             .modifier(BodyBlack())
                             .underline()
-                            .sheet(isPresented: $showPrivacyPolicy, content: {
-                                SafariView(url: URL(string: clientInfo.policyUrl)!)
-                            })
+                            .sheet(
+                                isPresented: $showPrivacyPolicy,
+                                content: {
+                                    SafariView(url: URL(string: clientInfo.policyUrl)!)
+                                })
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading) // 左寄せ
+                    .frame(maxWidth: .infinity, alignment: .leading)  // 左寄せ
                 }
                 .padding(.vertical, 16)
-            } else {
+            }
+            else {
                 VStack(alignment: .leading, spacing: 0) {
                     Text("terms_of_use")
                         .modifier(SubHeadLineGray())
@@ -118,9 +125,11 @@ struct RecipientOrgInfo: View {
                         Text(clientInfo.tosUrl)
                             .modifier(BodyBlack())
                             .underline()
-                            .sheet(isPresented: $showTermsOfUse, content: {
-                                SafariView(url: URL(string: clientInfo.tosUrl)!)
-                            })
+                            .sheet(
+                                isPresented: $showTermsOfUse,
+                                content: {
+                                    SafariView(url: URL(string: clientInfo.tosUrl)!)
+                                })
                     }
                 }
                 .padding(.vertical, 16)
@@ -134,11 +143,13 @@ struct RecipientOrgInfo: View {
                         Text(clientInfo.policyUrl)
                             .modifier(BodyBlack())
                             .underline()
-                            .sheet(isPresented: $showPrivacyPolicy, content: {
-                                SafariView(url: URL(string: clientInfo.policyUrl)!)
-                            })
+                            .sheet(
+                                isPresented: $showPrivacyPolicy,
+                                content: {
+                                    SafariView(url: URL(string: clientInfo.policyUrl)!)
+                                })
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading) // 左寄せ
+                    .frame(maxWidth: .infinity, alignment: .leading)  // 左寄せ
                 }
                 .padding(.vertical, 16)
             }

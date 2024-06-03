@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 struct BackupData: Codable {
     let seed: String
     let idTokenSharingHistories: [IdTokenSharingHistory]

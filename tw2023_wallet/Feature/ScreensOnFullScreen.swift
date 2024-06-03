@@ -17,12 +17,12 @@ enum ScreensOnFullScreen: Identifiable, Hashable {
 
     var id: Int {
         switch self {
-        case .root: return 0
-        case .credentialList: return 1
-        case .credentialDetail: return 2
-        case .credentialOffer: return 3
-        case .sharingRequest: return 4
-        case .verification: return 5
+            case .root: return 0
+            case .credentialList: return 1
+            case .credentialDetail: return 2
+            case .credentialOffer: return 3
+            case .sharingRequest: return 4
+            case .verification: return 5
         }
     }
 }

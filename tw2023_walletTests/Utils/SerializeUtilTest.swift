@@ -6,6 +6,7 @@
 //
 
 import XCTest
+
 @testable import tw2023_wallet
 
 enum TestEnum: String {
@@ -15,22 +16,21 @@ enum TestEnum: String {
 }
 
 final class EnumDeserializerTests: XCTestCase {
-    
+
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
-    
+
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
-    
+
     func testDeserialization() {
         let deserializer = EnumDeserializer<TestEnum>(enumType: TestEnum.self)
-        
 
         let stringValue = "Value2"
         let deserializedEnum = deserializer.deserialize(rawValue: stringValue)
-        
+
         XCTAssertNotNil(deserializedEnum, "Enum deserialization failed")
         XCTAssertEqual(deserializedEnum, TestEnum.case2, "Incorrect enum case deserialized")
     }

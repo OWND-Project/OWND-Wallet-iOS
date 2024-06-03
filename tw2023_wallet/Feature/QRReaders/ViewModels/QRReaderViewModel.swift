@@ -31,24 +31,28 @@ class QRReaderViewModel: ObservableObject {
             args.credentialOffer = lastQrCode
             credentialOfferArgs = args
             scanResultType = .openIDCredentialOffer
-        } else if code.starts(with: "siopv2://") {
+        }
+        else if code.starts(with: "siopv2://") {
             let args = SharingCredentialArgs()
             args.url = code
             sharingCredentialArgs = args
             scanResultType = .openID4VP
-        } else if code.starts(with: "openid4vp://") {
+        }
+        else if code.starts(with: "openid4vp://") {
             let args = SharingCredentialArgs()
             args.url = code
             sharingCredentialArgs = args
             scanResultType = .openID4VP
-        } else if let decompressedString = ZipUtil.decompressString(compressed: code),
-                  decodeQRCodeData(from: decompressedString) != nil
+        }
+        else if let decompressedString = ZipUtil.decompressString(compressed: code),
+            decodeQRCodeData(from: decompressedString) != nil
         {
             scanResultType = .compressedString
             let args = VerificationArgs()
             args.compressedString = lastQrCode
             verificationArgs = args
-        } else {
+        }
+        else {
             scanResultType = .unknown
         }
     }

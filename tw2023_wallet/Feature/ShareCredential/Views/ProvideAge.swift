@@ -16,11 +16,15 @@ struct ProvideAge: View {
             VStack(alignment: .leading, spacing: 0) {
                 Text(LocalizedStringKey(presentationDefinition.inputDescriptors[0].purpose!))
                     .modifier(BodyBlack())
-                Text(String(format: NSLocalizedString("age_share_description", comment: ""), self.clientInfo.name))
-                    .modifier(SubHeadLineGray())
+                Text(
+                    String(
+                        format: NSLocalizedString("age_share_description", comment: ""),
+                        self.clientInfo.name)
+                )
+                .modifier(SubHeadLineGray())
             }
             .padding(.vertical, 8)
-            .frame(maxWidth: .infinity, alignment: .leading) // 左寄せ
+            .frame(maxWidth: .infinity, alignment: .leading)  // 左寄せ
         }
     }
 }
@@ -29,5 +33,7 @@ struct ProvideAge: View {
     let modelData = ModelData()
     modelData.loadClientInfoList()
     modelData.loadPresentationDefinitions()
-    return ProvideAge(clientInfo: modelData.clientInfoList[0], presentationDefinition: modelData.presentationDefinitions[0])
+    return ProvideAge(
+        clientInfo: modelData.clientInfoList[0],
+        presentationDefinition: modelData.presentationDefinitions[0])
 }

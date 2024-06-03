@@ -23,7 +23,8 @@ struct Verification: View {
             ScrollView {
                 if viewModel.dataModel.isLoading {
                     ProgressView().progressViewStyle(CircularProgressViewStyle())
-                } else {
+                }
+                else {
                     HStack {
                         Button("Close") {
                             presentationMode.wrappedValue.dismiss()
@@ -43,7 +44,8 @@ struct Verification: View {
                                 }
                             }
                         }
-                    } else {
+                    }
+                    else {
                         VStack(alignment: .leading) {
                             StatusBox(displayText: .constant("invalid_certificate"), status: .error)
                             Image("verification_fail")
@@ -60,8 +62,7 @@ struct Verification: View {
         .padding(.horizontal, 16)
         .onAppear {
             Task {
-                if let encryptedString = args.compressedString
-                {
+                if let encryptedString = args.compressedString {
                     viewModel.parseArgs(compressedCredential: encryptedString)
                     await viewModel.verifyCredential()
                 }

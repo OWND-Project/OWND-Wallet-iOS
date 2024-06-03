@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 struct Dummy: Hashable, Codable, Identifiable {
     var id: Int
     var name: String

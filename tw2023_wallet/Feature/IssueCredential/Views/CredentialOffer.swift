@@ -13,9 +13,11 @@ import SwiftUI
 func getCredentialDisplayName(credentialSupported: CredentialSupported?) -> String {
     if let jwt = credentialSupported as? CredentialSupportedJwtVcJson {
         return jwt.display?.first?.name ?? ""
-    } else if let sdJwt = credentialSupported as? CredentialSupportedVcSdJwt {
+    }
+    else if let sdJwt = credentialSupported as? CredentialSupportedVcSdJwt {
         return sdJwt.display?.first?.name ?? ""
-    } else {
+    }
+    else {
         return ""
     }
 }
@@ -23,9 +25,11 @@ func getCredentialDisplayName(credentialSupported: CredentialSupported?) -> Stri
 func getClaimNames(credentialSupported: CredentialSupported?) -> [String] {
     if let jwt = credentialSupported as? CredentialSupportedJwtVcJson {
         return jwt.credentialDefinition.getClaimNames()
-    } else if let sdJwt = credentialSupported as? CredentialSupportedVcSdJwt {
+    }
+    else if let sdJwt = credentialSupported as? CredentialSupportedVcSdJwt {
         return sdJwt.credentialDefinition.getClaimNames()
-    } else {
+    }
+    else {
         return []
     }
 }
@@ -47,14 +51,21 @@ struct CredentialOfferView: View {
             Group {
                 if viewModel.dataModel.isLoading {
                     ProgressView().progressViewStyle(CircularProgressViewStyle())
-                } else {
+                }
+                else {
                     let issuerDisplayName = viewModel.dataModel.metaData?.display?.first?.name ?? ""
-                    let credentialSupported = viewModel.dataModel.metaData?.credentialsSupported.keys
+                    let credentialSupported = viewModel.dataModel.metaData?.credentialsSupported
+                        .keys
                     let firstCredentialName = credentialSupported?.first
-                    let targetCredential = firstCredentialName == nil ? nil : viewModel.dataModel.metaData?.credentialsSupported[firstCredentialName!]
+                    let targetCredential =
+                        firstCredentialName == nil
+                        ? nil
+                        : viewModel.dataModel.metaData?.credentialsSupported[firstCredentialName!]
 
-                    let credentialDisplayName = getCredentialDisplayName(credentialSupported: targetCredential)
-                    let displayNames: [String] = getClaimNames(credentialSupported: targetCredential)
+                    let credentialDisplayName = getCredentialDisplayName(
+                        credentialSupported: targetCredential)
+                    let displayNames: [String] = getClaimNames(
+                        credentialSupported: targetCredential)
                     HStack {
                         Button("Cancel") {
                             presentationMode.wrappedValue.dismiss()
@@ -66,37 +77,47 @@ struct CredentialOfferView: View {
                     GeometryReader { geometry in
                         ScrollView {
                             VStack {
-                                Text(String(format: NSLocalizedString("credentialOfferText", comment: ""), issuerDisplayName, credentialDisplayName))
-                                    .modifier(Title3Black())
+                                Text(
+                                    String(
+                                        format: NSLocalizedString(
+                                            "credentialOfferText", comment: ""), issuerDisplayName,
+                                        credentialDisplayName)
+                                )
+                                .modifier(Title3Black())
                                 Image("issue_confirmation")
                                     .resizable()
                                     .scaledToFit()
-                                    .frame(width: geometry.size.width * 0.65) // 横幅の65%に設定
+                                    .frame(width: geometry.size.width * 0.65)  // 横幅の65%に設定
                             }
                             Text("Items to be issued")
                                 .padding(.vertical, 16)
-                                .frame(maxWidth: .infinity, alignment: .leading) // 左寄せ
+                                .frame(maxWidth: .infinity, alignment: .leading)  // 左寄せ
                                 .modifier(BodyGray())
                             ForEach(displayNames, id: \.self) { displayName in
                                 CredentialSubjectLow(item: displayName)
                             }
                             Text("issuing_authority_information")
-                                .frame(maxWidth: .infinity, alignment: .leading) // 左寄せ
+                                .frame(maxWidth: .infinity, alignment: .leading)  // 左寄せ
                                 .padding(.top, 32)
                                 .modifier(BodyBlack())
 
-                            IssuerDetail(issuerMetadata: viewModel.dataModel.metaData, showTitle: false)
-                            ActionButtonBlack(title: "issue_credential", action: {
-                                let pinRequired = viewModel.checkIfPinIsRequired()
-                                if pinRequired {
-                                    self.navigateToPinInput = true
-                                } else {
-                                    Task {
-                                        try await viewModel.sendRequest(userPin: nil)
-                                        self.navigateToHome = true
+                            IssuerDetail(
+                                issuerMetadata: viewModel.dataModel.metaData, showTitle: false)
+                            ActionButtonBlack(
+                                title: "issue_credential",
+                                action: {
+                                    let pinRequired = viewModel.checkIfPinIsRequired()
+                                    if pinRequired {
+                                        self.navigateToPinInput = true
+                                    }
+                                    else {
+                                        Task {
+                                            try await viewModel.sendRequest(userPin: nil)
+                                            self.navigateToHome = true
+                                        }
                                     }
                                 }
-                            })
+                            )
                             .padding(.vertical, 16)
                             .navigationDestination(
                                 isPresented: $navigateToHome,
@@ -111,7 +132,7 @@ struct CredentialOfferView: View {
                                 }
                             )
                         }
-                        .padding(.horizontal, 16) // 左右に16dpのパディング
+                        .padding(.horizontal, 16)  // 左右に16dpのパディング
                         .padding(.vertical, 16)
                     }
                 }
@@ -123,7 +144,8 @@ struct CredentialOfferView: View {
                 do {
                     try viewModel.initialize(rawCredentialOfferString: args.credentialOffer!)
                     try await viewModel.loadData()
-                }catch{
+                }
+                catch {
                     self.showErrorDialog = true
                     print("credential offerが正しくありません")
                     print(error)
@@ -131,20 +153,22 @@ struct CredentialOfferView: View {
             }
         }
         .alert(isPresented: $showErrorDialog) {
-                    Alert(
-                        title: Text("error"),
-                        message: Text("failed_to_show_credential_offer"),
-                        dismissButton: .default(Text("OK")) {
-                            presentationMode.wrappedValue.dismiss()
-                        }
-                    )
+            Alert(
+                title: Text("error"),
+                message: Text("failed_to_show_credential_offer"),
+                dismissButton: .default(Text("OK")) {
+                    presentationMode.wrappedValue.dismiss()
                 }
+            )
+        }
     }
 }
 
 #Preview {
     let args = CredentialOfferArgs()
-    args.credentialOffer = "openid-credential-offer://?credential_offer=%7B%22credential_issuer%22%3A%22https%3A%2F%2Fissuer.privacybydesign.jp%3A8443%22%2C%22credentials%22%3A%5B%22ParticipationCertificate%22%5D%2C%22grants%22%3A%7B%22urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Apre-authorized_code%22%3A%7B%22pre-authorized_code%22%3A%22R2Wc1PlJN87DLttzKprnZvPiScDuRyv4%22%2C%22user_pin_required%22%3Afalse%7D%7D%7D"
+    args.credentialOffer =
+        "openid-credential-offer://?credential_offer=%7B%22credential_issuer%22%3A%22https%3A%2F%2Fissuer.privacybydesign.jp%3A8443%22%2C%22credentials%22%3A%5B%22ParticipationCertificate%22%5D%2C%22grants%22%3A%7B%22urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Apre-authorized_code%22%3A%7B%22pre-authorized_code%22%3A%22R2Wc1PlJN87DLttzKprnZvPiScDuRyv4%22%2C%22user_pin_required%22%3Afalse%7D%7D%7D"
     return CredentialOfferView(
-        viewModel: CredentialOfferPreviewModel()).environment(args)
+        viewModel: CredentialOfferPreviewModel()
+    ).environment(args)
 }

@@ -5,8 +5,8 @@
 //  Created by 若葉良介 on 2024/01/13.
 //
 
-import Foundation
 import CommonCrypto
+import Foundation
 
 enum KeyBindingImplError: Error {
     case UnexpectedDisclosureValue
@@ -14,31 +14,35 @@ enum KeyBindingImplError: Error {
 
 class KeyBindingImpl: KeyBinding {
     private let keyAlias: String
-    
+
     init(keyAlias: String) {
         self.keyAlias = keyAlias
     }
-    func generateJwt(sdJwt: String, selectedDisclosures: [Disclosure], aud: String, nonce: String) throws -> String {
+    func generateJwt(sdJwt: String, selectedDisclosures: [Disclosure], aud: String, nonce: String)
+        throws -> String
+    {
         let parts = sdJwt.split(separator: "~").map(String.init)
         let issuerSignedJwt = parts[0]
-        
+
         let hasNilValue = selectedDisclosures.contains { disclosure in
             disclosure.disclosure == nil
         }
-        
-        if (hasNilValue) {
+
+        if hasNilValue {
             throw KeyBindingImplError.UnexpectedDisclosureValue
         }
-        
-        let sd = issuerSignedJwt + "~" + selectedDisclosures.map { $0.disclosure! }.joined(separator: "~") + "~"
-        
+
+        let sd =
+            issuerSignedJwt + "~"
+            + selectedDisclosures.map { $0.disclosure! }.joined(separator: "~") + "~"
+
         let sdHash = sd.data(using: String.Encoding.ascii)?.sha256ToBase64Url() ?? ""
         let header = ["typ": "kb+jwt", "alg": "ES256"]
         let payload: [String: Any] = [
             "aud": aud,
             "iat": Int(Date().timeIntervalSince1970),
             "_sd_hash": sdHash,
-            "nonce": nonce
+            "nonce": nonce,
         ]
         return try JWTUtil.sign(keyAlias: keyAlias, header: header, payload: payload)
     }

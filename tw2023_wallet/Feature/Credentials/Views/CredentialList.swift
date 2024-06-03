@@ -14,7 +14,8 @@ struct CredentialList: View {
     @State private var navigateToMyNumberCard = false
     @State private var navigateToAddCertificates = false
 
-    @State var dummyPath: [ScreensOnFullScreen] = [] // full screenから開かれたDetailで必要なのでここでは空の配列を固定で持つ
+    // full screenから開かれたDetailで必要なのでここでは空の配列を固定で持つ
+    @State var dummyPath: [ScreensOnFullScreen] = []
 
     init(viewModel: CredentialListViewModel = CredentialListViewModel()) {
         self.viewModel = viewModel
@@ -28,24 +29,30 @@ struct CredentialList: View {
                 if viewModel.dataModel.isLoading {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle())
-                } else if viewModel.dataModel.credentials.isEmpty {
+                }
+                else if viewModel.dataModel.credentials.isEmpty {
                     GeometryReader { geometry in
                         HStack {
-                            Spacer() // 左側のスペース
+                            Spacer()  // 左側のスペース
                             VStack {
-                                Text("no_certificate").modifier(LargeTitleBlack()).padding(.vertical, 64)
+                                Text("no_certificate").modifier(LargeTitleBlack()).padding(
+                                    .vertical, 64)
                                 Image("tap_to_add")
                                     .resizable()
                                     .aspectRatio(1.6, contentMode: .fit)
-                                    .frame(width: geometry.size.width * 0.85, height: geometry.size.width * 0.53125)
+                                    .frame(
+                                        width: geometry.size.width * 0.85,
+                                        height: geometry.size.width * 0.53125
+                                    )
                                     .onTapGesture {
-                                        navigateToAddCertificates = true // 遷移をトリガー
+                                        navigateToAddCertificates = true  // 遷移をトリガー
                                     }
                             }
-                            Spacer() // 右側のスペース
+                            Spacer()  // 右側のスペース
                         }
                     }
-                } else {
+                }
+                else {
                     ScrollView {
                         LazyVStack(spacing: 16) {
                             ForEach(viewModel.dataModel.credentials) { credential in
@@ -59,7 +66,8 @@ struct CredentialList: View {
                                             path: $dummyPath,
                                             deleteAction: {
                                                 Task {
-                                                    viewModel.deleteCredential(credential: credential)
+                                                    viewModel.deleteCredential(
+                                                        credential: credential)
                                                 }
                                             }
                                         )
@@ -77,7 +85,7 @@ struct CredentialList: View {
                     .overlay(
                         FloatingActionButton(
                             onButtonTap: {
-                                navigateToAddCertificates = true // 遷移をトリガー
+                                navigateToAddCertificates = true  // 遷移をトリガー
                             }
                         ),
                         alignment: .bottomTrailing
@@ -86,9 +94,9 @@ struct CredentialList: View {
             }
             .navigationBarTitle("Credential List", displayMode: .inline)
             // AddCertificatesへの遷移をトリガーするための条件
-//            .navigationDestination(isPresented: $navigateToAddCertificates) {
-//                AddCertificates()
-//            }
+            //            .navigationDestination(isPresented: $navigateToAddCertificates) {
+            //                AddCertificates()
+            //            }
             .navigationBarBackButtonHidden(true)
             .fullScreenCover(isPresented: $navigateToAddCertificates, onDismiss: onDismiss) {
                 AddCertificates()
@@ -101,7 +109,7 @@ struct CredentialList: View {
             }
         }
     }
-    
+
     func onDismiss() {
         // nop
     }

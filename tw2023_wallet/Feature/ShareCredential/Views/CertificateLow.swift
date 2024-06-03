@@ -16,8 +16,8 @@ struct CertificateLow: View {
         let mirror = Mirror(reflecting: certificateInfo)
         ForEach(Array(mirror.children), id: \.label) { child in
             if let label = child.label, let value = child.value as? String, !value.isEmpty,
-               label != "organization" && label != "issuer"
-            { // 特定のラベルを除外
+                label != "organization" && label != "issuer"
+            {  // 特定のラベルを除外
                 VStack(alignment: .leading, spacing: 0) {
                     Text(LocalizedStringKey(label))
                         .padding(.bottom, 2)

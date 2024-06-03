@@ -14,16 +14,17 @@ struct RecipientRow: View {
         HStack {
             Group {
                 switch sharingHistory {
-                case let credential as CredentialSharingHistory:
-                    if let logoView = credential.logoImage {
-                        logoView
-                    } else {
+                    case let credential as CredentialSharingHistory:
+                        if let logoView = credential.logoImage {
+                            logoView
+                        }
+                        else {
+                            Color.clear
+                        }
+                    case let idToken as IdTokenSharingHistory:
+                        Color.clear  // todo: add `logoUri` to IdTokenSharingHistory
+                    default:
                         Color.clear
-                    }
-                case let idToken as IdTokenSharingHistory:
-                    Color.clear // todo: add `logoUri` to IdTokenSharingHistory
-                default:
-                    Color.clear
                 }
             }
             .frame(width: 50, height: 50)
@@ -31,18 +32,19 @@ struct RecipientRow: View {
             VStack(alignment: .leading, spacing: 0) {
                 let defaultText = Text("Unknown").modifier(BodyBlack())
                 switch sharingHistory {
-                case let credential as CredentialSharingHistory:
-                    if (credential.rpName != "") {
-                        Text(credential.rpName)
+                    case let credential as CredentialSharingHistory:
+                        if credential.rpName != "" {
+                            Text(credential.rpName)
+                                .modifier(BodyBlack())
+                        }
+                        else {
+                            defaultText
+                        }
+                    case let idToken as IdTokenSharingHistory:
+                        Text(idToken.rp)  // todo: add `rpName` to IdTokenSharingHistory
                             .modifier(BodyBlack())
-                    } else {
+                    default:
                         defaultText
-                    }
-                case let idToken as IdTokenSharingHistory:
-                    Text(idToken.rp) // todo: add `rpName` to IdTokenSharingHistory
-                        .modifier(BodyBlack())
-                default:
-                    defaultText
                 }
                 HStack {
                     (Text(LocalizedStringKey("date_of_last_information")) + Text(" :"))
@@ -53,7 +55,7 @@ struct RecipientRow: View {
                     Image(systemName: "chevron.forward").modifier(Title3Gray())
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading) // 左寄せ
+            .frame(maxWidth: .infinity, alignment: .leading)  // 左寄せ
             Spacer()
         }
     }
@@ -66,4 +68,3 @@ struct RecipientRow: View {
         sharingHistory: modelData.credentialSharingHistories[0]
     )
 }
-

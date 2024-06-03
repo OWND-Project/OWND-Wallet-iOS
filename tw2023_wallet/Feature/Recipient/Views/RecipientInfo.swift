@@ -19,42 +19,45 @@ struct RecipientInfo: View {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle())
 
-            } else {
+            }
+            else {
                 VStack(alignment: .leading, spacing: 0) {
                     HStack {
                         Group {
                             switch sharingHistory {
-                            case let credential as CredentialSharingHistory:
-                                if let logoView = credential.logoImage {
-                                    logoView
-                                } else {
+                                case let credential as CredentialSharingHistory:
+                                    if let logoView = credential.logoImage {
+                                        logoView
+                                    }
+                                    else {
+                                        Color.clear
+                                    }
+                                case let idToken as IdTokenSharingHistory:
+                                    Color.clear  // todo: add `logoUri` to IdTokenSharingHistory
+                                default:
                                     Color.clear
-                                }
-                            case let idToken as IdTokenSharingHistory:
-                                Color.clear // todo: add `logoUri` to IdTokenSharingHistory
-                            default:
-                                Color.clear
                             }
                         }
                         .frame(width: 70, height: 70)
                         let defaultText = Text("Unknown").modifier(BodyBlack())
                         switch sharingHistory {
-                        case let credential as CredentialSharingHistory:
-                            if (credential.rpName != "") {
-                                Text(credential.rpName)
+                            case let credential as CredentialSharingHistory:
+                                if credential.rpName != "" {
+                                    Text(credential.rpName)
+                                        .modifier(BodyBlack())
+                                }
+                                else {
+                                    defaultText
+                                }
+                            case let idToken as IdTokenSharingHistory:
+                                Text(idToken.rp)  // todo: add `rpName` to IdTokenSharingHistory
                                     .modifier(BodyBlack())
-                            } else {
+                            default:
                                 defaultText
-                            }
-                        case let idToken as IdTokenSharingHistory:
-                            Text(idToken.rp) // todo: add `rpName` to IdTokenSharingHistory
-                                .modifier(BodyBlack())
-                        default:
-                            defaultText
                         }
                     }
                     .padding(.vertical, 16)
-                    .frame(maxWidth: .infinity, alignment: .leading) // 左寄せ
+                    .frame(maxWidth: .infinity, alignment: .leading)  // 左寄せ
                     VStack {
                         if let certificateInfo = viewModel.certificateInfo {
                             let address = certificateInfo.getFullAddress()
@@ -73,20 +76,23 @@ struct RecipientInfo: View {
                             self.showPrivacyPolicy = true
                         }) {
                             switch sharingHistory {
-                            case let credential as CredentialSharingHistory:
-                            Text(credential.privacyPolicyUrl)
-                                .modifier(BodyBlack())
-                                .underline()
-                                .sheet(isPresented: $showPrivacyPolicy, content: {
-                                    SafariView(url: URL(string: credential.privacyPolicyUrl)!)
-                                })
-                            case let idToken as IdTokenSharingHistory:
-                                Text("")
-                            default:
-                                Text("")
+                                case let credential as CredentialSharingHistory:
+                                    Text(credential.privacyPolicyUrl)
+                                        .modifier(BodyBlack())
+                                        .underline()
+                                        .sheet(
+                                            isPresented: $showPrivacyPolicy,
+                                            content: {
+                                                SafariView(
+                                                    url: URL(string: credential.privacyPolicyUrl)!)
+                                            })
+                                case let idToken as IdTokenSharingHistory:
+                                    Text("")
+                                default:
+                                    Text("")
                             }
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading) // 左寄せ
+                        .frame(maxWidth: .infinity, alignment: .leading)  // 左寄せ
                     }
                     .padding(.vertical, 16)
                 }

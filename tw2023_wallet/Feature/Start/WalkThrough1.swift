@@ -16,7 +16,8 @@ struct WalkThrough1: View {
                 ZStack {
                     Image("step1")
                         .frame(width: geometry.size.width * 0.6)
-                        .position(x: geometry.size.width / 2, y: geometry.size.height / 2) // 画面上下左右中央
+                        // 画面上下左右中央
+                        .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
                     Image("walkthrough1")
                         .imageScale(.large)
                         .foregroundStyle(.tint)
@@ -35,27 +36,27 @@ struct WalkThrough1: View {
                         .padding(.vertical, 50)
                         .frame(maxWidth: .infinity, alignment: .center)
                         .multilineTextAlignment(.center)
-                        Spacer() // 下部の余白
+                        Spacer()  // 下部の余白
 
                         // 下部のボタンとスキップリンク
                         VStack {
                             HStack {
-                                Spacer() // 右寄せのためのスペーサー
+                                Spacer()  // 右寄せのためのスペーサー
                                 NavigationLink(destination: WalkThrough2()) {
                                     Image(systemName: "chevron.forward").modifier(Title3Gray())
                                 }
                             }
-                            .padding(.bottom, geometry.size.height * 0.2) // 下部からの位置を調整
+                            .padding(.bottom, geometry.size.height * 0.2)  // 下部からの位置を調整
 
                             HStack {
-                                Spacer() // 右寄せのためのスペーサー
+                                Spacer()  // 右寄せのためのスペーサー
                                 NavigationLink(destination: WalkThrough4()) {
                                     Text("skip")
                                         .underline()
                                         .modifier(BodyGray())
                                 }
                             }
-                            .padding(.bottom, geometry.size.height * 0.05) // 下部からの位置を調整
+                            .padding(.bottom, geometry.size.height * 0.05)  // 下部からの位置を調整
                         }
                     }
                 }

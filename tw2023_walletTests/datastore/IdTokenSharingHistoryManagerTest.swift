@@ -5,18 +5,17 @@
 //  Created by katsuyoshi ozaki on 2024/01/12.
 //
 
-import Foundation
-
-import XCTest
 import CoreData
-@testable import tw2023_wallet
+import Foundation
+import XCTest
 
+@testable import tw2023_wallet
 
 class IdTokenSharingHistoryManagerTests: XCTestCase {
 
     var context: NSManagedObjectContext!
     var manager: IdTokenSharingHistoryManager!
-    
+
     override func setUp() {
         super.setUp()
 
@@ -36,9 +35,10 @@ class IdTokenSharingHistoryManagerTests: XCTestCase {
 
     override func tearDown() {
         super.tearDown()
-        
+
         // テスト後にデータをクリア
-        let fetchRequest: NSFetchRequest<IdTokenSharingHistoryEntity> = IdTokenSharingHistoryEntity.fetchRequest()
+        let fetchRequest: NSFetchRequest<IdTokenSharingHistoryEntity> =
+            IdTokenSharingHistoryEntity.fetchRequest()
 
         do {
             let histories = try context.fetch(fetchRequest)
@@ -46,7 +46,8 @@ class IdTokenSharingHistoryManagerTests: XCTestCase {
                 context.delete(history)
             }
             try context.save()
-        } catch {
+        }
+        catch {
             print("Failed to delete test data: \(error.localizedDescription)")
         }
     }

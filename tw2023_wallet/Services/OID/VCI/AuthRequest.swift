@@ -75,7 +75,7 @@ struct RPRegistrationMetadataPayload: Codable {
     var policyUri: String?
     var tosUri: String?
     var clientPurpose: String?
-    var jwks: String? // todo jwksの配列型を指定する
+    var jwks: String?  // todo jwksの配列型を指定する
     var jwksUri: String?
     var vpFormatsSupported: Format?
 }
@@ -118,7 +118,7 @@ extension RequestObjectPayloadImpl {
         let jsonData = try JSONSerialization.data(withJSONObject: dictionary)
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
-        
+
         self = try decoder.decode(RequestObjectPayloadImpl.self, from: jsonData)
     }
 }
@@ -143,7 +143,6 @@ struct AuthorizationRequestPayloadImpl: AuthorizationRequestPayload, Codable {
     var clientIdScheme: String?
 }
 
-
 extension AuthorizationRequestPayloadImpl {
     init(from dictionary: [String: Any]) throws {
         let jsonData = try JSONSerialization.data(withJSONObject: dictionary)
@@ -151,7 +150,7 @@ extension AuthorizationRequestPayloadImpl {
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         // カスタムデコーディングロジックをここに追加することができます。
         // 例: decoder.dateDecodingStrategy = .iso8601
-        
+
         self = try decoder.decode(AuthorizationRequestPayloadImpl.self, from: jsonData)
     }
 }

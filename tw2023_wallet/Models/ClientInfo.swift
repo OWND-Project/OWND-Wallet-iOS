@@ -23,7 +23,7 @@ struct ClientInfo: Codable, Equatable {
         }
         return nil
     }
-    
+
     static func == (lhs: ClientInfo, rhs: ClientInfo) -> Bool {
         return lhs.name == rhs.name
     }

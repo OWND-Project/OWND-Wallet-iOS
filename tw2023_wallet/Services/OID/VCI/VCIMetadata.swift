@@ -32,11 +32,10 @@ struct IssuerCredentialSubject: Codable {
     let mandatory: Bool?
     let valueType: String?
     let display: [Display]?
-    
+
 }
 
 typealias IssuerCredentialSubjectMap = [String: IssuerCredentialSubject]
-
 
 struct JwtVcJsonCredentialDefinition: Codable {
     let type: [String]
@@ -65,7 +64,6 @@ extension VcSdJwtCredentialDefinition {
     }
 }
 
-
 typealias ICredentialContextType = [String: Any]
 
 protocol CredentialSupported: Codable {
@@ -86,9 +84,10 @@ struct CredentialSupportedVcSdJwt: CredentialSupported {
     let credentialDefinition: VcSdJwtCredentialDefinition
     let proofTypesSupported: [String]?
     let order: [String]?
-    
+
     enum CodingKeys: String, CodingKey {
-        case format, scope, cryptographicBindingMethodsSupported, cryptographicSuitesSupported, display ,credentialDefinition, proofTypesSupported, order
+        case format, scope, cryptographicBindingMethodsSupported, cryptographicSuitesSupported,
+            display, credentialDefinition, proofTypesSupported, order
     }
 }
 
@@ -101,9 +100,10 @@ struct CredentialSupportedJwtVcJson: CredentialSupported {
     let credentialDefinition: JwtVcJsonCredentialDefinition
     let proofTypesSupported: [String]?
     let order: [String]?
-    
+
     enum CodingKeys: String, CodingKey {
-        case format, scope, cryptographicBindingMethodsSupported, cryptographicSuitesSupported, display ,credentialDefinition, proofTypesSupported, order
+        case format, scope, cryptographicBindingMethodsSupported, cryptographicSuitesSupported,
+            display, credentialDefinition, proofTypesSupported, order
     }
 }
 
@@ -114,12 +114,15 @@ struct CredentialSupportedJwtVcJsonLdAndLdpVc: CredentialSupported {
     let display: [CredentialsSupportedDisplay]?
     let proofTypesSupported: [String]?
     let types: [String]
-    let context: [String] // todo オブジェクト形式に対応する
+    let context: [String]  // todo オブジェクト形式に対応する
     let credentialSubject: IssuerCredentialSubjectMap?
     let order: [String]?
-    
+
     enum CodingKeys: String, CodingKey {
-        case format, cryptographicBindingMethodsSupported, cryptographicSuitesSupported, display, types, context = "@context", credentialSubject, proofTypesSupported, order
+        case format, cryptographicBindingMethodsSupported, cryptographicSuitesSupported, display,
+            types
+        case context = "@context"
+        case credentialSubject, proofTypesSupported, order
     }
 }
 
@@ -135,14 +138,15 @@ func decodeCredentialSupported(from jsonData: Data) throws -> CredentialSupporte
     let format = formatContainer.format
 
     switch format {
-    case "vc+sd-jwt":
-        return try decoder.decode(CredentialSupportedVcSdJwt.self, from: jsonData)
-    case "jwt_vc_json":
-        return try decoder.decode(CredentialSupportedJwtVcJson.self, from: jsonData)
-    case "ldp_vc":
-        return try decoder.decode(CredentialSupportedJwtVcJsonLdAndLdpVc.self, from: jsonData)
-    default:
-        throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "Invalid format value"))
+        case "vc+sd-jwt":
+            return try decoder.decode(CredentialSupportedVcSdJwt.self, from: jsonData)
+        case "jwt_vc_json":
+            return try decoder.decode(CredentialSupportedJwtVcJson.self, from: jsonData)
+        case "ldp_vc":
+            return try decoder.decode(CredentialSupportedJwtVcJsonLdAndLdpVc.self, from: jsonData)
+        default:
+            throw DecodingError.dataCorrupted(
+                DecodingError.Context(codingPath: [], debugDescription: "Invalid format value"))
 
     }
 }
@@ -172,19 +176,24 @@ struct CredentialIssuerMetadata: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         credentialIssuer = try container.decode(String.self, forKey: .credentialIssuer)
-        authorizationServers = try container.decodeIfPresent([String].self, forKey: .authorizationServers)
+        authorizationServers = try container.decodeIfPresent(
+            [String].self, forKey: .authorizationServers)
         credentialEndpoint = try container.decodeIfPresent(String.self, forKey: .credentialEndpoint)
         tokenEndpoint = try container.decodeIfPresent(String.self, forKey: .tokenEndpoint)
-        batchCredentialEndpoint = try container.decodeIfPresent(String.self, forKey: .batchCredentialEndpoint)
-        deferredCredentialEndpoint = try container.decodeIfPresent(String.self, forKey: .deferredCredentialEndpoint)
-        
+        batchCredentialEndpoint = try container.decodeIfPresent(
+            String.self, forKey: .batchCredentialEndpoint)
+        deferredCredentialEndpoint = try container.decodeIfPresent(
+            String.self, forKey: .deferredCredentialEndpoint)
+
         display = try container.decodeIfPresent([Display].self, forKey: .display)
 
         var credentialsSupportedDict = [String: CredentialSupported]()
-        let credentialsSupportedContainer = try container.nestedContainer(keyedBy: DynamicKey.self, forKey: .credentialsSupported)
+        let credentialsSupportedContainer = try container.nestedContainer(
+            keyedBy: DynamicKey.self, forKey: .credentialsSupported)
         for key in credentialsSupportedContainer.allKeys {
             let credentialJSON = try credentialsSupportedContainer.decode(JSON.self, forKey: key)
-            let credentialData = try JSONSerialization.data(withJSONObject: credentialJSON.object, options: [])
+            let credentialData = try JSONSerialization.data(
+                withJSONObject: credentialJSON.object, options: [])
             let credentialSupported = try decodeCredentialSupported(from: credentialData)
             credentialsSupportedDict[key.stringValue] = credentialSupported
         }
@@ -199,12 +208,15 @@ struct CredentialIssuerMetadata: Codable {
         try container.encodeIfPresent(credentialEndpoint, forKey: .credentialEndpoint)
         try container.encodeIfPresent(tokenEndpoint, forKey: .tokenEndpoint)
         try container.encodeIfPresent(batchCredentialEndpoint, forKey: .batchCredentialEndpoint)
-        try container.encodeIfPresent(deferredCredentialEndpoint, forKey: .deferredCredentialEndpoint)
+        try container.encodeIfPresent(
+            deferredCredentialEndpoint, forKey: .deferredCredentialEndpoint)
 
         // Encode credentialsSupported based on the actual type
-        var credentialsSupportedContainer = container.nestedContainer(keyedBy: DynamicKey.self, forKey: .credentialsSupported)
+        var credentialsSupportedContainer = container.nestedContainer(
+            keyedBy: DynamicKey.self, forKey: .credentialsSupported)
         for (key, value) in credentialsSupported {
-            let credentialEncoder = credentialsSupportedContainer.superEncoder(forKey: DynamicKey(stringValue: key)!)
+            let credentialEncoder = credentialsSupportedContainer.superEncoder(
+                forKey: DynamicKey(stringValue: key)!)
             try value.encode(to: credentialEncoder)
         }
 
@@ -226,7 +238,7 @@ struct DynamicKey: CodingKey {
 
 struct GrantAuthorizationCode: Codable {
     let issuerState: String?
-    
+
     enum CodingKeys: String, CodingKey {
         case issuerState = "issuer_state"
     }
@@ -256,9 +268,10 @@ struct CredentialOffer: Codable {
     let credentialIssuer: String
     let credentials: [String]
     let grants: Grant?
-    
+
     enum CodingKeys: String, CodingKey {
-        case credentialIssuer = "credential_issuer", credentials, grants
+        case credentialIssuer = "credential_issuer"
+        case credentials, grants
     }
 }
 

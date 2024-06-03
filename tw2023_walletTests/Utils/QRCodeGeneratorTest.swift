@@ -6,8 +6,9 @@
 //
 
 import SwiftUI
-@testable import tw2023_wallet
 import XCTest
+
+@testable import tw2023_wallet
 
 final class QRCodeGeneratorTests: XCTestCase {
     func testQRCodeGeneration() {

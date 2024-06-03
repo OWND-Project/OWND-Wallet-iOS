@@ -20,7 +20,7 @@ struct DisclosureLow: View {
                 .padding(.bottom, 2)
                 .modifier(BodyBlack())
         }
-        .padding(.vertical, 6) // 上下のpaddingに対応
+        .padding(.vertical, 6)  // 上下のpaddingに対応
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }

@@ -17,7 +17,7 @@ class RecipientInfoViewModel: ObservableObject {
         self.isLoading = true
 
         DispatchQueue.global(qos: .userInitiated).async {
-            if (url != "") {
+            if url != "" {
                 let (certificateInfo, _) = extractFirstCertSubject(url: url)
                 DispatchQueue.main.async {
                     self.certificateInfo = certificateInfo

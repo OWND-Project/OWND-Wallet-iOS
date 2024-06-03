@@ -24,5 +24,6 @@ struct IdenticonView: UIViewRepresentable {
 }
 
 #Preview {
-    IdenticonView(hashString: "b58996c504c5638798eb6b511e6f49af", size: CGSize(width: 100, height: 100))
+    IdenticonView(
+        hashString: "b58996c504c5638798eb6b511e6f49af", size: CGSize(width: 100, height: 100))
 }

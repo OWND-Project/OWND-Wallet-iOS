@@ -13,10 +13,9 @@ class RecipientListPreviewModel: RecipientListViewModel {
         self.isLoading = true
         let modelData = ModelData()
         modelData.loadSharingHistories()
-        
+
         let histories = Histories(histories: modelData.sharingHistories)
-        
-        
+
         let groupedSharingHistories = histories.groupByRp()
         let latestHistories = histories.latestByRp()
         let sortedHistories = Histories.sortHistoriesByDate(histories: latestHistories)
