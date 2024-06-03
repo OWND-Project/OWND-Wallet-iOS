@@ -103,6 +103,7 @@ extension Datastore_CredentialData {
                     let vcDict = tmp["vc"] as? [String: Any],
                     let credentialSubject = vcDict["credentialSubject"] as? [String: Any]
                 else {
+                    print("Credential Data Not Found")
                     return nil
                 }
                 var disclousre = [String: String]()
@@ -112,6 +113,7 @@ extension Datastore_CredentialData {
                 }
                 return disclousre
             default:
+            print("Usupported Credential Format: \(self.format)")
                 return nil
         }
     }
@@ -142,6 +144,7 @@ extension Datastore_CredentialData {
         guard let metaData = self.parsedMetaData(),
             let disclosure = self.getDisclosure()
         else {
+            print("Unable to get metaData or disclosure")
             return nil
         }
 
@@ -159,7 +162,7 @@ extension Datastore_CredentialData {
             issuerDisplayName: issuerName,
             issuedAt: iat,
             backgroundImageUrl: getBackgroundImage(),
-            credentialType: CredentialType(rawValue: self.type)!,
+            credentialType: self.type,
             disclosure: disclosure,
             qrDisplay: self.generateQRDisplay(),
             metaData: metaData

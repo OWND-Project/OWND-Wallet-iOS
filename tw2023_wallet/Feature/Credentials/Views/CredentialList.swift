@@ -57,7 +57,7 @@ struct CredentialList: View {
                         LazyVStack(spacing: 16) {
                             ForEach(viewModel.dataModel.credentials) { credential in
                                 VStack(alignment: .leading) {
-                                    Text(LocalizedStringKey(credential.credentialType.rawValue))
+                                    Text(LocalizedStringKey(credential.credentialType))
                                         .font(.headline)
                                         .padding(.leading, 16)
                                     NavigationLink(

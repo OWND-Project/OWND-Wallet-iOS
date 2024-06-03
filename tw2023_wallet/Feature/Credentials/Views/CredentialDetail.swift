@@ -145,7 +145,7 @@ struct CredentialDetail: View {
                     .padding(.horizontal, 16)  // 左右に16dpのパディング
                     .padding(.vertical, 16)
                 }
-                .navigationTitle(LocalizedStringKey(self.credential.credentialType.rawValue))
+                .navigationTitle(LocalizedStringKey(self.credential.credentialType))
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationDestination(isPresented: $navigateToIssuerDetail) {
                     IssuerDetail(credential: credential)

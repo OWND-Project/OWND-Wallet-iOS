@@ -19,7 +19,7 @@ struct Credential: Codable, Identifiable, Hashable {
     var backgroundColor: String?
     var backgroundImageUrl: String?
     var textColor: String?
-    var credentialType: CredentialType
+    var credentialType: String
     // var disclosure: Dictionary<String, String>?以下は同様の意味
     var disclosure: [String: String]?
     var certificates: [Certificate?]?
@@ -56,10 +56,4 @@ struct Credential: Codable, Identifiable, Hashable {
     static func == (lhs: Credential, rhs: Credential) -> Bool {
         return lhs.id == rhs.id
     }
-}
-
-enum CredentialType: String, Codable {
-    case identityCredential = "IdentityCredential"
-    case employeeIdentificationCredential = "EmployeeIdentificationCredential"
-    case participationCertificate = "ParticipationCertificate"
 }
