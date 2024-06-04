@@ -18,7 +18,8 @@ struct CredentialRow: View {
                     backgroundImageView
                         .frame(height: geometry.size.width / 1.6)
                         .shadow(radius: 8)
-                } else {
+                }
+                else {
                     // backgroundImageが存在しない場合、RoundedRectangleを表示
                     RoundedRectangle(cornerRadius: 16)
                         .fill(credential.backgroundColor.map { colorFromHex($0) } ?? Color.white)
@@ -29,19 +30,22 @@ struct CredentialRow: View {
                     Group {
                         if let logoView = credential.logoImage {
                             logoView
-                        } else if credential.backgroundImage == nil {
-                            Image("logo_ownd") // デフォルトのロゴ画像、backgroundImageがnilの場合のみ表示
+                        }
+                        else if credential.backgroundImage == nil {
+                            Image("logo_ownd")  // デフォルトのロゴ画像、backgroundImageがnilの場合のみ表示
                         }
                     }
                     .frame(width: 60, height: 60)
                     .padding([.top, .leading], 16)
 
-                    Spacer() // スペースを作る
+                    Spacer()  // スペースを作る
 
                     if credential.backgroundImage == nil {
                         Text(credential.issuerDisplayName)
                             .font(.system(size: 16))
-                            .foregroundColor(credential.textColor.map { colorFromHex($0) } ?? .black)
+                            .foregroundColor(
+                                credential.textColor.map { colorFromHex($0) } ?? .black
+                            )
                             .padding(.trailing, 16)
                     }
                 }

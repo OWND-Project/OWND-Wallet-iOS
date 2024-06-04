@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PinCodeInput: View {
-    @State private var pinCode = "" // PINコード用の状態変数
+    @State private var pinCode = ""  // PINコード用の状態変数
     @State var viewModel: CredentialOfferViewModel
     @State private var navigateToCredentialList = false
     @FocusState private var isInputActive: Bool
@@ -22,7 +22,8 @@ struct PinCodeInput: View {
             Group {
                 if viewModel.dataModel.isLoading {
                     ProgressView().progressViewStyle(CircularProgressViewStyle())
-                } else {
+                }
+                else {
                     VStack(alignment: .leading, spacing: 0) {
                         Text("pincode_view_title")
                             .modifier(Title2Black())
@@ -35,22 +36,25 @@ struct PinCodeInput: View {
                             .padding(.vertical, 16)
                         // PINコード入力フィールド
                         SecureField("Enter PIN Code", text: $pinCode)
-                            .keyboardType(.numberPad) // 数字キーボードの使用
+                            .keyboardType(.numberPad)  // 数字キーボードの使用
                             .padding()
                             .background(
                                 RoundedRectangle(cornerRadius: 8)
                                     .stroke(Color("outlinedButtonBorderColor"), lineWidth: 1)
                             )
                             .padding(.vertical, 16)
-                            .focused($isInputActive) // FocusStateを適用
+                            .focused($isInputActive)  // FocusStateを適用
 
                         // デバッグ用：入力されたPINコードを表示
-                        ActionButtonBlack(title: "authentication", action: {
-                            Task {
-                                try await viewModel.sendRequest(userPin: pinCode)
-                                self.navigateToCredentialList = true
+                        ActionButtonBlack(
+                            title: "authentication",
+                            action: {
+                                Task {
+                                    try await viewModel.sendRequest(userPin: pinCode)
+                                    self.navigateToCredentialList = true
+                                }
                             }
-                        })
+                        )
                         .navigationDestination(
                             isPresented: $navigateToCredentialList,
                             destination: {

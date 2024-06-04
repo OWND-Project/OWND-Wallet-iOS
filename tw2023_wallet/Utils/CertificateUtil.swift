@@ -11,23 +11,27 @@ import Security
 import X509
 
 class CertificateHandler: NSObject, URLSessionDelegate {
-    var certificateChainResult: [X509Certificate?] = [] // Property to store certificate chain
-    var pemCertificateChainResult: [String?] = [] // PEM形式の証明書チェーン
-    var derCertificateChainResult: [Data?] = [] // DER形式の証明書チェーン
-    
+    var certificateChainResult: [X509Certificate?] = []  // Property to store certificate chain
+    var pemCertificateChainResult: [String?] = []  // PEM形式の証明書チェーン
+    var derCertificateChainResult: [Data?] = []  // DER形式の証明書チェーン
+
     let semaphore = DispatchSemaphore(value: 0)
 
-    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+    func urlSession(
+        _ session: URLSession, didReceive challenge: URLAuthenticationChallenge,
+        completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
+    ) {
         print("urlSession start")
         if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
-           let serverTrust = challenge.protectionSpace.serverTrust
+            let serverTrust = challenge.protectionSpace.serverTrust
         {
             var certificateChain: [SecCertificate] = []
 
             if let certificateRefs = SecTrustCopyCertificateChain(serverTrust) {
-                for i in 0 ..< CFArrayGetCount(certificateRefs) {
+                for i in 0..<CFArrayGetCount(certificateRefs) {
                     if let certificateRef = CFArrayGetValueAtIndex(certificateRefs, i) {
-                        let unmanagedCertificate = Unmanaged<SecCertificate>.fromOpaque(certificateRef)
+                        let unmanagedCertificate = Unmanaged<SecCertificate>.fromOpaque(
+                            certificateRef)
                         let certificate = unmanagedCertificate.takeUnretainedValue()
                         certificateChain.append(certificate)
                     }
@@ -38,13 +42,14 @@ class CertificateHandler: NSObject, URLSessionDelegate {
                 // certificate der bytes
                 var certificateDerData = Data()
                 certificateDerData.append(SecCertificateCopyData(certificate) as Data)
-                do{
+                do {
                     certificateChainResult.append(try X509Certificate(data: certificateDerData))
                     // X509Certificateに変換できたデータだけと加える
                     derCertificateChainResult.append(certificateDerData)
                     let pemFormat = convertToPEM(derData: certificateDerData)
                     pemCertificateChainResult.append(pemFormat)
-                }catch{
+                }
+                catch {
                     certificateChainResult.append(nil)
                     derCertificateChainResult.append(nil)
                     pemCertificateChainResult.append(nil)
@@ -55,9 +60,11 @@ class CertificateHandler: NSObject, URLSessionDelegate {
         completionHandler(.performDefaultHandling, nil)
         print("urlSession end")
     }
-    
+
     private func convertToPEM(derData: Data) -> String {
-        let base64String = derData.base64EncodedString(options: [.lineLength64Characters, .endLineWithLineFeed])
+        let base64String = derData.base64EncodedString(options: [
+            .lineLength64Characters, .endLineWithLineFeed,
+        ])
         return "-----BEGIN CERTIFICATE-----\n\(base64String)\n-----END CERTIFICATE-----\n"
     }
 }
@@ -85,7 +92,10 @@ class CertificateInfo: Codable {
     let email: String?
     var issuer: CertificateInfo?
 
-    init(domain: String?, organization: String?, locality: String?, state: String?, country: String?, street: String?, email: String?, issuer: CertificateInfo?) {
+    init(
+        domain: String?, organization: String?, locality: String?, state: String?, country: String?,
+        street: String?, email: String?, issuer: CertificateInfo?
+    ) {
         self.domain = domain
         self.organization = organization
         self.locality = locality
@@ -102,10 +112,9 @@ class CertificateInfo: Codable {
     }
 }
 
-
 func extractFirstCertSubject(url: String) -> (CertificateInfo?, [Data?]) {
     let (certificateChain, certificateDerChain) = extractCertificateChain(url: url)
-    if (certificateChain.isEmpty) {
+    if certificateChain.isEmpty {
         return (nil, [])
     }
 
@@ -113,10 +122,15 @@ func extractFirstCertSubject(url: String) -> (CertificateInfo?, [Data?]) {
         return (nil, [])
     }
     let issuer = issuerCertificateInfo(certificate: firstCertificate)
-    return (x509Certificate2CertificateInfo(firstCertificate: firstCertificate, issuer: issuer), certificateDerChain)
+    return (
+        x509Certificate2CertificateInfo(firstCertificate: firstCertificate, issuer: issuer),
+        certificateDerChain
+    )
 }
 
-func x509Certificate2CertificateInfo(firstCertificate: X509Certificate, issuer: CertificateInfo? = nil) -> CertificateInfo {
+func x509Certificate2CertificateInfo(
+    firstCertificate: X509Certificate, issuer: CertificateInfo? = nil
+) -> CertificateInfo {
     // TODO: Subject Alt Nameから取得する必要がある。
     // 2.5.4.3はdeprecated
     let domain = firstCertificate.subject(oidString: "2.5.4.3")?.joined(separator: " ")
@@ -127,7 +141,9 @@ func x509Certificate2CertificateInfo(firstCertificate: X509Certificate, issuer: 
     let street = firstCertificate.subject(oidString: "2.5.4.9")?.joined(separator: " ")
     let email = firstCertificate.subject(oidString: "1.2.840.113549.1.9.1")?.joined(separator: " ")
 
-    return CertificateInfo(domain: domain, organization: organization, locality: locality, state: state, country: country, street: street, email: email, issuer: issuer)
+    return CertificateInfo(
+        domain: domain, organization: organization, locality: locality, state: state,
+        country: country, street: street, email: email, issuer: issuer)
 }
 
 func issuerCertificateInfo(certificate: X509Certificate) -> CertificateInfo? {
@@ -143,7 +159,9 @@ func issuerCertificateInfo(certificate: X509Certificate) -> CertificateInfo? {
     let street = certificate.issuer(oidString: "2.5.4.9")
     let email = certificate.issuer(oidString: "1.2.840.113549.1.9.1")
 
-    return CertificateInfo(domain: domain, organization: organization, locality: locality, state: state, country: country, street: street, email: email, issuer: nil)
+    return CertificateInfo(
+        domain: domain, organization: organization, locality: locality, state: state,
+        country: country, street: street, email: email, issuer: nil)
 }
 
 func x509Certificate2CertificateInfo(pemData: Data) -> CertificateInfo {
@@ -151,7 +169,8 @@ func x509Certificate2CertificateInfo(pemData: Data) -> CertificateInfo {
     // 発行者（issuer）の情報を取得
     let issuerCertInfo = issuerCertificateInfo(certificate: certificate)
     // 被発行者（subject）の情報を取得
-    let subjectCertInfo = x509Certificate2CertificateInfo(firstCertificate: certificate, issuer: issuerCertInfo)
+    let subjectCertInfo = x509Certificate2CertificateInfo(
+        firstCertificate: certificate, issuer: issuerCertInfo)
     return subjectCertInfo
 }
 
@@ -169,37 +188,51 @@ func extractCertificateInfo(from distinguishedName: String) -> CertificateInfo {
     for part in subjectParts {
         let trimmedPart = part.trimmingCharacters(in: .whitespaces)
         switch trimmedPart {
-        case let value where value.hasPrefix("CN="):
-            domain = String(value.dropFirst("CN=".count))
-        case let value where value.hasPrefix("O="):
-            organization = String(value.dropFirst("O=".count))
-        case let value where value.hasPrefix("L="):
-            locality = String(value.dropFirst("L=".count))
-        case let value where value.hasPrefix("ST="):
-            state = String(value.dropFirst("ST=".count))
-        case let value where value.hasPrefix("C="):
-            country = String(value.dropFirst("C=".count))
-        case let value where value.hasPrefix("STREET="):
-            street = String(value.dropFirst("STREET=".count))
-        case let value where value.hasPrefix("E="):
-            email = String(value.dropFirst("E=".count))
-        default:
-            break
+            case let value where value.hasPrefix("CN="):
+                domain = String(value.dropFirst("CN=".count))
+            case let value where value.hasPrefix("O="):
+                organization = String(value.dropFirst("O=".count))
+            case let value where value.hasPrefix("L="):
+                locality = String(value.dropFirst("L=".count))
+            case let value where value.hasPrefix("ST="):
+                state = String(value.dropFirst("ST=".count))
+            case let value where value.hasPrefix("C="):
+                country = String(value.dropFirst("C=".count))
+            case let value where value.hasPrefix("STREET="):
+                street = String(value.dropFirst("STREET=".count))
+            case let value where value.hasPrefix("E="):
+                email = String(value.dropFirst("E=".count))
+            default:
+                break
         }
     }
 
-    return CertificateInfo(domain: domain, organization: organization, locality: locality, state: state, country: country, street: street, email: email, issuer: nil)
+    return CertificateInfo(
+        domain: domain, organization: organization, locality: locality, state: state,
+        country: country, street: street, email: email, issuer: nil)
 }
 
-func extractIssuerAndSubject(from certificateDescription: String) -> (issuer: String, subject: String) {
+func extractIssuerAndSubject(from certificateDescription: String) -> (
+    issuer: String, subject: String
+) {
     let issuerRegex = try! NSRegularExpression(pattern: "issuer: \"(.*?)\",", options: [])
     let subjectRegex = try! NSRegularExpression(pattern: "subject: \"(.*?)\",", options: [])
 
-    let issuerMatch = issuerRegex.firstMatch(in: certificateDescription, range: NSRange(certificateDescription.startIndex..., in: certificateDescription))
-    let subjectMatch = subjectRegex.firstMatch(in: certificateDescription, range: NSRange(certificateDescription.startIndex..., in: certificateDescription))
+    let issuerMatch = issuerRegex.firstMatch(
+        in: certificateDescription,
+        range: NSRange(certificateDescription.startIndex..., in: certificateDescription))
+    let subjectMatch = subjectRegex.firstMatch(
+        in: certificateDescription,
+        range: NSRange(certificateDescription.startIndex..., in: certificateDescription))
 
-    let issuer = issuerMatch.map { String(certificateDescription[Range($0.range, in: certificateDescription)!]) } ?? ""
-    let subject = subjectMatch.map { String(certificateDescription[Range($0.range, in: certificateDescription)!]) } ?? ""
+    let issuer =
+        issuerMatch.map {
+            String(certificateDescription[Range($0.range, in: certificateDescription)!])
+        } ?? ""
+    let subject =
+        subjectMatch.map {
+            String(certificateDescription[Range($0.range, in: certificateDescription)!])
+        } ?? ""
 
     return (issuer, subject)
 }
@@ -217,13 +250,14 @@ func extractCertificateChain(url: String) -> ([X509Certificate?], [Data?]) {
     let timeout_in_second: Double = 3
     var extractedCertificates: [X509Certificate?] = []
     var extractedDerCertificates: [Data?] = []
-    
+
     let targetURL = URL(string: url)!
     let configuration = URLSessionConfiguration.default
     configuration.timeoutIntervalForRequest = timeout_in_second
     configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
     let certificateHandler = CertificateHandler()
-    let session = URLSession(configuration: configuration, delegate: certificateHandler, delegateQueue: nil)
+    let session = URLSession(
+        configuration: configuration, delegate: certificateHandler, delegateQueue: nil)
 
     // This is an asynchronous operation
     let task = session.dataTask(with: targetURL) { _, _, _ in
@@ -231,13 +265,13 @@ func extractCertificateChain(url: String) -> ([X509Certificate?], [Data?]) {
         // certificateHandler.certificateChainResult will contain the certificate chain
 
         // Fetch the certificate chain from the CertificateHandler instance
-//        extractedCertificates = certificateHandler.certificateChainResult
-//        extractedDerCertificates = certificateHandler.derCertificateChainResult
+        //        extractedCertificates = certificateHandler.certificateChainResult
+        //        extractedDerCertificates = certificateHandler.derCertificateChainResult
     }
     task.resume()
     certificateHandler.semaphore.wait()
     extractedCertificates = certificateHandler.certificateChainResult
     extractedDerCertificates = certificateHandler.derCertificateChainResult
-       
+
     return (extractedCertificates, extractedDerCertificates)
 }

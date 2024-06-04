@@ -12,12 +12,13 @@ struct DisplayQRCode: View {
     @ObservedObject var viewModel: DisplayQRCodeViewModel
 
     init(credential: Credential) {
-        self._viewModel = ObservedObject(initialValue: DisplayQRCodeViewModel(credential: credential))
+        self._viewModel = ObservedObject(
+            initialValue: DisplayQRCodeViewModel(credential: credential))
     }
 
     var body: some View {
         VStack {
-            Spacer() // 上部にスペーサーを追加
+            Spacer()  // 上部にスペーサーを追加
 
             if viewModel.hasX5u {
                 if let qrCodeImage = viewModel.qrCodeImage {
@@ -29,13 +30,14 @@ struct DisplayQRCode: View {
                 }
                 Text("qr_generate_description")
                     .modifier(BodyBlack())
-            } else {
+            }
+            else {
                 Text("qr_generate_error_message")
                     .modifier(BodyBlack())
-                    .padding(.vertical, 64) // エラーメッセージのパディングを調整
+                    .padding(.vertical, 64)  // エラーメッセージのパディングを調整
             }
 
-            Spacer() // 下部にスペーサーを追加
+            Spacer()  // 下部にスペーサーを追加
 
             ActionButtonBlack(
                 title: "close",

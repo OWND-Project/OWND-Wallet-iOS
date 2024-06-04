@@ -19,8 +19,9 @@ enum DateFormatterUtil {
 
         if let date = inputFormatter.date(from: dateString) {
             return outputFormatter.string(from: date)
-        } else {
-            return dateString // 変換に失敗した場合、元の文字列を返す
+        }
+        else {
+            return dateString  // 変換に失敗した場合、元の文字列を返す
         }
     }
 }
@@ -28,15 +29,16 @@ enum DateFormatterUtil {
 class DateFormatterFactory {
     static func gmtDateFormatter(withoutTime: Bool = false) -> DateFormatter {
         let formatter = DateFormatter()
-        if (withoutTime) {
+        if withoutTime {
             formatter.dateFormat = "yyyy-MM-dd"
-        } else {
+        }
+        else {
             formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         }
         formatter.timeZone = TimeZone(abbreviation: "GMT")
         return formatter
     }
-    
+
     static func localDateFormatter() -> DateFormatter {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
@@ -49,7 +51,9 @@ class DateFormatterFactory {
 extension Google_Protobuf_Timestamp {
     /// `Google_Protobuf_Timestamp`を`Date`に変換します。
     func toDate() -> Date {
-        return Date(timeIntervalSince1970: TimeInterval(self.seconds) + TimeInterval(self.nanos) / 1_000_000_000)
+        return Date(
+            timeIntervalSince1970: TimeInterval(self.seconds) + TimeInterval(self.nanos)
+                / 1_000_000_000)
     }
 }
 
@@ -61,11 +65,12 @@ extension Date {
         formatter.timeZone = TimeZone(abbreviation: "GMT")
         return formatter.string(from: self)
     }
-    
+
     func toGoogleTimestamp() -> Google_Protobuf_Timestamp {
         var timestamp = Google_Protobuf_Timestamp()
         timestamp.seconds = Int64(timeIntervalSince1970)
-        timestamp.nanos = Int32((timeIntervalSince1970 * 1_000_000_000).truncatingRemainder(dividingBy: 1_000_000_000))
+        timestamp.nanos = Int32(
+            (timeIntervalSince1970 * 1_000_000_000).truncatingRemainder(dividingBy: 1_000_000_000))
         return timestamp
     }
 }

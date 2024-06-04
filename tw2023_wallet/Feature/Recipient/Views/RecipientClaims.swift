@@ -7,18 +7,18 @@
 
 import SwiftUI
 
-
 struct RecipientClaims: View {
     @StateObject var viewModel = RecipientClaimsViewModel()
     var sharingHistory: History
-    
+
     var body: some View {
         NavigationView {
             Group {
                 if viewModel.isLoading {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle())
-                } else {
+                }
+                else {
                     ScrollView {
                         VStack(alignment: .leading) {
                             LazyVStack(spacing: 16) {
@@ -26,20 +26,22 @@ struct RecipientClaims: View {
                                     .padding(.top, 16)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                 Spacer()
-                                
+
                                 ForEach(viewModel.claimsInfo, id: \.claimValue) { info in
                                     // workaround for `is_older_than_??`
-                                    let testLocalization = NSLocalizedString(info.claimKey, comment: "")
-                                    if (testLocalization != info.claimValue) {
+                                    let testLocalization = NSLocalizedString(
+                                        info.claimKey, comment: "")
+                                    if testLocalization != info.claimValue {
                                         Text(testLocalization)
-                                    }else{
+                                    }
+                                    else {
                                         Text(info.claimValue)
                                     }
-                                   if let value = info.purpose {
-                                       if (value != ""){
-                                         Text(value)
-                                            .modifier(BodyGray())
-                                       }
+                                    if let value = info.purpose {
+                                        if value != "" {
+                                            Text(value)
+                                                .modifier(BodyGray())
+                                        }
                                     }
                                     Spacer()
                                 }.frame(maxWidth: .infinity, alignment: .leading)
@@ -52,10 +54,9 @@ struct RecipientClaims: View {
             }.onAppear {
                 viewModel.loadClaimsInfo(sharingHistory: sharingHistory)
             }
-        } 
+        }
     }
 }
-
 
 #Preview {
     let modelData = ModelData()

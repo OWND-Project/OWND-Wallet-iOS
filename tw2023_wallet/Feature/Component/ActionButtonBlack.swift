@@ -18,17 +18,19 @@ struct ActionButtonBlack: View {
                     .font(.title2)
             }
             .padding(20)
-            .frame(maxWidth: .infinity) // 最小高さを設定
-            .frame(height: 56) // 画面幅の90%に設定
-            .background(Color("filledButtonBackgroundColor")) // ボタンの背景色
-            .foregroundColor(Color("filledButtonTextColor")) // テキストの色
-            .cornerRadius(8) // 角丸の設定
+            .frame(maxWidth: .infinity)  // 最小高さを設定
+            .frame(height: 56)  // 画面幅の90%に設定
+            .background(Color("filledButtonBackgroundColor"))  // ボタンの背景色
+            .foregroundColor(Color("filledButtonTextColor"))  // テキストの色
+            .cornerRadius(8)  // 角丸の設定
         }
     }
 }
 
 #Preview {
-    ActionButtonBlack(title: "provide_information", action: {
-        print("Button tapped")
-    })
+    ActionButtonBlack(
+        title: "provide_information",
+        action: {
+            print("Button tapped")
+        })
 }

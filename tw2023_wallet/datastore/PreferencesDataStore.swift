@@ -50,7 +50,8 @@ class BiometricAuthForPreference {
             throw error ?? LAError(.biometryNotAvailable)
         }
 
-        let success = try await context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: "Access requires authentication")
+        let success = try await context.evaluatePolicy(
+            .deviceOwnerAuthentication, localizedReason: "Access requires authentication")
         guard success else {
             throw LAError(.authenticationFailed)
         }

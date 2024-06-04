@@ -13,7 +13,7 @@ class CredentialSharingModel {
     init(presentationDefinition: PresentationDefinition? = nil) {
         self.presentationDefinition = presentationDefinition
     }
-    
+
     var type: String? = nil
     var data: SubmissionCredential? = nil
     var metadata: CredentialIssuerMetadata? = nil

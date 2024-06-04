@@ -9,7 +9,7 @@ import Foundation
 
 class CredentialListViewModel {
     var dataModel: CredentialListModel = .init()
-    
+
     private let credentialDataManager = CredentialDataManager(container: nil)
 
     func loadData(presentationDefinition: PresentationDefinition? = nil) {
@@ -20,53 +20,62 @@ class CredentialListViewModel {
         guard !dataModel.hasLoadedData else { return }
         dataModel.isLoading = true
         print("load data..")
-        
+
         var credentialList: [Credential] = []
-        credentialDataManager.getAllCredentials().forEach{rawCredential in
+        for rawCredential in credentialDataManager.getAllCredentials() {
             let converted = rawCredential.toCredential()
-            if (converted != nil) {
+            if converted != nil {
                 credentialList.append(converted!)
-            }else{
+            }
+            else {
                 print("Malformed Credential Found")
             }
         }
-        
+
         if let pd = presentationDefinition {
             dataModel.credentials = credentialList.filter { filterCredential($0, pd) }
-        } else {
+        }
+        else {
             dataModel.credentials = credentialList
         }
-        
+
         dataModel.isLoading = false
         dataModel.hasLoadedData = true
         print("done")
     }
-    
-    func filterCredential(_ credential: Credential, _ presentationDefinition: PresentationDefinition) -> Bool {
+
+    func filterCredential(
+        _ credential: Credential, _ presentationDefinition: PresentationDefinition
+    ) -> Bool {
         let format = credential.format
         print("format: \(format)")
         do {
             if format == "vc+sd-jwt" {
-                let ret = selectDisclosure(sdJwt: credential.payload, presentationDefinition: presentationDefinition)
+                let ret = selectDisclosure(
+                    sdJwt: credential.payload, presentationDefinition: presentationDefinition)
                 if let (_, disclosures) = ret {
                     return 0 < disclosures.count
                 }
                 return false
-            } else if format == "jwt_vc_json" {
+            }
+            else if format == "jwt_vc_json" {
                 let (_, payload, _) = try JWTUtil.decodeJwt(jwt: credential.payload)
                 print("satisfyConstrains?")
-                return satisfyConstrains(credential: payload, presentationDefinition: presentationDefinition)
-            } else {
+                return satisfyConstrains(
+                    credential: payload, presentationDefinition: presentationDefinition)
+            }
+            else {
                 // その他のフォーマットに対する処理が必要な場合、ここに追加
                 return false
             }
-        } catch {
+        }
+        catch {
             // JWTのデコードに失敗した場合の処理
             print("JWT decoding failed for credential with format: \(format)")
             return false
         }
     }
-    
+
     func deleteCredential(credential: Credential) {
         print("delete: \(credential.id), \(credential.format)")
         credentialDataManager.deleteCredentialById(id: credential.id)

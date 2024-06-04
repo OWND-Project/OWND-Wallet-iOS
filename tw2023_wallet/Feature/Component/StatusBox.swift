@@ -36,12 +36,12 @@ struct StatusBox: View {
 
     private var statusImage: String {
         switch status {
-        case .success:
-            return "checkmark.circle"
-        case .error:
-            return "exclamationmark.circle"
-        case .warning:
-            return "questionmark.circle"
+            case .success:
+                return "checkmark.circle"
+            case .error:
+                return "exclamationmark.circle"
+            case .warning:
+                return "questionmark.circle"
         }
     }
 }

@@ -7,7 +7,9 @@
 
 import Foundation
 
-func postTokenRequest(to url: URL, with parameters: [String: String], using session: URLSession = URLSession.shared) async throws -> OAuthTokenResponse {
+func postTokenRequest(
+    to url: URL, with parameters: [String: String], using session: URLSession = URLSession.shared
+) async throws -> OAuthTokenResponse {
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
     request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
@@ -24,7 +26,10 @@ func postTokenRequest(to url: URL, with parameters: [String: String], using sess
     return try decoder.decode(OAuthTokenResponse.self, from: data)
 }
 
-func postCredentialRequest(_ credentialRequest: CredentialRequest, to url: URL, accessToken: String, using session: URLSession = URLSession.shared) async throws -> CredentialResponse {
+func postCredentialRequest(
+    _ credentialRequest: CredentialRequest, to url: URL, accessToken: String,
+    using session: URLSession = URLSession.shared
+) async throws -> CredentialResponse {
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -34,15 +39,17 @@ func postCredentialRequest(_ credentialRequest: CredentialRequest, to url: URL, 
     // todo: snake_case と camelCaseの混在を適切に扱うようにする
     let encoder = JSONEncoder()
     encoder.keyEncodingStrategy = .convertToSnakeCase
-    
+
     let encoded = try encoder.encode(credentialRequest)
     var payload: Data? = nil
     if let jsonString = String(data: encoded, encoding: .utf8) {
         // workaround
-        let credSubWithCamelCase = jsonString.replacingOccurrences(of: "\"credential_subject\"", with: "\"credentialSubject\"")
+        let credSubWithCamelCase = jsonString.replacingOccurrences(
+            of: "\"credential_subject\"", with: "\"credentialSubject\"")
         payload = credSubWithCamelCase.data(using: .utf8)
         print("JSON String: \(jsonString)")
-    } else {
+    }
+    else {
         print("Failed to convert Data to String")
     }
     request.httpBody = payload
@@ -58,7 +65,6 @@ func postCredentialRequest(_ credentialRequest: CredentialRequest, to url: URL, 
     return try decoder.decode(CredentialResponse.self, from: data)
 }
 
-
 class VCIClient {
     private(set) var credentialOffer: CredentialOffer
     private var metadata: CredentialIssuerMetadata
@@ -67,33 +73,46 @@ class VCIClient {
     init(credentialOfferJson: String, using session: URLSession = URLSession.shared) async throws {
         let decoder = JSONDecoder()
         guard let jsonData = credentialOfferJson.data(using: .utf8) else {
-            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid JSON"])
+            throw NSError(
+                domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid JSON"])
         }
 
         credentialOffer = try decoder.decode(CredentialOffer.self, from: jsonData)
-        metadata = try await retrieveAllMetadata(issuer: credentialOffer.credentialIssuer, using: session)
+        metadata = try await retrieveAllMetadata(
+            issuer: credentialOffer.credentialIssuer, using: session)
         guard let unwrappedTokenEndpoint = metadata.tokenEndpoint else {
-            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Token endpoint URL is missing"])
+            throw NSError(
+                domain: "", code: 0,
+                userInfo: [NSLocalizedDescriptionKey: "Token endpoint URL is missing"])
         }
         tokenEndpoint = unwrappedTokenEndpoint
     }
 
-    func issueToken(userPin: String?, using session: URLSession = URLSession.shared) async throws -> OAuthTokenResponse {
+    func issueToken(userPin: String?, using session: URLSession = URLSession.shared) async throws
+        -> OAuthTokenResponse
+    {
         let grants = credentialOffer.grants
         let parameters: [String: String] = [
             "grant_type": "urn:ietf:params:oauth:grant-type:pre-authorized_code",
             "pre-authorized_code": grants?.urnIetfParams?.preAuthorizedCode ?? "",
-            "user_pin": userPin ?? ""
+            "user_pin": userPin ?? "",
         ]
-        return try await postTokenRequest(to: URL(string: tokenEndpoint)!, with: parameters, using: session)
+        return try await postTokenRequest(
+            to: URL(string: tokenEndpoint)!, with: parameters, using: session)
     }
-    
-    func issueCredential(payload: CredentialRequest, accessToken: String, using session: URLSession = URLSession.shared) async throws -> CredentialResponse {
+
+    func issueCredential(
+        payload: CredentialRequest, accessToken: String,
+        using session: URLSession = URLSession.shared
+    ) async throws -> CredentialResponse {
         guard let credentialEndpont = metadata.credentialEndpoint else {
-            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Credential endpoint URL is missing"])
+            throw NSError(
+                domain: "", code: 0,
+                userInfo: [NSLocalizedDescriptionKey: "Credential endpoint URL is missing"])
         }
         let url = URL(string: credentialEndpont)!
-        return try await postCredentialRequest(payload, to: url, accessToken: accessToken, using: session)
+        return try await postCredentialRequest(
+            payload, to: url, accessToken: accessToken, using: session)
     }
 }
 
@@ -143,18 +162,22 @@ struct CredentialDefinitionJwtVc: Encodable {
     let credentialSubject: [String: String]
 }
 
-func createCredentialRequest(formatValue: String, vctValue: String, proof: Proof?) -> CredentialRequest {
+func createCredentialRequest(formatValue: String, vctValue: String, proof: Proof?)
+    -> CredentialRequest
+{
     if formatValue == "vc+sd-jwt" {
         return CredentialRequestSdJwtVc(
             format: formatValue,
             proof: proof,
             credentialDefinition: ["vct": vctValue]
         )
-    } else {
+    }
+    else {
         return CredentialRequestJwtVc(
             format: formatValue,
             proof: proof,
-            credentialDefinition: CredentialDefinitionJwtVc(type: [vctValue], credentialSubject: [:])
+            credentialDefinition: CredentialDefinitionJwtVc(
+                type: [vctValue], credentialSubject: [:])
         )
     }
 }

@@ -57,7 +57,9 @@ struct QrCodeScannerView: UIViewRepresentable {
         }
     }
 
-    func makeUIView(context: UIViewRepresentableContext<QrCodeScannerView>) -> QrCodeScannerView.UIViewType {
+    func makeUIView(context: UIViewRepresentableContext<QrCodeScannerView>)
+        -> QrCodeScannerView.UIViewType
+    {
         print("makeUIView")
         let cameraView = CameraPreview(session: session)
 
@@ -72,7 +74,9 @@ struct QrCodeScannerView: UIViewRepresentable {
         uiView.session.stopRunning()
     }
 
-    func updateUIView(_ uiView: CameraPreview, context: UIViewRepresentableContext<QrCodeScannerView>) {
+    func updateUIView(
+        _ uiView: CameraPreview, context: UIViewRepresentableContext<QrCodeScannerView>
+    ) {
         uiView.setContentHuggingPriority(.defaultHigh, for: .vertical)
         uiView.setContentHuggingPriority(.defaultLow, for: .horizontal)
     }

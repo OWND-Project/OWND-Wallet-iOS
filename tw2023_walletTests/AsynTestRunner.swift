@@ -13,7 +13,8 @@ extension XCTestCase {
         Task {
             do {
                 try await asyncTest()
-            } catch {
+            }
+            catch {
                 XCTFail("Async test failed with error: \(error)")
             }
             expectation.fulfill()

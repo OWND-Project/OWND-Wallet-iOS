@@ -19,23 +19,26 @@ class VCIMetadataUtil {
         guard !parts.isEmpty else {
             fatalError("Invalid SD-JWT: No parts found")
         }
-        
+
         let issuerSignedJwt = parts.first!
         let disclosures = Array(parts[1..<parts.count - 1])
         let keyBindingJwt = parts.last!.isEmpty ? nil : parts.last
-        
-        return SDJwtParts(issuerSignedJwt: issuerSignedJwt, disclosures: disclosures, keyBindingJwt: keyBindingJwt)
+
+        return SDJwtParts(
+            issuerSignedJwt: issuerSignedJwt, disclosures: disclosures, keyBindingJwt: keyBindingJwt
+        )
     }
-    
+
     static func extractTypes(format: String, credential: String) throws -> [String] {
         var types: [String] = []
-        
+
         if format == "vc+sd-jwt" {
             let jwt = divideSDJwt(sdJwt: credential).issuerSignedJwt
             let decoded = try decodeJWTPayload(jwt: jwt)
             let vct = decoded["vct"] as! String
             types = [vct]
-        } else if format == "jwt_vc_json" {
+        }
+        else if format == "jwt_vc_json" {
             let decoded = try decodeJWTPayload(jwt: credential)
             let vc = decoded["vc"] as! [String: Any]
             let typeList = vc["type"] as! [String]
@@ -43,8 +46,7 @@ class VCIMetadataUtil {
         }
         return types
     }
-    
-    
+
     static func findMatchingCredentials(
         format: String,
         types: [String],
@@ -52,75 +54,82 @@ class VCIMetadataUtil {
     ) -> CredentialSupported? {
         return metadata.credentialsSupported.first { (_, credentialSupported) -> Bool in
             switch credentialSupported {
-            case let credentialSupported as CredentialSupportedVcSdJwt:
-                // VcSdJwtの場合、vctとtypesの最初の要素を比較
-                return format == "vc+sd-jwt" && types.first == credentialSupported.credentialDefinition.vct
-                
-            case let credentialSupported as CredentialSupportedJwtVcJson:
-                // JwtVcJsonの場合、typesとcredentialDefinition.typeを両方ソートして比較
-                return format == "jwt_vc_json" && containsAllElements(credentialSupported.credentialDefinition.type, types)
-                
-            default:
-                return false
+                case let credentialSupported as CredentialSupportedVcSdJwt:
+                    // VcSdJwtの場合、vctとtypesの最初の要素を比較
+                    return format == "vc+sd-jwt"
+                        && types.first == credentialSupported.credentialDefinition.vct
+
+                case let credentialSupported as CredentialSupportedJwtVcJson:
+                    // JwtVcJsonの場合、typesとcredentialDefinition.typeを両方ソートして比較
+                    return format == "jwt_vc_json"
+                        && containsAllElements(credentialSupported.credentialDefinition.type, types)
+
+                default:
+                    return false
             }
         }?.value
     }
-    
+
     static func containsAllElements<T: Hashable>(_ array1: [T], _ array2: [T]) -> Bool {
         let set1 = Set(array1)
         let set2 = Set(array2)
         return set1.isSuperset(of: set2)
     }
-    
-    static func extractDisplayByClaim(credentialsSupported: CredentialSupported) -> [String: [Display]] {
+
+    static func extractDisplayByClaim(credentialsSupported: CredentialSupported) -> [String:
+        [Display]]
+    {
         var displayMap = [String: [Display]]()
-        
+
         switch credentialsSupported {
-        case let credentialsSupported as CredentialSupportedJwtVcJson:
-            if let credentialSubject = credentialsSupported.credentialDefinition.credentialSubject {
-                for (k, v) in credentialSubject {
-                    if let display = v.display {
-                        displayMap[k] = display
+            case let credentialsSupported as CredentialSupportedJwtVcJson:
+                if let credentialSubject = credentialsSupported.credentialDefinition
+                    .credentialSubject
+                {
+                    for (k, v) in credentialSubject {
+                        if let display = v.display {
+                            displayMap[k] = display
+                        }
                     }
                 }
-            }
-            
-        case let credentialsSupported as CredentialSupportedVcSdJwt:
-            if let credentialSubject = credentialsSupported.credentialDefinition.claims {
-                for (k, v) in credentialSubject {
-                    if let display = v.display {
-                        displayMap[k] = display
+
+            case let credentialsSupported as CredentialSupportedVcSdJwt:
+                if let credentialSubject = credentialsSupported.credentialDefinition.claims {
+                    for (k, v) in credentialSubject {
+                        if let display = v.display {
+                            displayMap[k] = display
+                        }
                     }
                 }
-            }
-            
-        default:
-            print("not implemented yet")
+
+            default:
+                print("not implemented yet")
         }
-        
+
         return displayMap
     }
-    
+
     static func serializeDisplayByClaimMap(displayMap: [String: [Display]]) -> String {
         let encoder = JSONEncoder()
         do {
             let jsonData = try encoder.encode(displayMap)
             return String(data: jsonData, encoding: .utf8) ?? ""
-        } catch {
+        }
+        catch {
             print("Error serializing display map: \(error)")
             return ""
         }
     }
-    
+
     static func deserializeDisplayByClaimMap(displayMapString: String) -> [String: [Display]] {
         let decoder = JSONDecoder()
         do {
             let data = Data(displayMapString.utf8)
             return try decoder.decode([String: [Display]].self, from: data)
-        } catch {
+        }
+        catch {
             print("Error deserializing display map: \(error)")
             return [:]
         }
     }
 }
-

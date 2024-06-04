@@ -18,20 +18,22 @@ struct ActionButtonWhite: View {
                     .font(.title2)
             }
             .padding(20)
-            .frame(maxWidth: .infinity) // 最小高さを設定
+            .frame(maxWidth: .infinity)  // 最小高さを設定
             .foregroundColor(Color("outlinedButtonTextColor"))
-            .background(Color("outlinedButtonBackgroundColor")) // ボタンの背景色
-            .cornerRadius(8) // 角丸の設定
+            .background(Color("outlinedButtonBackgroundColor"))  // ボタンの背景色
+            .cornerRadius(8)  // 角丸の設定
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color("outlinedButtonBorderColor"), lineWidth: 1) // 黒い枠線
+                    .stroke(Color("outlinedButtonBorderColor"), lineWidth: 1)  // 黒い枠線
             )
         }
     }
 }
 
 #Preview {
-    ActionButtonWhite(title: "select_a_certificate", action: {
-        print("Button tapped")
-    })
+    ActionButtonWhite(
+        title: "select_a_certificate",
+        action: {
+            print("Button tapped")
+        })
 }

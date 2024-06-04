@@ -9,11 +9,11 @@ import Foundation
 
 @Observable
 class ModelData {
-//    var credentials: [Credential] = load("credentialData.json")
+    //    var credentials: [Credential] = load("credentialData.json")
     var credentials: [Credential] = []
-    var credentialSharingHistories: [CredentialSharingHistory] = [] // 新しい配列
+    var credentialSharingHistories: [CredentialSharingHistory] = []  // 新しい配列
     var sharingHistories: [History] = []
-    var issuerMetaDataList: [CredentialIssuerMetadata] = [] // IssureMetaDataを呼ぶため仮
+    var issuerMetaDataList: [CredentialIssuerMetadata] = []  // IssureMetaDataを呼ぶため仮
     var clientInfoList: [ClientInfo] = []
     var presentationDefinitions: [PresentationDefinition] = []
 
@@ -22,15 +22,18 @@ class ModelData {
     }
 
     func loadCredentialSharingHistories() {
-        let credentialSharingHistories = load("sharingHistoryData.json") as [CredentialSharingHistory]
+        let credentialSharingHistories =
+            load("sharingHistoryData.json") as [CredentialSharingHistory]
         self.credentialSharingHistories = credentialSharingHistories
     }
-    
+
     func loadSharingHistories() {
-        let credentialSharingHistories = load("sharingHistoryData.json") as [CredentialSharingHistory]
-        let idTokenSharingHistories = load("idTokenSharingHistories.json") as [IdTokenSharingHistory]
+        let credentialSharingHistories =
+            load("sharingHistoryData.json") as [CredentialSharingHistory]
+        let idTokenSharingHistories =
+            load("idTokenSharingHistories.json") as [IdTokenSharingHistory]
         let histories = (credentialSharingHistories + idTokenSharingHistories) as [History]
-        
+
         self.sharingHistories = histories
     }
 
@@ -57,14 +60,16 @@ func load<T: Decodable>(_ filename: String) -> T {
 
     do {
         data = try Data(contentsOf: file)
-    } catch {
+    }
+    catch {
         fatalError("Couldn't load \(filename) from main bundle:\n\(error)")
     }
 
     do {
         let decoder = JSONDecoder()
         return try decoder.decode(T.self, from: data)
-    } catch {
+    }
+    catch {
         fatalError("Couldn't parse \(filename) as \(T.self):\n\(error)")
     }
 }

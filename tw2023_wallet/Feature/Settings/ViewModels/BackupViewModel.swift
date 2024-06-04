@@ -13,7 +13,7 @@ class BackupViewModel {
     var hasLoadedData = false
     var lastCreatedAt: String? = nil
     var seed: String? = nil
-    
+
     func loadData() {
         guard ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] != "1" else {
             print("now previewing")
@@ -22,29 +22,30 @@ class BackupViewModel {
         guard !hasLoadedData else { return }
         isLoading = true
         print("load data..")
-        
+
         let dataStore = PreferencesDataStore.shared
         if let gmtString = dataStore.getLastBackupAtKey() {
             let gmtFormatter = DateFormatterFactory.gmtDateFormatter()
             let gmtDate = gmtFormatter.date(from: gmtString)!
-            
+
             let localFormatter = DateFormatterFactory.localDateFormatter()
             lastCreatedAt = localFormatter.string(from: gmtDate)
         }
-        
+
         isLoading = false
         hasLoadedData = true
         print("done")
     }
-    
+
     func accessPairwiseAccountManager() async -> Bool {
         do {
             let dataStore = PreferencesDataStore.shared
             let seed = try await dataStore.getSeed()
-            if (seed != nil && !seed!.isEmpty) {
+            if seed != nil && !seed!.isEmpty {
                 print("Accessed seed successfully")
                 self.seed = seed
-            } else {
+            }
+            else {
                 // 初回のシード生成
                 guard let hdKeyRing = HDKeyRing() else {
                     // TODO: エラーの定義を適切な場所で共通化する
@@ -57,41 +58,42 @@ class BackupViewModel {
                 self.seed = newSeed
             }
             return true
-        } catch {
+        }
+        catch {
             // 生体認証のエラー処理
             print("Biometric Error: \(error)")
             return false
         }
     }
-    
+
     func generateBackupData() -> Data? {
         let encoder = JSONEncoder()
-        
+
         let idTokenSharingHistories = IdTokenSharingHistoryManager(container: nil)
             .getAll()
             .map { it in
-            return IdTokenSharingHistory(
-                rp: it.rp,
-                accountIndex: Int(it.accountIndex),
-                createdAt: it.createdAt.toDate().toISO8601String()
-            )
-        }
+                return IdTokenSharingHistory(
+                    rp: it.rp,
+                    accountIndex: Int(it.accountIndex),
+                    createdAt: it.createdAt.toDate().toISO8601String()
+                )
+            }
         let credentialSharingHistories = CredentialSharingHistoryManager(container: nil)
             .getAll()
             .map { it in
-            return CredentialSharingHistory(
-                rp: it.rp,
-                accountIndex: Int(it.accountIndex),
-                createdAt: it.createdAt.toDate().toISO8601String(),
-                credentialID: it.credentialID,
-                
-                claims: it.claims.map{$0.toClaimInfo()},
-                
-                rpName: it.rpName,
-                privacyPolicyUrl: it.privacyPolicyURL,
-                logoUrl: it.logoURL
-            )
-        }
+                return CredentialSharingHistory(
+                    rp: it.rp,
+                    accountIndex: Int(it.accountIndex),
+                    createdAt: it.createdAt.toDate().toISO8601String(),
+                    credentialID: it.credentialID,
+
+                    claims: it.claims.map { $0.toClaimInfo() },
+
+                    rpName: it.rpName,
+                    privacyPolicyUrl: it.privacyPolicyURL,
+                    logoUrl: it.logoURL
+                )
+            }
         guard let seed = seed else {
             print("seed is not set")
             return nil
@@ -108,19 +110,20 @@ class BackupViewModel {
                 let compressed = ZipUtil.createZip(with: jsonString)
                 return compressed
             }
-        } catch {
+        }
+        catch {
             print(error)
         }
         return nil
     }
-    
+
     func updateLastBackupDate() {
         let now = Date()
         let gmtFormatter = DateFormatterFactory.gmtDateFormatter()
         let gmtString = gmtFormatter.string(from: now)
         let dataStore = PreferencesDataStore.shared
         dataStore.saveLastBackupAtKey(gmtString)
-        
+
         let gmtDate = gmtFormatter.date(from: gmtString)!
         let localFormatter = DateFormatterFactory.localDateFormatter()
         lastCreatedAt = localFormatter.string(from: gmtDate)

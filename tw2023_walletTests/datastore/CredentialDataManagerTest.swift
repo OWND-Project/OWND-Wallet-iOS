@@ -5,8 +5,9 @@
 //  Created by katsuyoshi ozaki on 2024/01/11.
 //
 
-import XCTest
 import CoreData
+import XCTest
+
 @testable import tw2023_wallet
 
 class CredentialDataManagerTests: XCTestCase {
@@ -35,7 +36,7 @@ class CredentialDataManagerTests: XCTestCase {
 
         // Create test credential data
         // let testCredentialData = Datastore_CredentialData(id: "1", format: "Format1", credential: "Credential1", cNonce: "CNonce1", cNonceExpiresIn: 3600, iss: "Iss1", iat: 1638290000, exp: 1638293600, type: "Type1", accessToken: "AccessToken1", credentialIssuerMetadata: "Metadata1")
-        
+
         var testCredentialData = Datastore_CredentialData()
         testCredentialData.id = "1"
         testCredentialData.format = "Format1"
@@ -43,8 +44,8 @@ class CredentialDataManagerTests: XCTestCase {
         testCredentialData.cNonce = "CNonce1"
         testCredentialData.cNonceExpiresIn = 3600
         testCredentialData.iss = "Iss1"
-        testCredentialData.iat = 1638290000
-        testCredentialData.exp = 1638293600
+        testCredentialData.iat = 1_638_290_000
+        testCredentialData.exp = 1_638_293_600
         testCredentialData.type = "Type1"
         testCredentialData.accessToken = "AccessToken1"
         testCredentialData.credentialIssuerMetadata = "Metadata1"
@@ -67,7 +68,6 @@ class CredentialDataManagerTests: XCTestCase {
         let context = inMemoryContainer.viewContext
         let credentialDataManager = CredentialDataManager(container: inMemoryContainer)
 
-        
         var testCredentialData = Datastore_CredentialData()
         testCredentialData.id = "1"
         testCredentialData.format = "Format1"
@@ -75,13 +75,12 @@ class CredentialDataManagerTests: XCTestCase {
         testCredentialData.cNonce = "CNonce1"
         testCredentialData.cNonceExpiresIn = 3600
         testCredentialData.iss = "Iss1"
-        testCredentialData.iat = 1638290000
-        testCredentialData.exp = 1638293600
+        testCredentialData.iat = 1_638_290_000
+        testCredentialData.exp = 1_638_293_600
         testCredentialData.type = "Type1"
         testCredentialData.accessToken = "AccessToken1"
         testCredentialData.credentialIssuerMetadata = "Metadata1"
 
-        
         // Save credential data
         try! credentialDataManager.saveCredentialData(credentialData: testCredentialData)
 
@@ -101,7 +100,7 @@ class CredentialDataManagerTests: XCTestCase {
 
         // Create test credential data
         // let testCredentialData = Datastore_CredentialData(id: "1", format: "Format1", credential: "Credential1", cNonce: "CNonce1", cNonceExpiresIn: 3600, iss: "Iss1", iat: 1638290000, exp: 1638293600, type: "Type1", accessToken: "AccessToken1", credentialIssuerMetadata: "Metadata1")
-        
+
         var testCredentialData = Datastore_CredentialData()
         testCredentialData.id = "1"
         testCredentialData.format = "Format1"
@@ -109,18 +108,18 @@ class CredentialDataManagerTests: XCTestCase {
         testCredentialData.cNonce = "CNonce1"
         testCredentialData.cNonceExpiresIn = 3600
         testCredentialData.iss = "Iss1"
-        testCredentialData.iat = 1638290000
-        testCredentialData.exp = 1638293600
+        testCredentialData.iat = 1_638_290_000
+        testCredentialData.exp = 1_638_293_600
         testCredentialData.type = "Type1"
         testCredentialData.accessToken = "AccessToken1"
         testCredentialData.credentialIssuerMetadata = "Metadata1"
 
         // Save credential data
         try! credentialDataManager.saveCredentialData(credentialData: testCredentialData)
-        
+
         // Get all credentials
         let credentialsBefore = credentialDataManager.getAllCredentials()
-        
+
         XCTAssertEqual(credentialsBefore.count, 1)
 
         // Delete all credentials
@@ -139,7 +138,7 @@ class CredentialDataManagerTests: XCTestCase {
 
         // Create test credential data
         // let testCredentialData = Datastore_CredentialData(id: "1", format: "Format1", credential: "Credential1", cNonce: "CNonce1", cNonceExpiresIn: 3600, iss: "Iss1", iat: 1638290000, exp: 1638293600, type: "Type1", accessToken: "AccessToken1", credentialIssuerMetadata: "Metadata1")
-        
+
         var testCredentialData = Datastore_CredentialData()
         testCredentialData.id = "1"
         testCredentialData.format = "Format1"
@@ -147,8 +146,8 @@ class CredentialDataManagerTests: XCTestCase {
         testCredentialData.cNonce = "CNonce1"
         testCredentialData.cNonceExpiresIn = 3600
         testCredentialData.iss = "Iss1"
-        testCredentialData.iat = 1638290000
-        testCredentialData.exp = 1638293600
+        testCredentialData.iat = 1_638_290_000
+        testCredentialData.exp = 1_638_293_600
         testCredentialData.type = "Type1"
         testCredentialData.accessToken = "AccessToken1"
         testCredentialData.credentialIssuerMetadata = "Metadata1"
@@ -167,4 +166,3 @@ class CredentialDataManagerTests: XCTestCase {
         // ... add more assertions for other properties
     }
 }
-

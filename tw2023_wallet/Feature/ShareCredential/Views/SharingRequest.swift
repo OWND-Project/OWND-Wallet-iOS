@@ -15,11 +15,11 @@ enum SharingScreen {
 
 struct SharingRequest: View {
     @Environment(\.presentationMode) var presentationMode
-//    @Environment(SharingCredentialArgs.self) var args
+    //    @Environment(SharingCredentialArgs.self) var args
     @Environment(SharingRequestModel.self) var sharingRequestModel
     @State var viewModel: SharingRequestViewModel = SharingRequestViewModel()
     var args: SharingCredentialArgs
-    
+
     @State var authenticated = false
     @State var showAlert = false
     @State var alertTitle = ""
@@ -42,7 +42,8 @@ struct SharingRequest: View {
                             }
                             Spacer()
                         }
-                    } else {
+                    }
+                    else {
                         if let clientInfo = viewModel.clientInfo {
                             ScrollView {
                                 VStack {
@@ -54,11 +55,18 @@ struct SharingRequest: View {
                                         Spacer()
                                     }
                                     // ------------ title section ------------
-                                    let titleKey = viewModel.presentationDefinition != nil ? "provide_the_information_necessary_to_start_using" : "provide_the_information_required_to_register"
-                                    Text(String(format: NSLocalizedString(titleKey, comment: ""), clientInfo.name))
-                                        .modifier(Title3Black())
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                    
+                                    let titleKey =
+                                        viewModel.presentationDefinition != nil
+                                        ? "provide_the_information_necessary_to_start_using"
+                                        : "provide_the_information_required_to_register"
+                                    Text(
+                                        String(
+                                            format: NSLocalizedString(titleKey, comment: ""),
+                                            clientInfo.name)
+                                    )
+                                    .modifier(Title3Black())
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+
                                     // ------------ logo to logo section ------------
                                     HStack {
                                         Image("logo_ownd")
@@ -70,7 +78,8 @@ struct SharingRequest: View {
                                         Group {
                                             if let logoView = clientInfo.logoImage {
                                                 logoView
-                                            } else {
+                                            }
+                                            else {
                                                 Color.clear
                                             }
                                         }
@@ -78,15 +87,23 @@ struct SharingRequest: View {
                                         .padding(.horizontal, 8)
                                     }
                                     .padding(.vertical, 16)
-                                    
+
                                     // ------------ sharing data info section ------------
-                                    Text(String(format: NSLocalizedString("information_provided_to", comment: ""), clientInfo.name))
-                                        .modifier(BodyGray())
-                                        .frame(maxWidth: .infinity, alignment: .leading) // 左寄せ
-                                        .padding(.top, 16)
-                                    
-                                    if let presentationDefinition = viewModel.presentationDefinition {
-                                        ProvideAge(clientInfo: clientInfo, presentationDefinition: presentationDefinition)
+                                    Text(
+                                        String(
+                                            format: NSLocalizedString(
+                                                "information_provided_to", comment: ""),
+                                            clientInfo.name)
+                                    )
+                                    .modifier(BodyGray())
+                                    .frame(maxWidth: .infinity, alignment: .leading)  // 左寄せ
+                                    .padding(.top, 16)
+
+                                    if let presentationDefinition = viewModel.presentationDefinition
+                                    {
+                                        ProvideAge(
+                                            clientInfo: clientInfo,
+                                            presentationDefinition: presentationDefinition)
                                         if viewModel.selectedCredential {
                                             // ------------ change link ------------
                                             StatusBox(displayText: $proofBy, status: .success)
@@ -99,60 +116,84 @@ struct SharingRequest: View {
                                                     sharingRequestModel.data = nil
                                                     path.append(ScreensOnFullScreen.credentialList)
                                                 }
-                                        } else {
-                                            StatusBox(displayText: .constant("no_certificate_selected"), status: .warning)
-                                            ActionButtonWhite(title: "select_a_certificate", action: {
-                                                path.append(ScreensOnFullScreen.credentialList)
-                                            })
                                         }
-                                    } else {
+                                        else {
+                                            StatusBox(
+                                                displayText: .constant("no_certificate_selected"),
+                                                status: .warning)
+                                            ActionButtonWhite(
+                                                title: "select_a_certificate",
+                                                action: {
+                                                    path.append(ScreensOnFullScreen.credentialList)
+                                                })
+                                        }
+                                    }
+                                    else {
                                         ProvideID(clientInfo: clientInfo)
                                     }
-                                    
+
                                     // ------------ recipient org info section ------------
                                     VStack(alignment: .leading, spacing: 0) {
                                         Text("recipient _organization_information")
                                             .modifier(BodyGray())
                                         RecipientOrgInfo(clientInfo: clientInfo)
                                     }
-                                    .frame(maxWidth: .infinity, alignment: .leading) // 左寄せ
+                                    .frame(maxWidth: .infinity, alignment: .leading)  // 左寄せ
                                     .padding(.vertical, 16)
-                                    
+
                                     // ------------ sharing button section ------------
-                                    if viewModel.presentationDefinition == nil || viewModel.selectedCredential {
-                                        ActionButtonBlack(title: "provide_information", action: {
-                                            Task {
-                                                if viewModel.presentationDefinition != nil, viewModel.selectedCredential {
-                                                    let result = await viewModel.shareVpToken(credentials: [sharingRequestModel.data!])
-                                                    switch result {
-                                                    case .success(let postResult):
-                                                        print("VP Token sharing succeeded.")
-                                                        if (postResult.location != nil) {
-                                                            sharingRequestModel.postResult = postResult
+                                    if viewModel.presentationDefinition == nil
+                                        || viewModel.selectedCredential
+                                    {
+                                        ActionButtonBlack(
+                                            title: "provide_information",
+                                            action: {
+                                                Task {
+                                                    if viewModel.presentationDefinition != nil,
+                                                        viewModel.selectedCredential
+                                                    {
+                                                        let result = await viewModel.shareVpToken(
+                                                            credentials: [sharingRequestModel.data!]
+                                                        )
+                                                        switch result {
+                                                            case .success(let postResult):
+                                                                print("VP Token sharing succeeded.")
+                                                                if postResult.location != nil {
+                                                                    sharingRequestModel.postResult =
+                                                                        postResult
+                                                                }
+                                                                showAlert = true
+                                                                alertTitle =
+                                                                    "VP Token sharing succeeded."
+                                                            case .failure(let error):
+                                                                print(
+                                                                    "VP Token sharing failed with error: \(error)"
+                                                                )
+                                                                showAlert = true
                                                         }
-                                                        showAlert = true
-                                                        alertTitle = "VP Token sharing succeeded."
-                                                    case .failure(let error):
-                                                        print("VP Token sharing failed with error: \(error)")
-                                                        showAlert = true
                                                     }
-                                                } else {
-                                                    let result = await viewModel.shareIdToken()
-                                                    switch result {
-                                                    case .success(let postResult):
-                                                        print("ID Token sharing succeeded.")
-                                                        if (postResult.location != nil) {
-                                                            sharingRequestModel.postResult = postResult
+                                                    else {
+                                                        let result = await viewModel.shareIdToken()
+                                                        switch result {
+                                                            case .success(let postResult):
+                                                                print("ID Token sharing succeeded.")
+                                                                if postResult.location != nil {
+                                                                    sharingRequestModel.postResult =
+                                                                        postResult
+                                                                }
+                                                                showAlert = true
+                                                                alertTitle =
+                                                                    "ID Token sharing succeeded."
+                                                            case .failure(let error):
+                                                                print(
+                                                                    "ID Token sharing failed with error: \(error)"
+                                                                )
+                                                                showAlert = true
                                                         }
-                                                        showAlert = true
-                                                        alertTitle = "ID Token sharing succeeded."
-                                                    case .failure(let error):
-                                                        print("ID Token sharing failed with error: \(error)")
-                                                        showAlert = true
                                                     }
                                                 }
                                             }
-                                        })
+                                        )
                                         .padding(.vertical, 16)
                                     }
                                 }
@@ -165,14 +206,18 @@ struct SharingRequest: View {
             .onChange(of: sharingRequestModel.data) {
                 if sharingRequestModel.data != nil {
                     viewModel.selectedCredential = true
-                    if let submission = sharingRequestModel.data, let metadata = sharingRequestModel.metadata {
+                    if let submission = sharingRequestModel.data,
+                        let metadata = sharingRequestModel.metadata
+                    {
                         if let credentialSupported = VCIMetadataUtil.findMatchingCredentials(
                             format: submission.format,
                             types: submission.types,
                             metadata: metadata
                         ) {
                             if let display = credentialSupported.display {
-                                proofBy = String(format: NSLocalizedString("proof_by", comment: ""), display[0].name!)
+                                proofBy = String(
+                                    format: NSLocalizedString("proof_by", comment: ""),
+                                    display[0].name!)
                             }
                         }
                     }
@@ -185,31 +230,33 @@ struct SharingRequest: View {
             }
             .navigationDestination(for: ScreensOnFullScreen.self) { screen in
                 switch screen {
-                case .credentialList:
-                    CredentialListForSharing()
-                case .credentialDetail(let credential):
-                    CredentialDetail(credential: credential, path: $path)
-                default:
-                    EmptyView()
+                    case .credentialList:
+                        CredentialListForSharing()
+                    case .credentialDetail(let credential):
+                        CredentialDetail(credential: credential, path: $path)
+                    default:
+                        EmptyView()
                 }
             }
             .onAppear {
                 Task {
                     print("accessPairwiseAccountManager")
-                    if (!authenticated) {
+                    if !authenticated {
                         let b = await viewModel.accessPairwiseAccountManager()
-                        if (b) {
+                        if b {
                             authenticated = true
                             if let url = args.url {
                                 await viewModel.loadData(url)
-                                if (viewModel.presentationDefinition != nil) {
-                                    sharingRequestModel.presentationDefinition = viewModel.presentationDefinition
+                                if viewModel.presentationDefinition != nil {
+                                    sharingRequestModel.presentationDefinition =
+                                        viewModel.presentationDefinition
                                 }
                                 showAlert = viewModel.showAlert
                                 alertTitle = viewModel.alertTitle
                                 alertMessage = viewModel.alertMessage
                             }
-                        } else {
+                        }
+                        else {
                             print("showAuthenticationFailedAlert")
                             alertTitle = "Authentication Failed"
                             alertMessage = "Unable to authenticate. Please try again."

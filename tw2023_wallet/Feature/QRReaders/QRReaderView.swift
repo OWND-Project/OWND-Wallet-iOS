@@ -10,9 +10,9 @@ import SwiftUI
 struct QRReaderView: View {
     @ObservedObject var viewModel: QRReaderViewModel
     @Binding var nextScreen: ScreensOnFullScreen
-    
+
     @State private var hasCameraAccess: Bool = false
-    @State private var qrCodeScannerView = QrCodeScannerView() // QrCodeScannerViewのインスタンス
+    @State private var qrCodeScannerView = QrCodeScannerView()  // QrCodeScannerViewのインスタンス
     @State private var isRequestingPermission: Bool = false
 
     @Environment(\.dismiss) var dismiss
@@ -33,29 +33,31 @@ struct QRReaderView: View {
                 if isRequestingPermission {
                     // ローディングインジケーターを表示
                     ProgressView()
-                } else if self.hasCameraAccess {
+                }
+                else if self.hasCameraAccess {
                     // QRコード読み取りView
                     qrCodeScannerView
                         .found(r: self.viewModel.onFoundQrCode)
                         .interval(delay: self.viewModel.scanInterval)
-                } else {
+                }
+                else {
                     Text("camera_authorization_required")
                 }
-                
+
                 VStack {
                     Spacer()
                     VStack {
                         Text("scan_the_qr_code")
                             .modifier(BodyWhite())
                             .padding(.vertical, 64)
-                        
+
                         Button(NSLocalizedString("cancel", comment: "Cancel button")) {
                             dismiss()
                             nextScreen = .root
                         }
                         .modifier(BodyWhite())
                     }
-                    .cornerRadius(10) // 角丸設定
+                    .cornerRadius(10)  // 角丸設定
                     .padding()
                 }
                 .padding()
@@ -70,20 +72,20 @@ struct QRReaderView: View {
 
     private func handleNavigation(scanResultType: ScanResultType) {
         switch scanResultType {
-        case .openIDCredentialOffer:
-            sharedArgs.credentialOfferArgs = viewModel.credentialOfferArgs
-            dismiss()
-            nextScreen = ScreensOnFullScreen.credentialOffer
-        case .openID4VP:
-            sharedArgs.sharingCredentialArgs = viewModel.sharingCredentialArgs
-            dismiss()
-            nextScreen = ScreensOnFullScreen.sharingRequest
-        case .compressedString:
-            sharedArgs.verificationArgs = viewModel.verificationArgs
-            dismiss()
-            nextScreen = ScreensOnFullScreen.verification
-        default:
-            break
+            case .openIDCredentialOffer:
+                sharedArgs.credentialOfferArgs = viewModel.credentialOfferArgs
+                dismiss()
+                nextScreen = ScreensOnFullScreen.credentialOffer
+            case .openID4VP:
+                sharedArgs.sharingCredentialArgs = viewModel.sharingCredentialArgs
+                dismiss()
+                nextScreen = ScreensOnFullScreen.sharingRequest
+            case .compressedString:
+                sharedArgs.verificationArgs = viewModel.verificationArgs
+                dismiss()
+                nextScreen = ScreensOnFullScreen.verification
+            default:
+                break
         }
     }
 
@@ -91,11 +93,12 @@ struct QRReaderView: View {
         print("checkCameraPermission")
         if CameraPermissionHandler.hasCameraPermission() {
             hasCameraAccess = true
-        } else {
-            isRequestingPermission = true // パーミッション要求開始
+        }
+        else {
+            isRequestingPermission = true  // パーミッション要求開始
             CameraPermissionHandler.requestCameraPermission { granted in
                 DispatchQueue.main.async {
-                    isRequestingPermission = false // パーミッション要求終了
+                    isRequestingPermission = false  // パーミッション要求終了
                     if granted {
                         self.hasCameraAccess = true
                         // パーミッションダイアログでカメラセッションが動かなくなるので一度セッションを停止

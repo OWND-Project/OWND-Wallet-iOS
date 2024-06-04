@@ -47,10 +47,11 @@ class CameraPreview: UIView {
         overlayLayer.frame = bounds
         overlayLayer.backgroundColor = UIColor.black.withAlphaComponent(0.5).cgColor
 
-        let clearArea = CGRect(x: (bounds.width - scanAreaSize) / 2,
-                               y: (bounds.height - scanAreaSize) / 2,
-                               width: scanAreaSize,
-                               height: scanAreaSize)
+        let clearArea = CGRect(
+            x: (bounds.width - scanAreaSize) / 2,
+            y: (bounds.height - scanAreaSize) / 2,
+            width: scanAreaSize,
+            height: scanAreaSize)
 
         let clearPath = UIBezierPath(rect: bounds)
         let scanAreaPath = UIBezierPath(rect: clearArea)

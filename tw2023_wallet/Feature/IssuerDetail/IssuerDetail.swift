@@ -24,14 +24,14 @@ struct IssuerDetail: View {
         self.credential = credential
         self.showTitle = showTitle
     }
-    
+
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 0) {
                 HStack {
                     let displayName = issuerMetadata?.display?[0].name ?? "Unknown Issuer Name"
                     Text(displayName).modifier(TitleBlack())
-                    .frame(height: 60)
+                        .frame(height: 60)
                 }
                 .padding(.top, 16)
 
@@ -39,7 +39,8 @@ struct IssuerDetail: View {
                     if let issuerCertificate = verifierCertificate.issuer {
                         HStack {
                             Image("verifier_mark")
-                            Text("verified by \(issuerCertificate.organization ?? "")").modifier(SubHeadLineGray())
+                            Text("verified by \(issuerCertificate.organization ?? "")").modifier(
+                                SubHeadLineGray())
                         }
                         .padding(.leading, 16)
                         .padding(.bottom, 16)
@@ -70,9 +71,10 @@ struct IssuerDetail: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .padding(.horizontal, showTitle ? 16 : 0)
-            .navigationBarTitle(showTitle ? "issuing_authority_information" : "", displayMode: .inline)
+            .navigationBarTitle(
+                showTitle ? "issuing_authority_information" : "", displayMode: .inline)
         }
-        .onAppear() {
+        .onAppear {
             Task {
                 await viewModel.loadData(
                     credential: self.credential

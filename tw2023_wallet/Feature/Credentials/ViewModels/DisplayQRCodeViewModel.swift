@@ -28,7 +28,8 @@ class DisplayQRCodeViewModel: ObservableObject {
     }
 
     private func decodeBase64URLSafeString(_ base64URLSafeString: String) -> Data? {
-        var base64String = base64URLSafeString
+        var base64String =
+            base64URLSafeString
             .replacingOccurrences(of: "-", with: "+")
             .replacingOccurrences(of: "_", with: "/")
 
@@ -46,8 +47,8 @@ class DisplayQRCodeViewModel: ObservableObject {
 
     var hasX5u: Bool {
         if let header = jwtHeader,
-           let data = header.data(using: .utf8),
-           let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+            let data = header.data(using: .utf8),
+            let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
         {
             return json["x5u"] != nil
         }
@@ -55,19 +56,19 @@ class DisplayQRCodeViewModel: ObservableObject {
     }
 
     func generateCompressedJwt(_ credential: Credential) -> String? {
-//        guard let displayData = credential.qrDisplay.data(using: .utf8),
-//              let displayDict = try? JSONSerialization.jsonObject(with: displayData) as? [String: Any]
-//        else {
-//            return nil
-//        }
+        //        guard let displayData = credential.qrDisplay.data(using: .utf8),
+        //              let displayDict = try? JSONSerialization.jsonObject(with: displayData) as? [String: Any]
+        //        else {
+        //            return nil
+        //        }
         let jsonDict = [
             "format": credential.format,
             "credential": credential.payload,
-            "display": credential.qrDisplay
+            "display": credential.qrDisplay,
         ]
 
         guard let jsonData = try? JSONSerialization.data(withJSONObject: jsonDict, options: []),
-              let jsonString = String(data: jsonData, encoding: .utf8)
+            let jsonString = String(data: jsonData, encoding: .utf8)
         else {
             return nil
         }

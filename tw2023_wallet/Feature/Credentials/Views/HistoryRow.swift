@@ -17,42 +17,46 @@ struct HistoryRow: View {
                     .modifier(BodyBlack())
                 HStack {
                     switch history {
-                    case let credential as CredentialSharingHistory:
-                        let historyClaims = credential.claims
-                        let displayClaims = historyClaims.map{
-                            $0.claimKey
-                        }
-                        Text(localizedDisplayClaims(displayClaims, maxWidth: geometry.size.width))
+                        case let credential as CredentialSharingHistory:
+                            let historyClaims = credential.claims
+                            let displayClaims = historyClaims.map {
+                                $0.claimKey
+                            }
+                            Text(
+                                localizedDisplayClaims(displayClaims, maxWidth: geometry.size.width)
+                            )
                             .lineLimit(1)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.top, 2)
                             .modifier(SubHeadLineGray())
-                        Text(totalItemsLocalized(credential.claims.count))
-                            .frame(maxWidth: .infinity, alignment: .trailing)
-                            .padding(.bottom, 2)
-                            .modifier(SubHeadLineGray())
-                    case let idToken as IdTokenSharingHistory:
-                        Text("利用者ID")
-                            .lineLimit(1)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.top, 2)
-                            .modifier(SubHeadLineGray())
-                        Text(totalItemsLocalized(1))
-                            .frame(maxWidth: .infinity, alignment: .trailing)
-                            .padding(.bottom, 2)
-                            .modifier(SubHeadLineGray())
-                    default:
-                        let _ = print("Unexpected history type")
+                            Text(totalItemsLocalized(credential.claims.count))
+                                .frame(maxWidth: .infinity, alignment: .trailing)
+                                .padding(.bottom, 2)
+                                .modifier(SubHeadLineGray())
+                        case let idToken as IdTokenSharingHistory:
+                            Text("利用者ID")
+                                .lineLimit(1)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.top, 2)
+                                .modifier(SubHeadLineGray())
+                            Text(totalItemsLocalized(1))
+                                .frame(maxWidth: .infinity, alignment: .trailing)
+                                .padding(.bottom, 2)
+                                .modifier(SubHeadLineGray())
+                        default:
+                            let _ = print("Unexpected history type")
                     }
                 }
             }
         }
-        .padding(.vertical, 12) // ここで上下のpaddingを追加
+        .padding(.vertical, 12)  // ここで上下のpaddingを追加
     }
 
     private func localizedDisplayClaims(_ claims: [String], maxWidth: CGFloat) -> String {
         let maxDisplayCount = 3
-        var displayString = claims.prefix(maxDisplayCount).map { NSLocalizedString($0, comment: "") }.joined(separator: " | ")
+        var displayString = claims.prefix(maxDisplayCount).map {
+            NSLocalizedString($0, comment: "")
+        }.joined(separator: " | ")
 
         if claims.count > maxDisplayCount {
             displayString += " ..."

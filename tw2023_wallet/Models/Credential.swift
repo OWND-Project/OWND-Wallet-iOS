@@ -48,12 +48,12 @@ struct Credential: Codable, Identifiable, Hashable {
         var STREET: String?
         var C: String
     }
-    
+
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
 
-    static func ==(lhs: Credential, rhs: Credential) -> Bool {
+    static func == (lhs: Credential, rhs: Credential) -> Bool {
         return lhs.id == rhs.id
     }
 }

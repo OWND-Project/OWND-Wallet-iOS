@@ -14,11 +14,12 @@ enum LimitDisclosure: String, Codable {
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let value = try container.decode(String.self)
-        
+
         guard let limitDisclosure = LimitDisclosure(rawValue: value) else {
-            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid limitDisclosure type value: \(value)")
+            throw DecodingError.dataCorruptedError(
+                in: container, debugDescription: "Invalid limitDisclosure type value: \(value)")
         }
-        
+
         self = limitDisclosure
     }
 }
@@ -29,11 +30,12 @@ enum Rule: String, Codable {
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let value = try container.decode(String.self)
-        
+
         guard let rule = Rule(rawValue: value) else {
-            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid rule type value: \(value)")
+            throw DecodingError.dataCorruptedError(
+                in: container, debugDescription: "Invalid rule type value: \(value)")
         }
-        
+
         self = rule
     }
 }
@@ -103,4 +105,3 @@ struct PresentationSubmission: Codable {
     let definitionId: String
     let descriptorMap: [DescriptorMap]
 }
-

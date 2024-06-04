@@ -10,14 +10,18 @@ import Foundation
 
 class RecipientListViewModel: ObservableObject {
     @Published var sharingHistories: [History] = []
-    @Published var groupedSharingHistories: [String : [History]] = [:]
+    @Published var groupedSharingHistories: [String: [History]] = [:]
     @Published var hasLoadedData = false
     @Published var isLoading = false
     private var credentialHistoryManager: CredentialSharingHistoryManager
     private var idTokenHistoryManager: IdTokenSharingHistoryManager
 
-    init(credentialHistoryManager: CredentialSharingHistoryManager = CredentialSharingHistoryManager(container: nil),
-         idTokenHistoryManager: IdTokenSharingHistoryManager = IdTokenSharingHistoryManager(container: nil)) {
+    init(
+        credentialHistoryManager: CredentialSharingHistoryManager = CredentialSharingHistoryManager(
+            container: nil),
+        idTokenHistoryManager: IdTokenSharingHistoryManager = IdTokenSharingHistoryManager(
+            container: nil)
+    ) {
         self.credentialHistoryManager = credentialHistoryManager
         self.idTokenHistoryManager = idTokenHistoryManager
     }
@@ -30,13 +34,14 @@ class RecipientListViewModel: ObservableObject {
         let mappedCredentialHistories = credentialHistories.map { datastoreHistory in
             datastoreHistory.toCredentialSharingHistory()
         }
-        
+
         let idTokenSharingHistories = self.idTokenHistoryManager.getAll()
         let mappedIdTokenSharingHistories = idTokenSharingHistories.map { datastoreHistory in
             datastoreHistory.toIdTokenSharingHistory()
         }
-        
-        let histories = Histories(histories: mappedCredentialHistories + mappedIdTokenSharingHistories)
+
+        let histories = Histories(
+            histories: mappedCredentialHistories + mappedIdTokenSharingHistories)
 
         let groupedSharingHistories = histories.groupByRp()
         let latestHistories = histories.latestByRp()

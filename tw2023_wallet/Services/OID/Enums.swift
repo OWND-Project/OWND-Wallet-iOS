@@ -14,15 +14,16 @@ enum ResponseMode: String, Codable {
     case directPostJwt = "direct_post.jwt"
     case post = "post"
     case query = "query"
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let value = try container.decode(String.self)
-        
+
         guard let responseMode = ResponseMode(rawValue: value) else {
-            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid response mode value: \(value)")
+            throw DecodingError.dataCorruptedError(
+                in: container, debugDescription: "Invalid response mode value: \(value)")
         }
-        
+
         self = responseMode
     }
 }
@@ -39,11 +40,12 @@ enum Scope: String, Codable {
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let value = try container.decode(String.self)
-        
+
         guard let scope = Scope(rawValue: value) else {
-            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid scope value: \(value)")
+            throw DecodingError.dataCorruptedError(
+                in: container, debugDescription: "Invalid scope value: \(value)")
         }
-        
+
         self = scope
     }
 }
@@ -55,11 +57,12 @@ enum SubjectType: String, Codable {
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let value = try container.decode(String.self)
-        
+
         guard let subjectType = SubjectType(rawValue: value) else {
-            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid subject type value: \(value)")
+            throw DecodingError.dataCorruptedError(
+                in: container, debugDescription: "Invalid subject type value: \(value)")
         }
-        
+
         self = subjectType
     }
 }
@@ -74,11 +77,12 @@ enum SigningAlgo: String, Codable {
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let value = try container.decode(String.self)
-        
+
         guard let signingAlgo = SigningAlgo(rawValue: value) else {
-            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid signing algorithm value: \(value)")
+            throw DecodingError.dataCorruptedError(
+                in: container, debugDescription: "Invalid signing algorithm value: \(value)")
         }
-        
+
         self = signingAlgo
     }
 }
@@ -90,11 +94,12 @@ enum GrantType: String, Codable {
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let value = try container.decode(String.self)
-        
+
         guard let grantType = GrantType(rawValue: value) else {
-            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid grant type value: \(value)")
+            throw DecodingError.dataCorruptedError(
+                in: container, debugDescription: "Invalid grant type value: \(value)")
         }
-        
+
         self = grantType
     }
 }
@@ -106,11 +111,13 @@ enum AuthenticationContextReferences: String, Codable {
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let value = try container.decode(String.self)
-        
+
         guard let authContextRef = AuthenticationContextReferences(rawValue: value) else {
-            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid authentication context reference value: \(value)")
+            throw DecodingError.dataCorruptedError(
+                in: container,
+                debugDescription: "Invalid authentication context reference value: \(value)")
         }
-        
+
         self = authContextRef
     }
 }
@@ -124,11 +131,13 @@ enum TokenEndpointAuthMethod: String, Codable {
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let value = try container.decode(String.self)
-        
+
         guard let authMethod = TokenEndpointAuthMethod(rawValue: value) else {
-            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid token endpoint authentication method value: \(value)")
+            throw DecodingError.dataCorruptedError(
+                in: container,
+                debugDescription: "Invalid token endpoint authentication method value: \(value)")
         }
-        
+
         self = authMethod
     }
 }
@@ -141,11 +150,12 @@ enum ClaimType: String, Codable {
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let value = try container.decode(String.self)
-        
+
         guard let claimType = ClaimType(rawValue: value) else {
-            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid claim type value: \(value)")
+            throw DecodingError.dataCorruptedError(
+                in: container, debugDescription: "Invalid claim type value: \(value)")
         }
-        
+
         self = claimType
     }
 }
@@ -163,12 +173,12 @@ enum Format: String, Codable {
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let value = try container.decode(String.self)
-        
+
         guard let format = Format(rawValue: value) else {
-            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid format value: \(value)")
+            throw DecodingError.dataCorruptedError(
+                in: container, debugDescription: "Invalid format value: \(value)")
         }
-        
+
         self = format
     }
 }
-

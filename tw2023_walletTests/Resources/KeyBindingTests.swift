@@ -12,7 +12,7 @@ final class KeyBindingTests: XCTestCase {
     var keyAlias = "testKeyAlias"
     var publicKey: SecKey?
     var privateKey: SecKey?
-    
+
     override func setUpWithError() throws {
         super.setUp()
         // キーペアの生成
@@ -29,22 +29,24 @@ final class KeyBindingTests: XCTestCase {
     func testGenerateJwtSignature() throws {
         // 必要なパラメータを設定
         let sdJwt = "sdJwtSample"
-        let selectedDisclosures = [Disclosure(disclosure: "disclosureSample", key: "keySample", value: "valueSample")]
+        let selectedDisclosures = [
+            Disclosure(disclosure: "disclosureSample", key: "keySample", value: "valueSample")
+        ]
         let aud = "audSample"
         let nonce = "nonceSample"
-        
 
         // JWTの生成
         let keyBinding = KeyBindingImpl(keyAlias: keyAlias)
-        let jwt = try keyBinding.generateJwt(sdJwt: sdJwt, selectedDisclosures: selectedDisclosures, aud: aud, nonce: nonce)
+        let jwt = try keyBinding.generateJwt(
+            sdJwt: sdJwt, selectedDisclosures: selectedDisclosures, aud: aud, nonce: nonce)
 
         // JWTの検証
         let verificationResult = JWTUtil.verifyJwt(jwt: jwt, publicKey: publicKey!)
         switch verificationResult {
-        case .success(_):
-            XCTAssertTrue(true, "JWT verification succeeded")
-        case .failure(let error):
-            XCTFail("JWT verification failed: \(error)")
+            case .success(_):
+                XCTAssertTrue(true, "JWT verification succeeded")
+            case .failure(let error):
+                XCTFail("JWT verification failed: \(error)")
         }
     }
 

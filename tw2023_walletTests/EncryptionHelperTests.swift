@@ -32,8 +32,11 @@ final class EncryptionHelperTests: XCTestCase {
         }
 
         // データの復号化
-        guard let decryptedData = helper.decrypt(data: encrypted.encryptedData, iv: encrypted.iv, tag: encrypted.tag),
-              let decryptedString = String(data: decryptedData, encoding: .utf8) else {
+        guard
+            let decryptedData = helper.decrypt(
+                data: encrypted.encryptedData, iv: encrypted.iv, tag: encrypted.tag),
+            let decryptedString = String(data: decryptedData, encoding: .utf8)
+        else {
             XCTFail("Failed to decrypt data")
             return
         }
@@ -41,15 +44,15 @@ final class EncryptionHelperTests: XCTestCase {
         // 元の文字列と復号化された文字列が一致することを確認
         XCTAssertEqual(originalString, decryptedString)
     }
-    
-    func testEncryptionDecryptionWithSerialization(){
+
+    func testEncryptionDecryptionWithSerialization() {
         let helper = EncryptionHelper()
         let originalString = "テストメッセージ"
         guard let originalData = originalString.data(using: .utf8) else {
             XCTFail("Failed to convert string to data")
             return
         }
-        
+
         guard let encrypted = helper.encryptWithSerialization(data: originalData) else {
             XCTFail("Failed to encrypt data")
             return
@@ -57,13 +60,14 @@ final class EncryptionHelperTests: XCTestCase {
 
         // データの復号化
         guard let decryptedData = helper.decryptWithDeserialization(data: encrypted),
-              let decryptedString = String(data: decryptedData, encoding: .utf8) else {
+            let decryptedString = String(data: decryptedData, encoding: .utf8)
+        else {
             XCTFail("Failed to decrypt data")
             return
         }
-        
+
         XCTAssertEqual(originalString, decryptedString)
-        
+
     }
 
     func testPerformanceExample() throws {

@@ -5,17 +5,15 @@
 //  Created by 若葉良介 on 2023/12/21.
 //
 
-import SwiftUI
 import CoreData
 import LocalAuthentication
+import SwiftUI
 
-
-func createCredentialOfferArgs(value: String) -> CredentialOfferArgs{
+func createCredentialOfferArgs(value: String) -> CredentialOfferArgs {
     let args = CredentialOfferArgs()
     args.credentialOffer = value
     return args
 }
-
 
 func createOpenID4VPArgs(value: String) -> SharingCredentialArgs {
     let args = SharingCredentialArgs()
@@ -23,16 +21,15 @@ func createOpenID4VPArgs(value: String) -> SharingCredentialArgs {
     return args
 }
 
-
 @main
 struct tw2023_walletApp: App {
     @State private var isShowingCredentialOffer = false
     @State private var credentialOffer: String? = nil
     @State private var isShowingOpenID4VP = false
     @State private var openID4VP: String? = nil
-    
+
     @State private var sharingRequestModel = SharingRequestModel()
-    
+
     private var authenticationManager = AuthenticationManager()
     @Environment(\.scenePhase) private var scenePhase
 
@@ -43,68 +40,83 @@ struct tw2023_walletApp: App {
                     .onOpenURL(perform: { url in
                         handleIncomingURL(url)
                     })
-                    .fullScreenCover(isPresented: $isShowingCredentialOffer, onDismiss: {
-                        credentialOffer = nil
-                    }) {
+                    .fullScreenCover(
+                        isPresented: $isShowingCredentialOffer,
+                        onDismiss: {
+                            credentialOffer = nil
+                        }
+                    ) {
                         if let value = credentialOffer {
-                            CredentialOfferView().environment(createCredentialOfferArgs(value: value))
-                        } else {
+                            CredentialOfferView().environment(
+                                createCredentialOfferArgs(value: value))
+                        }
+                        else {
                             EmptyView()
                         }
                     }
-                    .fullScreenCover(isPresented: $isShowingOpenID4VP, onDismiss: {
-                        openID4VP = nil
-                    }) {
+                    .fullScreenCover(
+                        isPresented: $isShowingOpenID4VP,
+                        onDismiss: {
+                            openID4VP = nil
+                        }
+                    ) {
                         if let value = openID4VP {
-                            SharingRequest(args: createOpenID4VPArgs(value: value)).environment(sharingRequestModel)
-                        } else {
+                            SharingRequest(args: createOpenID4VPArgs(value: value)).environment(
+                                sharingRequestModel)
+                        }
+                        else {
                             EmptyView()
                         }
                     }
-            } else {
+            }
+            else {
                 AuthenticationView(authenticationManager: self.authenticationManager)
             }
         }
         .environment(authenticationManager)
-        .onChange(of: scenePhase) { 
+        .onChange(of: scenePhase) {
             handleScenePhaseChange(scenePhase)
         }
     }
-    
+
     private func handleScenePhaseChange(_ newPhase: ScenePhase) {
         switch newPhase {
-        case .active:
-            print("App is active")
-        case .inactive:
-            print("App is inactive")
-        case .background:
-            print("App is in background")
-            if self.authenticationManager.shouldLock() {
-                self.authenticationManager.isUnlocked = false
-                if credentialOffer != nil {
-                    credentialOffer = nil
+            case .active:
+                print("App is active")
+            case .inactive:
+                print("App is inactive")
+            case .background:
+                print("App is in background")
+                if self.authenticationManager.shouldLock() {
+                    self.authenticationManager.isUnlocked = false
+                    if credentialOffer != nil {
+                        credentialOffer = nil
+                    }
                 }
-            }
-        @unknown default:
-            break
+            @unknown default:
+                break
         }
     }
-    
+
     private func handleIncomingURL(_ url: URL) {
         print("handling url : \(url)")
         if url.scheme == "openid4vp" {
             handleVp(url)
-        } else if url.scheme == "openid-credential-offer" {
+        }
+        else if url.scheme == "openid-credential-offer" {
             handleOffer(url)
-        } else if let components = URLComponents(url: url, resolvingAgainstBaseURL: false) {
+        }
+        else if let components = URLComponents(url: url, resolvingAgainstBaseURL: false) {
             if let queryItems = components.queryItems {
                 let credentialOfferParam = queryItems.first { $0.name == "credential_offer" }?.value
                 if credentialOfferParam != nil {
                     handleOffer(url)
-                } else {
+                }
+                else {
                     handleVp(url)
                 }
-            } else {
+            }
+            else {
                 print("query not found")
             }
         }
@@ -121,10 +133,9 @@ struct tw2023_walletApp: App {
         openID4VP = url.absoluteString
         isShowingOpenID4VP = true
     }
-    
+
 }
 
 enum ApplicatoinError: Error {
     case illegalState(message: String? = nil)
 }
-

@@ -15,9 +15,14 @@ class QrCodeCameraDelegate: NSObject, AVCaptureMetadataOutputObjectsDelegate {
     var onResult: (String) -> Void = { _ in }
     var mockData: String?
 
-    func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
+    func metadataOutput(
+        _ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject],
+        from connection: AVCaptureConnection
+    ) {
         if let metadataObject = metadataObjects.first {
-            guard let readableObject = metadataObject as? AVMetadataMachineReadableCodeObject else { return }
+            guard let readableObject = metadataObject as? AVMetadataMachineReadableCodeObject else {
+                return
+            }
             guard let stringValue = readableObject.stringValue else { return }
             foundBarcode(stringValue)
         }

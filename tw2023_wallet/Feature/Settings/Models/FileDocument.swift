@@ -19,9 +19,11 @@ struct TextFileDocument: FileDocument {
 
     init(configuration: ReadConfiguration) throws {
         if let data = configuration.file.regularFileContents,
-           let text = String(data: data, encoding: .utf8) {
+            let text = String(data: data, encoding: .utf8)
+        {
             self.text = text
-        } else {
+        }
+        else {
             throw CocoaError(.fileReadCorruptFile)
         }
     }
@@ -43,11 +45,12 @@ struct ZipFileDocument: FileDocument {
     init(configuration: ReadConfiguration) throws {
         if let data = configuration.file.regularFileContents {
             self.data = data
-        } else {
+        }
+        else {
             throw CocoaError(.fileReadCorruptFile)
         }
     }
-    
+
     func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
         return FileWrapper(regularFileWithContents: data)
     }

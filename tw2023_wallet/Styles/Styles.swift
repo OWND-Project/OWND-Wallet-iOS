@@ -197,12 +197,12 @@ struct StatusBoxForeground: ViewModifier {
 
     private var foregroundColor: Color {
         switch status {
-        case .success:
-            return Color("status_success")
-        case .warning:
-            return Color("status_warning")
-        case .error:
-            return Color("status_error")
+            case .success:
+                return Color("status_success")
+            case .warning:
+                return Color("status_warning")
+            case .error:
+                return Color("status_error")
         }
     }
 }
@@ -217,12 +217,12 @@ struct StatusBoxBackground: ViewModifier {
 
     private var backgroundColor: Color {
         switch status {
-        case .success:
-            return Color("infoBackground")
-        case .warning:
-            return Color("warnBackground")
-        case .error:
-            return Color("errorBackground")
+            case .success:
+                return Color("infoBackground")
+            case .warning:
+                return Color("warnBackground")
+            case .error:
+                return Color("errorBackground")
         }
     }
 }

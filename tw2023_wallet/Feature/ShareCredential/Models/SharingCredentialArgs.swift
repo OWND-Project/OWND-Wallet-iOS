@@ -10,11 +10,11 @@ import Foundation
 @Observable
 class SharingCredentialArgs: Hashable {
     var url: String?
-    
+
     func hash(into hasher: inout Hasher) {
         hasher.combine(url)
     }
-    
+
     static func == (lhs: SharingCredentialArgs, rhs: SharingCredentialArgs) -> Bool {
         return lhs.url == rhs.url
     }

@@ -9,29 +9,31 @@ import SwiftUI
 
 struct CredentialListForSharing: View {
     @Environment(SharingRequestModel.self) var sharingRequestModel: SharingRequestModel?
-    
+
     var viewModel: CredentialListViewModel
-    
+
     init(
         viewModel: CredentialListViewModel = CredentialListViewModel()
     ) {
         print("init credential list")
         self.viewModel = viewModel
     }
-    
+
     var body: some View {
         Group {
             if viewModel.dataModel.isLoading {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle())
-            } else {
+            }
+            else {
                 ScrollView {
                     ForEach(viewModel.dataModel.credentials) { credential in
                         VStack(alignment: .leading) {
                             Text(LocalizedStringKey(credential.credentialType.rawValue))
                                 .font(.headline)
                                 .padding(.leading, 16)
-                            NavigationLink(value: ScreensOnFullScreen.credentialDetail(credential)) {
+                            NavigationLink(value: ScreensOnFullScreen.credentialDetail(credential))
+                            {
                                 CredentialRow(credential: credential)
                                     .aspectRatio(1.6, contentMode: .fit)
                                     .frame(maxWidth: .infinity)
@@ -47,7 +49,8 @@ struct CredentialListForSharing: View {
             Task {
                 if let model = sharingRequestModel {
                     viewModel.loadData(presentationDefinition: model.presentationDefinition)
-                } else {
+                }
+                else {
                     viewModel.loadData()
                 }
             }

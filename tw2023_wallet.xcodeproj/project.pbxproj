@@ -182,6 +182,9 @@
 		A8C810432B82042300CF8CD6 /* SharingToModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C8103E2B82042200CF8CD6 /* SharingToModel.swift */; };
 		A8C810442B82042300CF8CD6 /* SharingToRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C810402B82042200CF8CD6 /* SharingToRow.swift */; };
 		A8C810452B82042300CF8CD6 /* SharingTo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C810412B82042200CF8CD6 /* SharingTo.swift */; };
+		A8CC48782C0D8EE700113623 /* SwiftFormat in Frameworks */ = {isa = PBXBuildFile; productRef = A8CC48772C0D8EE700113623 /* SwiftFormat */; };
+		A8CC487A2C0D8EE700113623 /* SwiftFormatConfiguration in Frameworks */ = {isa = PBXBuildFile; productRef = A8CC48792C0D8EE700113623 /* SwiftFormatConfiguration */; };
+		A8CC487C2C0D8EE700113623 /* swift-format in Frameworks */ = {isa = PBXBuildFile; productRef = A8CC487B2C0D8EE700113623 /* swift-format */; };
 		A8E892302B3A705D009F3755 /* SerializeUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8E8922F2B3A705D009F3755 /* SerializeUtil.swift */; };
 		F613F8602B55FEF800DA4B9E /* PinCodeInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = F613F85F2B55FEF800DA4B9E /* PinCodeInput.swift */; };
 		F621E1F32B6C654D0034BF95 /* RecipientDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = F621E1F22B6C654D0034BF95 /* RecipientDetail.swift */; };
@@ -461,12 +464,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				A89297572B3AA1EB007315BE /* Gzip in Frameworks */,
+				A8CC48782C0D8EE700113623 /* SwiftFormat in Frameworks */,
 				A8137C482B484454008CA5AC /* JWTDecode in Frameworks */,
+				A8CC487A2C0D8EE700113623 /* SwiftFormatConfiguration in Frameworks */,
 				A89297622B3AF26F007315BE /* SwiftASN1 in Frameworks */,
 				A83039D52B4E7449004139A7 /* SwiftProtobuf in Frameworks */,
 				A81087252B3D66A1004425DE /* X509 in Frameworks */,
 				A89297652B3AF487007315BE /* ASN1Decoder in Frameworks */,
 				8B7F89212B8D7507005DA52B /* Zip in Frameworks */,
+				A8CC487C2C0D8EE700113623 /* swift-format in Frameworks */,
 				8B297C4B2B39AB8900D2998D /* SwiftyJSON in Frameworks */,
 				8B0E0A942B3BC36E0080F6A3 /* web3swift in Frameworks */,
 				8BF745992B4FF85F000F74A9 /* JOSESwift in Frameworks */,
@@ -1183,6 +1189,9 @@
 				8BF745982B4FF85F000F74A9 /* JOSESwift */,
 				F6A239AB2B4E709200B09F17 /* IGIdenticon */,
 				8B7F89202B8D7507005DA52B /* Zip */,
+				A8CC48772C0D8EE700113623 /* SwiftFormat */,
+				A8CC48792C0D8EE700113623 /* SwiftFormatConfiguration */,
+				A8CC487B2C0D8EE700113623 /* swift-format */,
 			);
 			productName = tw2023_wallet;
 			productReference = 8B81E2992B33CC4000ED3B4E /* tw2023_wallet.app */;
@@ -1272,6 +1281,7 @@
 				8BF745972B4FF85F000F74A9 /* XCRemoteSwiftPackageReference "JOSESwift" */,
 				F6A239AA2B4E709200B09F17 /* XCRemoteSwiftPackageReference "IGIdenticon" */,
 				8B7F891F2B8D7507005DA52B /* XCRemoteSwiftPackageReference "Zip" */,
+				A8CC48762C0D8EE600113623 /* XCRemoteSwiftPackageReference "swift-format" */,
 			);
 			productRefGroup = 8B81E29A2B33CC4000ED3B4E /* Products */;
 			projectDirPath = "";
@@ -1979,6 +1989,14 @@
 				minimumVersion = 1.9.0;
 			};
 		};
+		A8CC48762C0D8EE600113623 /* XCRemoteSwiftPackageReference "swift-format" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-format";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 510.1.0;
+			};
+		};
 		F6A239AA2B4E709200B09F17 /* XCRemoteSwiftPackageReference "IGIdenticon" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/seaburg/IGIdenticon.git";
@@ -2044,6 +2062,21 @@
 			isa = XCSwiftPackageProductDependency;
 			package = A89297632B3AF487007315BE /* XCRemoteSwiftPackageReference "ASN1Decoder" */;
 			productName = ASN1Decoder;
+		};
+		A8CC48772C0D8EE700113623 /* SwiftFormat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A8CC48762C0D8EE600113623 /* XCRemoteSwiftPackageReference "swift-format" */;
+			productName = SwiftFormat;
+		};
+		A8CC48792C0D8EE700113623 /* SwiftFormatConfiguration */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A8CC48762C0D8EE600113623 /* XCRemoteSwiftPackageReference "swift-format" */;
+			productName = SwiftFormatConfiguration;
+		};
+		A8CC487B2C0D8EE700113623 /* swift-format */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A8CC48762C0D8EE600113623 /* XCRemoteSwiftPackageReference "swift-format" */;
+			productName = "swift-format";
 		};
 		F6A239AB2B4E709200B09F17 /* IGIdenticon */ = {
 			isa = XCSwiftPackageProductDependency;

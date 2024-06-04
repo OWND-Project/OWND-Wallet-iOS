@@ -6,56 +6,57 @@
 //
 
 import XCTest
+
 @testable import tw2023_wallet
 
 final class KeyPairUitlTests: XCTestCase {
-    
+
     func generateRandomString(length: Int) -> String {
         let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
         let randomString = String((0..<length).map { _ in letters.randomElement()! })
         return randomString
     }
-    
+
     func testGeneration() {
         XCTAssertNoThrow(try! KeyPairUtil.generateSignVerifyKeyPair(alias: "abc"))
     }
-    
+
     func testCheckKeyExistence() {
         let tag = generateRandomString(length: 5)
         XCTAssertNoThrow(try! KeyPairUtil.generateSignVerifyKeyPair(alias: tag))
         XCTAssertTrue(KeyPairUtil.isKeyPairExist(alias: tag))
     }
-    
-    func testGetPrivateKey(){
+
+    func testGetPrivateKey() {
         let tag = generateRandomString(length: 5)
         XCTAssertNoThrow(try! KeyPairUtil.generateSignVerifyKeyPair(alias: tag))
         XCTAssertNotNil(KeyPairUtil.getPrivateKey(alias: tag))
     }
-    
-    func testGetPublicKey(){
+
+    func testGetPublicKey() {
         let tag = generateRandomString(length: 5)
         XCTAssertNoThrow(try! KeyPairUtil.generateSignVerifyKeyPair(alias: tag))
         XCTAssertNotNil(KeyPairUtil.getPublicKey(alias: tag))
     }
-    
-    func testGetKeyPair(){
+
+    func testGetKeyPair() {
         let tag = generateRandomString(length: 5)
         XCTAssertNoThrow(try! KeyPairUtil.generateSignVerifyKeyPair(alias: tag))
         XCTAssertNotNil(KeyPairUtil.getKeyPair(alias: tag))
     }
-    
+
     func testPublicKeyToJwk() {
         let tag = generateRandomString(length: 5)
         XCTAssertNoThrow(try! KeyPairUtil.generateSignVerifyKeyPair(alias: tag))
         let keyPair = KeyPairUtil.getKeyPair(alias: tag)
-        
+
         XCTAssertNotNil(keyPair)
         let (prv, pub) = keyPair!
         let jwk = KeyPairUtil.publicKeyToJwk(publicKey: pub)
         XCTAssertNotNil(jwk)
     }
-    
-    func testCreateProofJwtAndVerify(){
+
+    func testCreateProofJwtAndVerify() {
         let tag = generateRandomString(length: 5)
         XCTAssertNoThrow(try! KeyPairUtil.generateSignVerifyKeyPair(alias: tag))
         let keyPair = KeyPairUtil.getKeyPair(alias: tag)
@@ -67,32 +68,33 @@ final class KeyPairUitlTests: XCTestCase {
             XCTFail()
             return
         }
-        
-        let proofJwt = try! KeyPairUtil.createProofJwt(keyAlias: tag, audience: "audience", nonce: "nonce")
-        
+
+        let proofJwt = try! KeyPairUtil.createProofJwt(
+            keyAlias: tag, audience: "audience", nonce: "nonce")
+
         XCTAssertTrue(KeyPairUtil.verifyJwt(jwkJson: jwk, jwt: proofJwt))
-        
+
     }
-    
+
     func testCreatePublicKey() {
         let tag = generateRandomString(length: 5)
         XCTAssertNoThrow(try! KeyPairUtil.generateSignVerifyKeyPair(alias: tag))
         let publicKey = KeyPairUtil.getPublicKey(alias: tag)
         let jwk = KeyPairUtil.publicKeyToJwk(publicKey: publicKey!)
         let convertedPublicKey = try! KeyPairUtil.createPublicKey(jwk: jwk!)
-        
+
         var error: Unmanaged<CFError>?
-        
+
         let original = SecKeyCopyExternalRepresentation(publicKey!, &error) as Data?
         let originalBytes = [UInt8](original!)
         let originalX = Data(originalBytes[1...32])
         let originalY = Data(originalBytes[33...64])
-        
+
         let converted = SecKeyCopyExternalRepresentation(convertedPublicKey, &error) as Data?
         let convertedBytes = [UInt8](converted!)
         let convertedX = Data(convertedBytes[1...32])
         let convertedY = Data(convertedBytes[33...64])
-        
+
         XCTAssertEqual(originalX, convertedX)
         XCTAssertEqual(originalY, convertedY)
     }

@@ -12,4 +12,3 @@ struct IdTokenSharingHistory: Codable, Hashable, History {
     let accountIndex: Int
     let createdAt: String
 }
-

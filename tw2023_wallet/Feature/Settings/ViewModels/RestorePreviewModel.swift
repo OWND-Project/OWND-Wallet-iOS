@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 class RestorePreviewModel1: RestoreViewModel {
     override init() {
         super.init()

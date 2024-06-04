@@ -5,15 +5,13 @@
 //  Created by 若葉良介 on 2023/12/21.
 //
 
-import SwiftUI
-
 //struct MyNumberCard: View {
 //    var body: some View {
 //        Text("Identity Credential")
 //    }
 //}
 import SafariServices
-
+import SwiftUI
 
 struct MyNumberCard: View {
     @Environment(\.presentationMode) var presentationMode
@@ -29,13 +27,12 @@ struct MyNumberCard: View {
         if let url = URL(string: urlString), UIApplication.shared.canOpenURL(url) {
             UIApplication.shared.open(url, options: [:], completionHandler: nil)
             presentationMode.wrappedValue.dismiss()
-        } else {
+        }
+        else {
             // URLが不正またはSafariが利用できない場合の処理
         }
     }
 }
-
-
 
 #Preview {
     MyNumberCard()
