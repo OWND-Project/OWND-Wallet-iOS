@@ -113,7 +113,7 @@ extension Datastore_CredentialData {
                 }
                 return disclousre
             default:
-            print("Usupported Credential Format: \(self.format)")
+                print("Usupported Credential Format: \(self.format)")
                 return nil
         }
     }

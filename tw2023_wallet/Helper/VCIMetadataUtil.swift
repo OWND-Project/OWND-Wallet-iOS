@@ -31,7 +31,7 @@ class VCIMetadataUtil {
 
     static func extractTypes(format: String, credential: String) throws -> [String] {
         var types: [String] = []
-        
+
         switch format {
             case "vc+sd-jwt":
                 let jwt = divideSDJwt(sdJwt: credential).issuerSignedJwt

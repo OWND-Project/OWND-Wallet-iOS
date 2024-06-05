@@ -167,7 +167,7 @@ class CredentialDataManagerTests: XCTestCase {
     }
 
     func testToCredential() {
-        
+
         guard
             let url = Bundle.main.url(
                 forResource: "credential_issuer_metadata_jwt_vc", withExtension: "json"),
@@ -176,8 +176,7 @@ class CredentialDataManagerTests: XCTestCase {
             XCTFail("Cannot read credential_issuer_metadata.json")
             return
         }
-        
-        
+
         var testCredentialData = Datastore_CredentialData()
         testCredentialData.id = "1"
         testCredentialData.format = "jwt_vc_json"
