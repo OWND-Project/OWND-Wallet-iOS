@@ -105,3 +105,29 @@ struct PresentationSubmission: Codable {
     let definitionId: String
     let descriptorMap: [DescriptorMap]
 }
+
+class JwtVpJsonPresentation {
+    static func genDescriptorMap(
+        inputDescriptorId: String, pathIndex: Int = -1, pathNestedIndex: Int = 0
+    ) -> DescriptorMap {
+        let path: String
+        if pathIndex == -1 {
+            path = "$"
+        }
+        else {
+            path = "$[\(pathIndex)]"
+        }
+
+        let pathNested = Path(
+            format: "jwt_vc_json",
+            path: "$.vp.verifiableCredential[\(pathNestedIndex)]"
+        )
+
+        return DescriptorMap(
+            id: inputDescriptorId,
+            format: "jwt_vp_json",
+            path: path,
+            pathNested: pathNested
+        )
+    }
+}

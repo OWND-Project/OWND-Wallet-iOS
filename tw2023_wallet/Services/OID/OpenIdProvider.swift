@@ -52,6 +52,7 @@ class OpenIdProvider {
     private var keyPair: KeyPair?  // for proof of posession for jwt_vc_json presentation
     private var secp256k1KeyPair: KeyPairData?  // for sub of id_token
     private var keyBinding: KeyBinding?
+    private var jwtVpJsonGenerator: JwtVpJsonGenerator?
     var authRequestProcessedData: ProcessedRequestData?
     var clientId: String?
     var responseType: String?
@@ -75,6 +76,10 @@ class OpenIdProvider {
 
     func setKeyBinding(keyBinding: KeyBinding) {
         self.keyBinding = keyBinding
+    }
+
+    func setJwtVpJsonGenerator(jwtVpJsonGenerator: JwtVpJsonGenerator) {
+        self.jwtVpJsonGenerator = jwtVpJsonGenerator
     }
 
     func processSIOPRequest(_ url: String, using session: URLSession = URLSession.shared) async
@@ -352,7 +357,9 @@ class OpenIdProvider {
                         credential.id,
                         try createPresentationSubmissionJwtVc(
                             credential: credential,
-                            presentationDefinition: presentationDefinition
+                            presentationDefinition: presentationDefinition,
+                            clientId: clientId,
+                            nonce: nonce
                         )
                     )
 
@@ -487,7 +494,8 @@ class OpenIdProvider {
 
     func createPresentationSubmissionJwtVc(
         credential: SubmissionCredential,
-        presentationDefinition: PresentationDefinition
+        presentationDefinition: PresentationDefinition,
+        clientId: String, nonce: String
     ) throws -> (String, DescriptorMap, [DisclosedClaim], String?) {
         do {
             let (_, payload, _) = try JWTUtil.decodeJwt(jwt: credential.credential)
@@ -499,13 +507,19 @@ class OpenIdProvider {
                         id: credential.id, types: credential.types, name: key,
                         value: value as? String)
                 }
+                guard
+                    let vpToken = self.jwtVpJsonGenerator?.generateJwt(
+                        vcJwt: credential.credential, headerOptions: HeaderOptions(),
+                        payloadOptions: JwtVpJsonPayloadOptions(aud: clientId, nonce: nonce))
+                else {
+                    throw OpenIdProviderIllegalInputException.illegalCredentialInput
+                }
+
+                let descriptorMap = JwtVpJsonPresentation.genDescriptorMap(
+                    inputDescriptorId: credential.inputDescriptor.id)
                 return (
-                    credential.credential,
-                    DescriptorMap(
-                        id: credential.inputDescriptor.id,
-                        format: credential.format,
-                        path: "$",
-                        pathNested: nil),
+                    vpToken,
+                    descriptorMap,
                     disclosedClaims,
                     nil
                 )
@@ -515,6 +529,7 @@ class OpenIdProvider {
             }
         }
         catch {
+            print("Error: \(error)")
             throw error
         }
     }
@@ -754,6 +769,13 @@ protocol KeyBinding {
         throws -> String
 }
 
+protocol JwtVpJsonGenerator {
+    func generateJwt(
+        vcJwt: String, headerOptions: HeaderOptions, payloadOptions: JwtVpJsonPayloadOptions
+    ) -> String
+    func getJwk() -> [String: String]
+}
+
 struct SIOPLoginResponseData: Decodable {
     let Location: String
 }
@@ -762,4 +784,87 @@ struct PostResult: Decodable {
     let statusCode: Int
     let location: String?
     let cookies: [String]?
+}
+
+struct HeaderOptions: Codable {
+    var alg: String = "ES256"
+    var typ: String = "JWT"
+    var jwk: String? = nil
+}
+
+struct JwtVpJsonPayloadOptions: Codable {
+    var iss: String? = nil
+    var jti: String? = nil
+    var aud: String
+    var nbf: Int64? = nil
+    var iat: Int64? = nil
+    var exp: Int64? = nil
+    var nonce: String
+}
+
+struct VpJwtPayload: Codable {
+    var iss: String?
+    var jti: String?
+    var aud: String?
+    var nbf: Int64?
+    var iat: Int64?
+    var exp: Int64?
+    var nonce: String?
+    var vp: [String: Any]
+
+    enum CodingKeys: String, CodingKey {
+        case iss, jti, aud, nbf, iat, exp, nonce, vp
+    }
+
+    init(
+        iss: String?, jti: String?, aud: String?, nbf: Int64?, iat: Int64?, exp: Int64?,
+        nonce: String?, vp: [String: Any]
+    ) {
+        self.iss = iss
+        self.jti = jti
+        self.aud = aud
+        self.nbf = nbf
+        self.iat = iat
+        self.exp = exp
+        self.nonce = nonce
+        self.vp = vp
+    }
+
+    // Custom encoding to handle [String: Any] in vp
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(iss, forKey: .iss)
+        try container.encodeIfPresent(jti, forKey: .jti)
+        try container.encodeIfPresent(aud, forKey: .aud)
+        try container.encodeIfPresent(nbf, forKey: .nbf)
+        try container.encodeIfPresent(iat, forKey: .iat)
+        try container.encodeIfPresent(exp, forKey: .exp)
+        try container.encodeIfPresent(nonce, forKey: .nonce)
+
+        let vpData = try JSONSerialization.data(withJSONObject: vp, options: [])
+        let vpString = String(data: vpData, encoding: .utf8)
+        try container.encodeIfPresent(vpString, forKey: .vp)
+    }
+
+    // Custom decoding to handle [String: Any] in vp
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        iss = try container.decodeIfPresent(String.self, forKey: .iss)
+        jti = try container.decodeIfPresent(String.self, forKey: .jti)
+        aud = try container.decodeIfPresent(String.self, forKey: .aud)
+        nbf = try container.decodeIfPresent(Int64.self, forKey: .nbf)
+        iat = try container.decodeIfPresent(Int64.self, forKey: .iat)
+        exp = try container.decodeIfPresent(Int64.self, forKey: .exp)
+        nonce = try container.decodeIfPresent(String.self, forKey: .nonce)
+
+        let vpString = try container.decodeIfPresent(String.self, forKey: .vp)
+        if let vpString = vpString, let vpData = vpString.data(using: .utf8) {
+            vp =
+                (try JSONSerialization.jsonObject(with: vpData, options: []) as? [String: Any])
+                ?? [:]
+        }
+        else {
+            vp = [:]
+        }
+    }
 }
