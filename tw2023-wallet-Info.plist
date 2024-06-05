@@ -27,5 +27,17 @@
 	</array>
 	<key>LSMinimumSystemVersion</key>
 	<string>14.3.0</string>
+	<key>NSUbiquitousContainers</key>
+	<dict>
+		<key>iCloud.com.ownd-project</key>
+		<dict>
+			<key>NSUbiquitousContainerIsDocumentScopePublic</key>
+			<true/>
+			<key>NSUbiquitousContainerName</key>
+			<string>Ownd Wallet</string>
+			<key>NSUbiquitousContainerSupportedFolderLevels</key>
+			<string>any</string>
+		</dict>
+	</dict>
 </dict>
 </plist>
