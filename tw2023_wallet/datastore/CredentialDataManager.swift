@@ -103,6 +103,7 @@ extension Datastore_CredentialData {
                     let vcDict = tmp["vc"] as? [String: Any],
                     let credentialSubject = vcDict["credentialSubject"] as? [String: Any]
                 else {
+                    print("Credential Data Not Found")
                     return nil
                 }
                 var disclousre = [String: String]()
@@ -112,15 +113,14 @@ extension Datastore_CredentialData {
                 }
                 return disclousre
             default:
+                print("Usupported Credential Format: \(self.format)")
                 return nil
         }
     }
 
     private func getBackgroundImage() -> String? {
-        guard let metaData = self.parsedMetaData() else {
-            return nil
-        }
-        guard let supportedName = metaData.credentialsSupported.keys.first,  // todo: 1つめを前提としている
+        guard let metaData = self.parsedMetaData(),
+            let supportedName = metaData.credentialsSupported.keys.first,  // todo: 1つめを前提としている
             let supported = metaData.credentialsSupported[supportedName],
             let displays = supported.display,
             let firstDisplay = displays.first,  // todo: 1つめを前提としている
@@ -141,17 +141,17 @@ extension Datastore_CredentialData {
     }
 
     func toCredential() -> Credential? {
-        guard let metaData = self.parsedMetaData() else {
+        guard let metaData = self.parsedMetaData(),
+            let disclosure = self.getDisclosure()
+        else {
+            print("Unable to get metaData or disclosure")
             return nil
         }
+
         let issuer = metaData.credentialIssuer
         let display = metaData.display?.first
         let issuerName = display?.name ?? "Unknown Issuer"
         let iat = self.convertUnixTimestampToDate(unixTimestamp: self.iat)
-
-        guard let disclosure = getDisclosure() else {
-            return nil
-        }
 
         // 最低限のデータのみ詰めている。必要があれば追加する。
         let result = Credential(
@@ -162,7 +162,7 @@ extension Datastore_CredentialData {
             issuerDisplayName: issuerName,
             issuedAt: iat,
             backgroundImageUrl: getBackgroundImage(),
-            credentialType: CredentialType(rawValue: self.type)!,
+            credentialType: self.type,
             disclosure: disclosure,
             qrDisplay: self.generateQRDisplay(),
             metaData: metaData
@@ -173,7 +173,7 @@ extension Datastore_CredentialData {
 }
 
 extension CredentialDataEntity {
-    func toCredentialData() -> Datastore_CredentialData {
+    func toDatastore_CredentialData() -> Datastore_CredentialData {
         let helper = EncryptionHelper()
         var credentialData = Datastore_CredentialData()
         credentialData.id = self.id!
@@ -277,7 +277,7 @@ class CredentialDataManager {
             let credentialEntities = try context.fetch(fetchRequest)
 
             for credentialEntity in credentialEntities {
-                let credentialData = credentialEntity.toCredentialData()
+                let credentialData = credentialEntity.toDatastore_CredentialData()
                 credentials.append(credentialData)
             }
         }
@@ -297,7 +297,7 @@ class CredentialDataManager {
             let credentialEntities = try context.fetch(fetchRequest)
 
             if let credentialEntity = credentialEntities.first {
-                return credentialEntity.toCredentialData()
+                return credentialEntity.toDatastore_CredentialData()
             }
             else {
                 return nil

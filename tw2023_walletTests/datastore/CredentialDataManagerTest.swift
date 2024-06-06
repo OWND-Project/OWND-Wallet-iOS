@@ -165,4 +165,42 @@ class CredentialDataManagerTests: XCTestCase {
         XCTAssertEqual(retrievedCredential?.credential, testCredentialData.credential)
         // ... add more assertions for other properties
     }
+
+    func testToCredential() {
+
+        guard
+            let url = Bundle.main.url(
+                forResource: "credential_issuer_metadata_jwt_vc", withExtension: "json"),
+            let jsonData = try? Data(contentsOf: url)
+        else {
+            XCTFail("Cannot read credential_issuer_metadata.json")
+            return
+        }
+
+        var testCredentialData = Datastore_CredentialData()
+        testCredentialData.id = "1"
+        testCredentialData.format = "jwt_vc_json"
+        testCredentialData.credential =
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJ2YyI6eyJ0eXBlIjpbIlR5cGUxIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7Im5hbWUiOiJqaG9uIHNtaXRoIn19fQ.oJgBUQB_YHrRwMeXjpLPvdvuXEFNgFfnq6iJEa-Lapw"
+        testCredentialData.cNonce = "CNonce1"
+        testCredentialData.cNonceExpiresIn = 3600
+        testCredentialData.iss = "Iss1"
+        testCredentialData.iat = 1_638_290_000
+        testCredentialData.exp = 1_638_293_600
+        testCredentialData.type = "Type1"
+        testCredentialData.accessToken = "AccessToken1"
+        testCredentialData.credentialIssuerMetadata = String(decoding: jsonData, as: UTF8.self)
+        // Convert to Credential
+        let credential = testCredentialData.toCredential()
+
+        // Assert that the generated credential matches the input data
+        XCTAssertNotNil(credential)
+        XCTAssertEqual(credential?.id, testCredentialData.id)
+        XCTAssertEqual(credential?.format, testCredentialData.format)
+        XCTAssertEqual(credential?.payload, testCredentialData.credential)
+        XCTAssertEqual(credential?.credentialType, testCredentialData.type)
+        XCTAssertNotNil(credential?.disclosure)
+        // Additional assertions can be added as necessary to validate other parts of the Credential
+    }
+
 }

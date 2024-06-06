@@ -32,18 +32,22 @@ class VCIMetadataUtil {
     static func extractTypes(format: String, credential: String) throws -> [String] {
         var types: [String] = []
 
-        if format == "vc+sd-jwt" {
-            let jwt = divideSDJwt(sdJwt: credential).issuerSignedJwt
-            let decoded = try decodeJWTPayload(jwt: jwt)
-            let vct = decoded["vct"] as! String
-            types = [vct]
+        switch format {
+            case "vc+sd-jwt":
+                let jwt = divideSDJwt(sdJwt: credential).issuerSignedJwt
+                let decoded = try decodeJWTPayload(jwt: jwt)
+                let vct = decoded["vct"] as! String
+                types = [vct]
+            case "jwt_vc_json":
+                let decoded = try decodeJWTPayload(jwt: credential)
+                print(decoded)
+                let vc = decoded["vc"] as! [String: Any]
+                let typeList = vc["type"] as! [String]
+                types = typeList
+            default:
+                print("Unsupported Credential Format: \(format)")
         }
-        else if format == "jwt_vc_json" {
-            let decoded = try decodeJWTPayload(jwt: credential)
-            let vc = decoded["vc"] as! [String: Any]
-            let typeList = vc["type"] as! [String]
-            types = typeList
-        }
+
         return types
     }
 

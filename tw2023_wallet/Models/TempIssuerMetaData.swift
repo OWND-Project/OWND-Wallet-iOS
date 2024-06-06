@@ -13,7 +13,7 @@ struct TempIssuerMetaData: Codable {
     var issuerDisplayName: String
     var issuerDisplayLogoUrl: String?
     var credentialsSupportedDisplayName: String
-    var credentialType: CredentialType
+    var credentialType: String
     var displayNames: [String]
 
     var issuerDisplayLogoImage: AnyView? {
