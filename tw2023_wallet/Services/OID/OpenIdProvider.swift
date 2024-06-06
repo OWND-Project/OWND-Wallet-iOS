@@ -52,6 +52,7 @@ class OpenIdProvider {
     private var keyPair: KeyPair?  // for proof of posession for jwt_vc_json presentation
     private var secp256k1KeyPair: KeyPairData?  // for sub of id_token
     private var keyBinding: KeyBinding?
+    private var jwtVpJsonGenerator: JwtVpJsonGenerator?
     var authRequestProcessedData: ProcessedRequestData?
     var clientId: String?
     var responseType: String?
@@ -77,6 +78,10 @@ class OpenIdProvider {
         self.keyBinding = keyBinding
     }
 
+    func setJwtVpJsonGenerator(jwtVpJsonGenerator: JwtVpJsonGenerator) {
+        self.jwtVpJsonGenerator = jwtVpJsonGenerator
+    }
+
     func processSIOPRequest(_ url: String, using session: URLSession = URLSession.shared) async
         -> Result<ProcessedRequestData, AuthorizationRequestError>
     {
@@ -84,19 +89,6 @@ class OpenIdProvider {
         let processedRequestDataResult = await parseAndResolve(from: url)
         switch processedRequestDataResult {
             case .success(let processedRequestData):
-                if processedRequestData.requestIsSigned {
-                    print("verify request jwt")
-                    let jwt = processedRequestData.requestObjectJwt
-                    let clientMetadata = processedRequestData.clientMetadata
-                    let result = await verifyRequestObject(jwt: jwt, clientMetadata: clientMetadata)
-                    switch result {
-                        case .success:
-                            print("verify request jwt success")
-                        case .failure(let error):
-                            return .failure(error)
-                    }
-                }
-
                 let authRequest = processedRequestData.authorizationRequest
                 let requestObj = processedRequestData.requestObject
                 guard let _clientId = requestObj.clientId ?? authRequest.clientId else {
@@ -107,6 +99,28 @@ class OpenIdProvider {
                 clientId = _clientId
 
                 let clientScheme = requestObj.clientIdScheme ?? authRequest.clientIdScheme
+
+                if processedRequestData.requestIsSigned {
+                    if clientScheme == "x509_san_dns" {
+                        // TODO("extract certs")
+                        // TODO("verify jwt")
+                        // TODO("verify certs")
+                    }
+                    else {
+                        print("verify request jwt")
+                        let jwt = processedRequestData.requestObjectJwt
+                        let clientMetadata = processedRequestData.clientMetadata
+                        let result = await verifyRequestObject(
+                            jwt: jwt, clientMetadata: clientMetadata)
+                        switch result {
+                            case .success:
+                                print("verify request jwt success")
+                            case .failure(let error):
+                                return .failure(error)
+                        }
+                    }
+                }
+
                 if clientScheme == "redirect_uri" {
                     let responseUri = requestObj.responseUri ?? authRequest.responseUri
                     if clientId != responseUri {
@@ -352,7 +366,9 @@ class OpenIdProvider {
                         credential.id,
                         try createPresentationSubmissionJwtVc(
                             credential: credential,
-                            presentationDefinition: presentationDefinition
+                            presentationDefinition: presentationDefinition,
+                            clientId: clientId,
+                            nonce: nonce
                         )
                     )
 
@@ -487,7 +503,8 @@ class OpenIdProvider {
 
     func createPresentationSubmissionJwtVc(
         credential: SubmissionCredential,
-        presentationDefinition: PresentationDefinition
+        presentationDefinition: PresentationDefinition,
+        clientId: String, nonce: String
     ) throws -> (String, DescriptorMap, [DisclosedClaim], String?) {
         do {
             let (_, payload, _) = try JWTUtil.decodeJwt(jwt: credential.credential)
@@ -499,13 +516,19 @@ class OpenIdProvider {
                         id: credential.id, types: credential.types, name: key,
                         value: value as? String)
                 }
+                guard
+                    let vpToken = self.jwtVpJsonGenerator?.generateJwt(
+                        vcJwt: credential.credential, headerOptions: HeaderOptions(),
+                        payloadOptions: JwtVpJsonPayloadOptions(aud: clientId, nonce: nonce))
+                else {
+                    throw OpenIdProviderIllegalInputException.illegalCredentialInput
+                }
+
+                let descriptorMap = JwtVpJsonPresentation.genDescriptorMap(
+                    inputDescriptorId: credential.inputDescriptor.id)
                 return (
-                    credential.credential,
-                    DescriptorMap(
-                        id: credential.inputDescriptor.id,
-                        format: credential.format,
-                        path: "$",
-                        pathNested: nil),
+                    vpToken,
+                    descriptorMap,
                     disclosedClaims,
                     nil
                 )
@@ -515,6 +538,7 @@ class OpenIdProvider {
             }
         }
         catch {
+            print("Error: \(error)")
             throw error
         }
     }
@@ -754,6 +778,13 @@ protocol KeyBinding {
         throws -> String
 }
 
+protocol JwtVpJsonGenerator {
+    func generateJwt(
+        vcJwt: String, headerOptions: HeaderOptions, payloadOptions: JwtVpJsonPayloadOptions
+    ) -> String
+    func getJwk() -> [String: String]
+}
+
 struct SIOPLoginResponseData: Decodable {
     let Location: String
 }
@@ -762,4 +793,65 @@ struct PostResult: Decodable {
     let statusCode: Int
     let location: String?
     let cookies: [String]?
+}
+
+struct HeaderOptions: Codable {
+    var alg: String = "ES256"
+    var typ: String = "JWT"
+    var jwk: String? = nil
+}
+
+struct JwtVpJsonPayloadOptions: Codable {
+    var iss: String? = nil
+    var jti: String? = nil
+    var aud: String
+    var nbf: Int64? = nil
+    var iat: Int64? = nil
+    var exp: Int64? = nil
+    var nonce: String
+}
+
+struct VpJwtPayload {
+    var iss: String?
+    var jti: String?
+    var aud: String?
+    var nbf: Int64?
+    var iat: Int64?
+    var exp: Int64?
+    var nonce: String?
+    var vp: [String: Any]
+
+    enum CodingKeys: String, CodingKey {
+        case iss, jti, aud, nbf, iat, exp, nonce, vp
+    }
+
+    init(
+        iss: String?, jti: String?, aud: String?, nbf: Int64?, iat: Int64?, exp: Int64?,
+        nonce: String?, vp: [String: Any]
+    ) {
+        self.iss = iss
+        self.jti = jti
+        self.aud = aud
+        self.nbf = nbf
+        self.iat = iat
+        self.exp = exp
+        self.nonce = nonce
+        self.vp = vp
+    }
+
+
+    // 手動で辞書を構築し、エンコードするメソッド
+    func toDictionary() -> [String: Any] {
+        var dict: [String: Any] = [:]
+        if let iss = iss { dict["iss"] = iss }
+        if let jti = jti { dict["jti"] = jti }
+        if let aud = aud { dict["aud"] = aud }
+        if let nbf = nbf { dict["nbf"] = nbf }
+        if let iat = iat { dict["iat"] = iat }
+        if let exp = exp { dict["exp"] = exp }
+        if let nonce = nonce { dict["nonce"] = nonce }
+        dict["vp"] = vp
+
+        return dict
+    }
 }

@@ -117,6 +117,9 @@
 		8B81E3092B35BAB200ED3B4E /* SharingRequestViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B81E3082B35BAB200ED3B4E /* SharingRequestViewModel.swift */; };
 		8B91B1542B6B9F3C00A1AA1A /* ScreensOnFullScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B91B1532B6B9F3C00A1AA1A /* ScreensOnFullScreen.swift */; };
 		8B91B1562B6BBBAC00A1AA1A /* CredentialListForSharing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B91B1552B6BBBAC00A1AA1A /* CredentialListForSharing.swift */; };
+		8BAB8D8A2C0F128100B579A4 /* JwtVpJsonGeneratorImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAB8D892C0F128100B579A4 /* JwtVpJsonGeneratorImpl.swift */; };
+		8BAB8D8B2C0F128100B579A4 /* JwtVpJsonGeneratorImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAB8D892C0F128100B579A4 /* JwtVpJsonGeneratorImpl.swift */; };
+		8BAB8D8C2C10045300B579A4 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89463E02B555C910069EF21 /* Constants.swift */; };
 		8BAD97B92B831F6300B60358 /* BackupModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAD97B82B831F6300B60358 /* BackupModel.swift */; };
 		8BB2BA742B4BC46400C668BA /* BiometricAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BB2BA732B4BC46400C668BA /* BiometricAuth.swift */; };
 		8BB2BA752B4BC46400C668BA /* BiometricAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BB2BA732B4BC46400C668BA /* BiometricAuth.swift */; };
@@ -343,6 +346,7 @@
 		8B81E3082B35BAB200ED3B4E /* SharingRequestViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingRequestViewModel.swift; sourceTree = "<group>"; };
 		8B91B1532B6B9F3C00A1AA1A /* ScreensOnFullScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreensOnFullScreen.swift; sourceTree = "<group>"; };
 		8B91B1552B6BBBAC00A1AA1A /* CredentialListForSharing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CredentialListForSharing.swift; sourceTree = "<group>"; };
+		8BAB8D892C0F128100B579A4 /* JwtVpJsonGeneratorImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JwtVpJsonGeneratorImpl.swift; sourceTree = "<group>"; };
 		8BAD97B82B831F6300B60358 /* BackupModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupModel.swift; sourceTree = "<group>"; };
 		8BB2BA732B4BC46400C668BA /* BiometricAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricAuth.swift; sourceTree = "<group>"; };
 		8BB2BA782B4BC95700C668BA /* AuthenticationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationView.swift; sourceTree = "<group>"; };
@@ -548,6 +552,7 @@
 				8B6C3B832B45082A00B5D784 /* OpenIdProvider.swift */,
 				8B5C65942B5237C200D72289 /* Types.swift */,
 				8B5C65972B5251C000D72289 /* KeyBindingImpl.swift */,
+				8BAB8D892C0F128100B579A4 /* JwtVpJsonGeneratorImpl.swift */,
 			);
 			path = OID;
 			sourceTree = "<group>";
@@ -1385,6 +1390,7 @@
 				F6A239A92B4E3A4600B09F17 /* SharingRequesModel.swift in Sources */,
 				8B5C659E2B552C2700D72289 /* VerificationArgs.swift in Sources */,
 				F6CC76952B567C1100FA26A8 /* QRReaderView.swift in Sources */,
+				8BAB8D8A2C0F128100B579A4 /* JwtVpJsonGeneratorImpl.swift in Sources */,
 				8B81E2CF2B33D8AB00ED3B4E /* Setting.swift in Sources */,
 				A8C810442B82042300CF8CD6 /* SharingToRow.swift in Sources */,
 				A89297542B3AA151007315BE /* ZipUtil.swift in Sources */,
@@ -1527,7 +1533,9 @@
 				8B81E2AE2B33CC4300ED3B4E /* tw2023_walletTests.swift in Sources */,
 				A810871E2B3BC9DF004425DE /* ES256KTest.swift in Sources */,
 				8B297C382B3953D700D2998D /* VCIMetadata.swift in Sources */,
+				8BAB8D8B2C0F128100B579A4 /* JwtVpJsonGeneratorImpl.swift in Sources */,
 				8B297C372B39538500D2998D /* VCIMetadataTests.swift in Sources */,
+				8BAB8D8C2C10045300B579A4 /* Constants.swift in Sources */,
 				8B6C3B872B47BED600B5D784 /* OpenIdProviderTests.swift in Sources */,
 				8B0E0A982B3BC39C0080F6A3 /* KeyRing.swift in Sources */,
 				8BB2BA7D2B4C08D900C668BA /* EncryptionHelper.swift in Sources */,

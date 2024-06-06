@@ -182,6 +182,94 @@ final class OpenIdProviderTests: XCTestCase {
         XCTAssertEqual(disclosedClaims[0].name, "claim1")
     }
 
+    func testCreatePresentationSubmissionJwtVpJson() throws {
+
+        let tag = "jwt_signing_key"
+        XCTAssertNoThrow(try! KeyPairUtil.generateSignVerifyKeyPair(alias: tag))
+        let (_, publicKey) = KeyPairUtil.getKeyPair(alias: tag)!
+
+        let header = [
+            "typ": "JWT",
+            "alg": "ES256",
+        ]
+        let credentialSubject: [String: String] = ["claim1": "foo"]
+        let vc: [String: Any] = ["credentialSubject": credentialSubject]
+        let payload: [String: Any] = ["vc": vc]
+
+        let vcJwt = try! JWTUtil.sign(keyAlias: tag, header: header, payload: payload)
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        let presentationDefinition = try decoder.decode(
+            PresentationDefinition.self, from: presentationDefinition1.data(using: .utf8)!)
+
+        let credential = SubmissionCredential(
+            id: "internal-id-1", format: "jwt_vp_json", types: [], credential: vcJwt,
+            inputDescriptor: presentationDefinition.inputDescriptors[0])
+        let idProvider = OpenIdProvider(ProviderOption())
+
+        try KeyPairUtil.generateSignVerifyKeyPair(
+            alias: Constants.Cryptography.KEY_PAIR_ALIAS_FOR_KEY_JWT_VP_JSON)
+        let jwtVpJsonGenerator = JwtVpJsonGeneratorImpl(
+            keyAlias: Constants.Cryptography.KEY_PAIR_ALIAS_FOR_KEY_JWT_VP_JSON)
+        idProvider.setJwtVpJsonGenerator(jwtVpJsonGenerator: jwtVpJsonGenerator)
+
+        let presentationSubmission = try idProvider.createPresentationSubmissionJwtVc(
+            credential: credential,
+            presentationDefinition: presentationDefinition,
+            clientId: "https://rp.example.com",
+            nonce: "dummy-nonce"
+        )
+        let (vpToken, descriptorMap, disclosedClaims, _) = presentationSubmission
+        do {
+            let decodedJwt = try JWTUtil.decodeJwt(jwt: vpToken)
+            let jwk = decodedJwt.0["jwk"]
+            //            let payload = decodedJwt.1
+            let publicKey = try! KeyPairUtil.createPublicKey(jwk: jwk as! [String: String])
+            let result = JWTUtil.verifyJwt(jwt: vpToken, publicKey: publicKey)
+            switch result {
+                case .success(let verifiedJwt):
+                    let decodedPayload = verifiedJwt.body
+                    let vp = decodedPayload["vp"]
+                    XCTAssertNotNil(vp, "vp should not be nil")
+                    if let vpObject = vp as? [String: Any] {
+                        let verifiableCredential = vpObject["verifiableCredential"]
+                        if let vpArray = verifiableCredential as? [String] {
+                            // アサート: vpの件数が1件であること
+                            XCTAssertEqual(
+                                vpArray.count, 1, "vp array should contain exactly one element")
+                            //
+                            let jwtVc = vpArray[0]
+                            let decodedJwtVc = try JWTUtil.decodeJwt(jwt: jwtVc)
+                            print(decodedJwtVc.1)
+                            let vc = decodedJwtVc.1["vc"] as? [String: Any]
+                            let credentialSubject = vc!["credentialSubject"] as? [String: String]
+                            XCTAssertEqual(credentialSubject!["claim1"], "foo")
+                        }
+                        else {
+                            XCTFail("vp should be an array of dictionaries")
+                        }
+                    }
+                    else {
+                        XCTFail("vp should be an dictionaries")
+                    }
+                case .failure(let error):
+                    print(error)
+                    XCTFail("Error verify vp_token: \(error)")
+            }
+        }
+        catch {
+            XCTFail("Error generating JWT: \(error)")
+        }
+        XCTAssertEqual(descriptorMap.format, "jwt_vp_json")
+        XCTAssertEqual(descriptorMap.path, "$")
+        XCTAssertEqual(descriptorMap.pathNested?.format, "jwt_vc_json")
+        XCTAssertEqual(descriptorMap.pathNested?.path, "$.vp.verifiableCredential[0]")
+        XCTAssertEqual(disclosedClaims.count, 1)
+        XCTAssertEqual(disclosedClaims[0].id, "internal-id-1")
+        XCTAssertEqual(disclosedClaims[0].name, "claim1")
+        XCTAssertEqual(disclosedClaims[0].value, "foo")
+    }
+
     func testRespondVPResponseDirectPost() throws {
         // mock up
         decodeDisclosureFunction = mockDecodeDisclosure2Records

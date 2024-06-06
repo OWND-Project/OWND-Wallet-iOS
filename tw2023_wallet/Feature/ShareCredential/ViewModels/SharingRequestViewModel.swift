@@ -252,6 +252,10 @@ class SharingRequestViewModel {
         let keyBinding = KeyBindingImpl(keyAlias: Constants.Cryptography.KEY_BINDING)
         openIdProvider.setKeyBinding(keyBinding: keyBinding)
 
+        let jwtVpJsonGenerator = JwtVpJsonGeneratorImpl(
+            keyAlias: Constants.Cryptography.KEY_PAIR_ALIAS_FOR_KEY_JWT_VP_JSON)
+        openIdProvider.setJwtVpJsonGenerator(jwtVpJsonGenerator: jwtVpJsonGenerator)
+
         let delegate = NoRedirectDelegate()
         let configuration = URLSessionConfiguration.default
         let session = URLSession(
