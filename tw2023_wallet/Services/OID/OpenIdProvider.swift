@@ -89,19 +89,6 @@ class OpenIdProvider {
         let processedRequestDataResult = await parseAndResolve(from: url)
         switch processedRequestDataResult {
             case .success(let processedRequestData):
-                if processedRequestData.requestIsSigned {
-                    print("verify request jwt")
-                    let jwt = processedRequestData.requestObjectJwt
-                    let clientMetadata = processedRequestData.clientMetadata
-                    let result = await verifyRequestObject(jwt: jwt, clientMetadata: clientMetadata)
-                    switch result {
-                        case .success:
-                            print("verify request jwt success")
-                        case .failure(let error):
-                            return .failure(error)
-                    }
-                }
-
                 let authRequest = processedRequestData.authorizationRequest
                 let requestObj = processedRequestData.requestObject
                 guard let _clientId = requestObj.clientId ?? authRequest.clientId else {
@@ -112,6 +99,28 @@ class OpenIdProvider {
                 clientId = _clientId
 
                 let clientScheme = requestObj.clientIdScheme ?? authRequest.clientIdScheme
+
+                if processedRequestData.requestIsSigned {
+                    if clientScheme == "x509_san_dns" {
+                        // TODO("extract certs")
+                        // TODO("verify jwt")
+                        // TODO("verify certs")
+                    }
+                    else {
+                        print("verify request jwt")
+                        let jwt = processedRequestData.requestObjectJwt
+                        let clientMetadata = processedRequestData.clientMetadata
+                        let result = await verifyRequestObject(
+                            jwt: jwt, clientMetadata: clientMetadata)
+                        switch result {
+                            case .success:
+                                print("verify request jwt success")
+                            case .failure(let error):
+                                return .failure(error)
+                        }
+                    }
+                }
+
                 if clientScheme == "redirect_uri" {
                     let responseUri = requestObj.responseUri ?? authRequest.responseUri
                     if clientId != responseUri {
@@ -802,7 +811,7 @@ struct JwtVpJsonPayloadOptions: Codable {
     var nonce: String
 }
 
-struct VpJwtPayload: Codable {
+struct VpJwtPayload {
     var iss: String?
     var jti: String?
     var aud: String?
@@ -830,41 +839,19 @@ struct VpJwtPayload: Codable {
         self.vp = vp
     }
 
-    // Custom encoding to handle [String: Any] in vp
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encodeIfPresent(iss, forKey: .iss)
-        try container.encodeIfPresent(jti, forKey: .jti)
-        try container.encodeIfPresent(aud, forKey: .aud)
-        try container.encodeIfPresent(nbf, forKey: .nbf)
-        try container.encodeIfPresent(iat, forKey: .iat)
-        try container.encodeIfPresent(exp, forKey: .exp)
-        try container.encodeIfPresent(nonce, forKey: .nonce)
 
-        let vpData = try JSONSerialization.data(withJSONObject: vp, options: [])
-        let vpString = String(data: vpData, encoding: .utf8)
-        try container.encodeIfPresent(vpString, forKey: .vp)
-    }
+    // 手動で辞書を構築し、エンコードするメソッド
+    func toDictionary() -> [String: Any] {
+        var dict: [String: Any] = [:]
+        if let iss = iss { dict["iss"] = iss }
+        if let jti = jti { dict["jti"] = jti }
+        if let aud = aud { dict["aud"] = aud }
+        if let nbf = nbf { dict["nbf"] = nbf }
+        if let iat = iat { dict["iat"] = iat }
+        if let exp = exp { dict["exp"] = exp }
+        if let nonce = nonce { dict["nonce"] = nonce }
+        dict["vp"] = vp
 
-    // Custom decoding to handle [String: Any] in vp
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        iss = try container.decodeIfPresent(String.self, forKey: .iss)
-        jti = try container.decodeIfPresent(String.self, forKey: .jti)
-        aud = try container.decodeIfPresent(String.self, forKey: .aud)
-        nbf = try container.decodeIfPresent(Int64.self, forKey: .nbf)
-        iat = try container.decodeIfPresent(Int64.self, forKey: .iat)
-        exp = try container.decodeIfPresent(Int64.self, forKey: .exp)
-        nonce = try container.decodeIfPresent(String.self, forKey: .nonce)
-
-        let vpString = try container.decodeIfPresent(String.self, forKey: .vp)
-        if let vpString = vpString, let vpData = vpString.data(using: .utf8) {
-            vp =
-                (try JSONSerialization.jsonObject(with: vpData, options: []) as? [String: Any])
-                ?? [:]
-        }
-        else {
-            vp = [:]
-        }
+        return dict
     }
 }

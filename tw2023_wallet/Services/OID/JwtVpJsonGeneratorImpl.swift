@@ -40,15 +40,7 @@ class JwtVpJsonGeneratorImpl: JwtVpJsonGenerator {
             nonce: payloadOptions.nonce,
             vp: vpClaims
         )
-
-        let encoder = JSONEncoder()
-        guard let vpTokenPayloadData = try? encoder.encode(jwtPayload),
-            let vpTokenPayload = try? JSONSerialization.jsonObject(with: vpTokenPayloadData)
-                as? [String: Any]
-        else {
-            fatalError("Failed to encode jwtPayload")
-        }
-
+        let vpTokenPayload = jwtPayload.toDictionary()
         do {
             return try JWTUtil.sign(keyAlias: keyAlias, header: header, payload: vpTokenPayload)
         }
