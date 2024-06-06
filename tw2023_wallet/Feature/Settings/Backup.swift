@@ -30,10 +30,13 @@ struct Backup: View {
                     let now = Date()
                     let formatter = DateFormatterFactory.gmtDateFormatter(withoutTime: true)
                     defaultFileName = "owned_wallet_\(formatter.string(from: now))"
-                    if let backupData = viewModel.generateBackupData() {
+                    if let backupData = viewModel.generateBackupData(), backupData.count > 0 {
                         zipData = backupData
+                        isExporting = true
+                    }else{
+                        showAlert = true
+                        alertTitle = String(localized: "unable_to_create_backup_data")
                     }
-                    isExporting = true
                 }
             )
             .padding(.horizontal, 16)
