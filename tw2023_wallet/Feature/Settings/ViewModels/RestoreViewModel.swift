@@ -7,23 +7,23 @@
 
 import Foundation
 
-
 func loadFile(at url: URL) -> Data? {
     do {
         if url.startAccessingSecurityScopedResource() {
-            defer { url.stopAccessingSecurityScopedResource() } // 終了時にアクセス権を解放
+            defer { url.stopAccessingSecurityScopedResource() }  // 終了時にアクセス権を解放
 
             let data = try Data(contentsOf: url)
             return data
-        } else {
+        }
+        else {
             print("Security scoped resource could not be accessed.")
         }
-    } catch {
+    }
+    catch {
         print("Unable to load the file: \(error)")
     }
     return nil
 }
-
 
 @Observable
 class RestoreViewModel {

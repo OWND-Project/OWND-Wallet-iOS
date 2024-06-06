@@ -69,7 +69,6 @@ class ZipUtil {
         try fileManager.createDirectory(
             at: tempDirectoryURL, withIntermediateDirectories: true, attributes: nil)
 
-        
         let tempFileName = "tempZipFile.zip"
         // 一時ZIPファイルのパスを生成
         let tempZipFilePath = tempDirectoryURL.appendingPathComponent(tempFileName)
@@ -85,7 +84,8 @@ class ZipUtil {
         let unzippedFiles = try fileManager.contentsOfDirectory(
             at: tempDirectoryURL, includingPropertiesForKeys: nil, options: [])
 
-        if let targetFileURL = unzippedFiles.first(where: { $0.lastPathComponent != tempFileName }){
+        if let targetFileURL = unzippedFiles.first(where: { $0.lastPathComponent != tempFileName })
+        {
             let content = try String(contentsOf: targetFileURL, encoding: .utf8)
             return content
         }

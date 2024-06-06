@@ -33,7 +33,8 @@ struct Backup: View {
                     if let backupData = viewModel.generateBackupData(), backupData.count > 0 {
                         zipData = backupData
                         isExporting = true
-                    }else{
+                    }
+                    else {
                         showAlert = true
                         alertTitle = String(localized: "unable_to_create_backup_data")
                     }
