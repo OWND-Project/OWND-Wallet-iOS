@@ -7,24 +7,6 @@
 
 import Foundation
 
-func loadFile(at url: URL) -> Data? {
-    do {
-        if url.startAccessingSecurityScopedResource() {
-            defer { url.stopAccessingSecurityScopedResource() }  // 終了時にアクセス権を解放
-
-            let data = try Data(contentsOf: url)
-            return data
-        }
-        else {
-            print("Security scoped resource could not be accessed.")
-        }
-    }
-    catch {
-        print("Unable to load the file: \(error)")
-    }
-    return nil
-}
-
 @Observable
 class RestoreViewModel {
 
@@ -44,8 +26,7 @@ class RestoreViewModel {
             return .failure(RestoreError.invalidBackupFile)
         }
 
-        let decoder = JSONDecoder()
-        guard let decodedData = try? decoder.decode(BackupData.self, from: jsonData) else {
+        guard let decodedData = decodeJsonAsBackupModel(jsonData: jsonData) else {
             return .failure(RestoreError.invalidBackupFile)
         }
 
