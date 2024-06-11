@@ -15,7 +15,7 @@ class RestoreViewModel {
         guard let url = importedDocumentUrl else {
             return .failure(ApplicatoinError.illegalState(message: "url is not selected"))
         }
-        guard let contents = try? Data(contentsOf: url) else {
+        guard let contents = loadFile(at: url) else {
             return .failure(RestoreError.invalidBackupFile)
         }
 
@@ -26,8 +26,7 @@ class RestoreViewModel {
             return .failure(RestoreError.invalidBackupFile)
         }
 
-        let decoder = JSONDecoder()
-        guard let decodedData = try? decoder.decode(BackupData.self, from: jsonData) else {
+        guard let decodedData = decodeJsonAsBackupModel(jsonData: jsonData) else {
             return .failure(RestoreError.invalidBackupFile)
         }
 

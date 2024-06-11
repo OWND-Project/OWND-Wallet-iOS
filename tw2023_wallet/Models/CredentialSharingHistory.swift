@@ -101,3 +101,31 @@ struct CredentialSharingHistory: Codable, Hashable, History {
         return ImageLoader.loadImage(from: logoUrl)
     }
 }
+
+// Old data model for backup.
+// See `BackupModel.swift`
+struct CredentialSharingHistoryV1: Codable, Hashable, History {
+    let rp: String
+    let accountIndex: Int
+    let createdAt: String
+    let credentialID: String
+    var claims: [String]
+    var rpName: String
+    var privacyPolicyUrl: String
+    var logoUrl: String
+
+    func convertToLatestVersion() -> CredentialSharingHistory {
+        return CredentialSharingHistory(
+            rp: rp,
+            accountIndex: accountIndex,
+            createdAt: createdAt,
+            credentialID: credentialID,
+            claims: claims.map {
+                ClaimInfo(claimKey: $0, claimValue: "")
+            },
+            rpName: rpName,
+            privacyPolicyUrl: privacyPolicyUrl,
+            logoUrl: logoUrl
+        )
+    }
+}

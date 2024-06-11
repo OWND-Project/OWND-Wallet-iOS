@@ -27,4 +27,39 @@ class ZipUtilTests: XCTestCase {
         XCTAssertEqual(
             decompressedString, inputString, "Decompressed string does not match original string")
     }
+
+    func testCreateZip() {
+        // テスト用のコンテンツを定義
+        let content = "Hello, World!"
+
+        // createZipメソッドを呼び出してZIPデータを生成
+        guard let zipData = ZipUtil.createZip(with: content) else {
+            XCTFail("ZIPデータの生成に失敗しました")
+            return
+        }
+
+        // ZIPデータがnilでないことを確認
+        XCTAssertNotNil(zipData, "ZIPデータはnilではありません")
+    }
+
+    func testUnzipAndReadContent() {
+        // テスト用のコンテンツを定義
+        let content = "Hello, World!"
+
+        // createZipメソッドを呼び出してZIPデータを生成
+        guard let zipData = ZipUtil.createZip(with: content) else {
+            XCTFail("ZIPデータの生成に失敗しました")
+            return
+        }
+
+        // unzipAndReadContentメソッドを呼び出して内容を確認
+        do {
+            let unzippedContent = try ZipUtil.unzipAndReadContent(from: zipData)
+            XCTAssertEqual(unzippedContent, content, "解凍されたコンテンツが一致しません")
+        }
+        catch {
+            XCTFail("解凍中にエラーが発生しました: \(error)")
+        }
+    }
+
 }

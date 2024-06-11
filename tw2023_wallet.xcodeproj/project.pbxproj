@@ -182,6 +182,8 @@
 		A89463E12B555C910069EF21 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89463E02B555C910069EF21 /* Constants.swift */; };
 		A8ADC6992BCE3CDA0077A0C4 /* IdTokenSharingHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8ADC6982BCE3CDA0077A0C4 /* IdTokenSharingHistory.swift */; };
 		A8ADC69B2BCEAD090077A0C4 /* idTokenSharingHistories.json in Resources */ = {isa = PBXBuildFile; fileRef = A8ADC69A2BCEAD090077A0C4 /* idTokenSharingHistories.json */; };
+		A8AF22882C12A59B00D6EDA5 /* RestoreHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8AF22872C12A59B00D6EDA5 /* RestoreHelper.swift */; };
+		A8AF228D2C12A6C100D6EDA5 /* RestoreHelperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8AF228C2C12A6C100D6EDA5 /* RestoreHelperTests.swift */; };
 		A8C810422B82042300CF8CD6 /* SharingToViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C8103C2B82042200CF8CD6 /* SharingToViewModel.swift */; };
 		A8C810432B82042300CF8CD6 /* SharingToModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C8103E2B82042200CF8CD6 /* SharingToModel.swift */; };
 		A8C810442B82042300CF8CD6 /* SharingToRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C810402B82042200CF8CD6 /* SharingToRow.swift */; };
@@ -393,6 +395,8 @@
 		A89463E02B555C910069EF21 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		A8ADC6982BCE3CDA0077A0C4 /* IdTokenSharingHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdTokenSharingHistory.swift; sourceTree = "<group>"; };
 		A8ADC69A2BCEAD090077A0C4 /* idTokenSharingHistories.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = idTokenSharingHistories.json; sourceTree = "<group>"; };
+		A8AF22872C12A59B00D6EDA5 /* RestoreHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreHelper.swift; sourceTree = "<group>"; };
+		A8AF228C2C12A6C100D6EDA5 /* RestoreHelperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreHelperTests.swift; sourceTree = "<group>"; };
 		A8C810382B80951800CF8CD6 /* SharingToRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingToRow.swift; sourceTree = "<group>"; };
 		A8C8103C2B82042200CF8CD6 /* SharingToViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharingToViewModel.swift; sourceTree = "<group>"; };
 		A8C8103E2B82042200CF8CD6 /* SharingToModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharingToModel.swift; sourceTree = "<group>"; };
@@ -658,6 +662,7 @@
 		8B81E2AC2B33CC4300ED3B4E /* tw2023_walletTests */ = {
 			isa = PBXGroup;
 			children = (
+				A8AF22892C12A61E00D6EDA5 /* Helper */,
 				A84AB6BF2B4F725000E8C88B /* datastore */,
 				A83039B62B4E4229004139A7 /* Utils */,
 				A810871C2B3BC998004425DE /* Signature */,
@@ -672,7 +677,6 @@
 				8B0E0AA82B3ED7D20080F6A3 /* AuthorizationRquestTests.swift */,
 				8B6C3B862B47BED600B5D784 /* OpenIdProviderTests.swift */,
 				8B6C3B882B481BEC00B5D784 /* VCIMetadataUtilTests.swift */,
-				8BB2BA7E2B4C188E00C668BA /* EncryptionHelperTests.swift */,
 			);
 			path = tw2023_walletTests;
 			sourceTree = "<group>";
@@ -910,6 +914,7 @@
 				8BB2BA7B2B4C08D900C668BA /* EncryptionHelper.swift */,
 				F6E0A01C2B400FAA00C2B541 /* ImageLoader.swift */,
 				F6CB1FAD2B68FB180078C857 /* DateFormatterUtil.swift */,
+				A8AF22872C12A59B00D6EDA5 /* RestoreHelper.swift */,
 			);
 			path = Helper;
 			sourceTree = "<group>";
@@ -980,6 +985,15 @@
 				8B80569E2B60E2FB009A87C8 /* PreferencesDataStore.swift */,
 			);
 			path = datastore;
+			sourceTree = "<group>";
+		};
+		A8AF22892C12A61E00D6EDA5 /* Helper */ = {
+			isa = PBXGroup;
+			children = (
+				8BB2BA7E2B4C188E00C668BA /* EncryptionHelperTests.swift */,
+				A8AF228C2C12A6C100D6EDA5 /* RestoreHelperTests.swift */,
+			);
+			path = Helper;
 			sourceTree = "<group>";
 		};
 		A8C8103A2B82042200CF8CD6 /* SharingTo */ = {
@@ -1454,6 +1468,7 @@
 				F6CB1FAE2B68FB180078C857 /* DateFormatterUtil.swift in Sources */,
 				8B81E29D2B33CC4000ED3B4E /* tw2023_walletApp.swift in Sources */,
 				8B81E2E92B3451DC00ED3B4E /* FloatingActionButton.swift in Sources */,
+				A8AF22882C12A59B00D6EDA5 /* RestoreHelper.swift in Sources */,
 				F6E0A0192B3FFE8C00C2B541 /* CredentialSubjectLow.swift in Sources */,
 				8B43AE342B3A81960016CF83 /* Enums.swift in Sources */,
 				F6EECE542B6B82DD00011E12 /* RecipientList.swift in Sources */,
@@ -1553,6 +1568,7 @@
 				8B4265982B57677600A07F2B /* SDJwtUtil.swift in Sources */,
 				8B80569D2B5F7815009A87C8 /* SharingCredentialArgs.swift in Sources */,
 				8B43AE302B3A5B2C0016CF83 /* MockURLProtocol.swift in Sources */,
+				A8AF228D2C12A6C100D6EDA5 /* RestoreHelperTests.swift in Sources */,
 				8B43AE352B3A81960016CF83 /* Enums.swift in Sources */,
 				A83039C12B4E4229004139A7 /* KeyPairUtilTest.swift in Sources */,
 				A83039BF2B4E4229004139A7 /* ZipUtilTest.swift in Sources */,
@@ -1748,7 +1764,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.1.5;
+				MARKETING_VERSION = 0.1.6;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.ownd-project";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1784,7 +1800,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.1.5;
+				MARKETING_VERSION = 0.1.6;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.ownd-project";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

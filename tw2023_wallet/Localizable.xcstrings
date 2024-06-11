@@ -10,9 +10,6 @@
     "#%@" : {
 
     },
-    "1" : {
-
-    },
     "2024/02/17" : {
 
     },
@@ -1705,6 +1702,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "全 %d 項目"
+          }
+        }
+      }
+    },
+    "unable_to_create_backup_data" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バックアップデータを作成できません"
           }
         }
       }
