@@ -277,43 +277,6 @@ func extractCertificateChain(url: String) -> ([X509Certificate?], [Data?]) {
     return (extractedCertificates, extractedDerCertificates)
 }
 
-func secKeyToP256PublicKey(secKey: SecKey) -> P256.Signing.PublicKey? {
-    // 公開鍵データをSecKeyから抽出
-    var error: Unmanaged<CFError>?
-    guard let publicKeyData = SecKeyCopyExternalRepresentation(secKey, &error) as Data? else {
-        print("Error extracting public key data: \(error!.takeRetainedValue() as Error)")
-        return nil
-    }
-
-    // 公開鍵データをP256.Signing.PublicKeyに変換
-    do {
-        let publicKey = try P256.Signing.PublicKey(rawRepresentation: publicKeyData)
-        return publicKey
-    }
-    catch {
-        print("Error creating P256.Signing.PublicKey: \(error)")
-        return nil
-    }
-}
-func secKeyToP256PrivateKey(secKey: SecKey) -> P256.Signing.PrivateKey? {
-    // 秘密鍵データをSecKeyから抽出
-    var error: Unmanaged<CFError>?
-    guard let privateKeyData = SecKeyCopyExternalRepresentation(secKey, &error) as Data? else {
-        print("Error extracting private key data: \(error!.takeRetainedValue() as Error)")
-        return nil
-    }
-
-    // 秘密鍵データをP256.Signing.PrivateKeyに変換
-    do {
-        let privateKey = try P256.Signing.PrivateKey(rawRepresentation: privateKeyData)
-        return privateKey
-    }
-    catch {
-        print("Error creating P256.Signing.PrivateKey: \(error)")
-        return nil
-    }
-}
-
 func createDistinguishedName(
     commonName: String, organizationName: String, localityName: String, stateOrProvinceName: String,
     countryName: String
