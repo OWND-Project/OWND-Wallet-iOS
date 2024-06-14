@@ -5,6 +5,7 @@
 //  Created by katsuyoshi ozaki on 2024/01/05.
 //
 
+import CryptoKit
 import Foundation
 
 enum KeyError: Error {
@@ -227,6 +228,14 @@ class KeyPairUtil {
                 print(error)
                 return false
         }
+    }
+
+    static func generateRandomP256KeyPair() -> (
+        privateKey: P256.Signing.PrivateKey, publicKey: P256.Signing.PublicKey
+    ) {
+        let privateKey = P256.Signing.PrivateKey()
+        let publicKey = privateKey.publicKey
+        return (privateKey, publicKey)
     }
 }
 

@@ -5,6 +5,7 @@
 //  Created by katsuyoshi ozaki on 2024/01/05.
 //
 
+import X509
 import XCTest
 
 @testable import tw2023_wallet
@@ -54,5 +55,92 @@ final class JWTUtilTest: XCTestCase {
         XCTAssertTrue(NSDictionary(dictionary: payload).isEqual(to: expectedPayload))
         XCTAssertEqual(signature, expectedSignature)
 
+    }
+
+    func testVerifyJwtByX5C() {
+        let subjectKey = KeyPairUtil.generateRandomP256KeyPair()
+        let issuerKey = KeyPairUtil.generateRandomP256KeyPair()
+
+        do {
+            let now = Date()
+            let notBefore = now
+            let notAfter = Calendar.current.date(byAdding: .year, value: 1, to: now)!
+
+            let subjectDistinguishedName = try createDistinguishedName(
+                commonName: "Example Subject",
+                organizationName: "Example Company A",
+                localityName: "City A",
+                stateOrProvinceName: "State A",
+                countryName: "Country A"
+            )
+
+            let issuerDistinguishdName = try createDistinguishedName(
+                commonName: "Example CA",
+                organizationName: "Example Company B",
+                localityName: "City B",
+                stateOrProvinceName: "State B",
+                countryName: "Country B"
+            )
+
+            let cert0 = generateCertificate(
+                subjectKey: Certificate.PublicKey(subjectKey.publicKey),
+                subjectDistinguishedName: subjectDistinguishedName,
+                issuerKey: Certificate.PrivateKey(issuerKey.privateKey),
+                issuerDistinguishedName: issuerDistinguishdName,
+                notBefore: notBefore, notAfter: notAfter,
+                isCa: false,
+                subjectAlternativeName: ["www.example.com", "api.example.com"]
+            )!
+            let pem0 = SignatureUtil.certificateToPem(certificate: cert0, withDelimiters: false)
+
+            let cert1 = generateCertificate(
+                subjectKey: Certificate.PublicKey(issuerKey.publicKey),
+                subjectDistinguishedName: issuerDistinguishdName,
+                issuerKey: Certificate.PrivateKey(issuerKey.privateKey),
+                issuerDistinguishedName: issuerDistinguishdName,
+                notBefore: notBefore, notAfter: notAfter,
+                isCa: true
+            )!
+
+            let pem1 = SignatureUtil.certificateToPem(certificate: cert1, withDelimiters: false)
+
+            let header: [String: Any] = [
+                "typ": "JWT",
+                "alg": "ES256",
+                "x5c": [pem0, pem1],
+            ]
+            let headerData = try! JSONSerialization.data(withJSONObject: header, options: [])
+            let headerBase64 = headerData.base64EncodedString()
+
+            let payload: [String: String] = [:]
+            let payloadData = try! JSONSerialization.data(withJSONObject: payload, options: [])
+            let payloadBase64 = payloadData.base64EncodedString()
+
+            let unsignedToken = "\(headerBase64).\(payloadBase64)"
+
+            let signature = try! subjectKey.privateKey.signature(for: Data(unsignedToken.utf8))
+            let signatureBase64 = signature.rawRepresentation.base64EncodedString()
+            // let signatureBase64 = signature.derRepresentation.base64EncodedString()
+            let jwt = "\(unsignedToken).\(signatureBase64)"
+
+            let verifyResult = JWTUtil.verifyJwtByX5C(jwt: jwt, verifyCertChain: false)
+
+            switch verifyResult {
+                case .success(let verifedX5CJwt):
+                    let (decoded, certificates) = verifedX5CJwt
+                    XCTAssertTrue(decoded.header["alg"] as! String == "ES256")
+                    if isDomainInSAN(certificate: certificates[0], domain: "www.example.com") {
+                        print("verify san entry success")
+                    }
+                    else {
+                        XCTFail("client_id is not in san entry")
+                    }
+                case .failure(let error):
+                    XCTFail("\(error)")
+            }
+        }
+        catch {
+            XCTFail()
+        }
     }
 }

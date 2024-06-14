@@ -6,6 +6,7 @@
 //
 
 import ASN1Decoder
+import CryptoKit
 import Foundation
 import Security
 import X509
@@ -274,4 +275,95 @@ func extractCertificateChain(url: String) -> ([X509Certificate?], [Data?]) {
     extractedDerCertificates = certificateHandler.derCertificateChainResult
 
     return (extractedCertificates, extractedDerCertificates)
+}
+
+func createDistinguishedName(
+    commonName: String, organizationName: String, localityName: String, stateOrProvinceName: String,
+    countryName: String
+) throws -> DistinguishedName {
+    let distinguishedName = try DistinguishedName {
+        CommonName(commonName)
+        OrganizationName(organizationName)
+        LocalityName(localityName)
+        StateOrProvinceName(stateOrProvinceName)
+        CountryName(countryName)
+    }
+    return distinguishedName
+}
+
+func generateCertificate(
+    subjectKey: Certificate.PublicKey,
+    subjectDistinguishedName: DistinguishedName,
+    issuerKey: Certificate.PrivateKey,
+    issuerDistinguishedName: DistinguishedName,
+    notBefore: Date,
+    notAfter: Date,
+    isCa: Bool,
+    subjectAlternativeName: [String] = []
+) -> Certificate? {
+    do {
+
+        let serialNumberValue = UInt64(Date().timeIntervalSince1970)
+        let serialNumber = Certificate.SerialNumber(serialNumberValue)
+
+        let ca =
+            if isCa {
+                BasicConstraints.isCertificateAuthority(maxPathLength: nil)
+            }
+            else {
+                BasicConstraints.notCertificateAuthority
+            }
+        let exKeyUsage = try ExtendedKeyUsage([.serverAuth, .clientAuth])
+        let san = SubjectAlternativeNames(subjectAlternativeName.map { .dnsName($0) })
+        let extentions = try Certificate.Extensions {
+            exKeyUsage
+            Critical(ca)
+            san
+        }
+
+        // https://swiftpackageindex.com/apple/swift-certificates/main/documentation/x509/certificate
+        let cert = try Certificate(
+            version: Certificate.Version.v3,
+            serialNumber: serialNumber,
+            publicKey: subjectKey,
+            notValidBefore: notBefore,
+            notValidAfter: notAfter,
+            issuer: issuerDistinguishedName,
+            subject: subjectDistinguishedName,
+            signatureAlgorithm: Certificate.SignatureAlgorithm.ecdsaWithSHA256,
+            extensions: extentions,
+            issuerPrivateKey: issuerKey
+        )
+        return cert
+    }
+    catch {
+        print("Error creating Certificate: \(error)")
+        return nil
+    }
+}
+
+func isDomainInSAN(certificate: Certificate, domain: String) -> Bool {
+    // SubjectAlternativeNames を取得
+    do {
+        guard let sanExtension = try certificate.extensions.subjectAlternativeNames else {
+            return false
+        }
+
+        // SAN のエントリをチェック
+        for name in sanExtension {
+            switch name {
+                case .dnsName(let sanDomain):
+                    if sanDomain == domain {
+                        return true
+                    }
+                default:
+                    continue
+            }
+        }
+
+        return false
+    }
+    catch {
+        return false
+    }
 }

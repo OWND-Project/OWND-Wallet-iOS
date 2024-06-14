@@ -93,12 +93,17 @@ enum SignatureUtil {
         return (d, publicKey)
     }
 
-    static func certificateToPem(certificate: Certificate) -> String {
+    static func certificateToPem(certificate: Certificate, withDelimiters: Bool = true) -> String {
         var serializer = DER.Serializer()
         try! serializer.serialize(certificate)
 
         let certInBase64 = Data(serializer.serializedBytes).base64EncodedString()
-        return addPrePostAmble(base64str: certInBase64)
+        if withDelimiters {
+            return addPrePostAmble(base64str: certInBase64)
+        }
+        else {
+            return certInBase64
+        }
     }
 
     static func generateCertificate(
@@ -184,7 +189,8 @@ enum SignatureUtil {
         return try Certificate(pemEncoded: pem)
     }
 
-    static func convertPemToX509Certificates(pemChain: String) throws -> [Certificate] {
+    static func convertPemWithDelimitersToX509Certificates(pemChain: String) throws -> [Certificate]
+    {
         let certWithGarbage =
             pemChain
             .trimmingCharacters(in: .whitespacesAndNewlines)
@@ -204,7 +210,11 @@ enum SignatureUtil {
                     )
             }
 
-        return cleaned.map {
+        return try! convertPemToX509Certificates(pemChain: cleaned)
+    }
+
+    static func convertPemToX509Certificates(pemChain: [String]) throws -> [Certificate] {
+        return pemChain.map {
             try! decodeBase64ToX509Certificate(base64str: $0)
         }
     }
@@ -254,7 +264,8 @@ enum SignatureUtil {
 
             if let data = data, let responseBody = String(data: data, encoding: .utf8) {
                 do {
-                    let certificates = try convertPemToX509Certificates(pemChain: responseBody)
+                    let certificates = try convertPemWithDelimitersToX509Certificates(
+                        pemChain: responseBody)
                     completion(certificates, nil)
                 }
                 catch {
@@ -358,6 +369,9 @@ enum SignatureUtil {
             return trustResult == .unspecified || trustResult == .proceed
         }
         else {
+            if let error = error {
+                print("\(String(describing: error))")
+            }
             return false
         }
     }
