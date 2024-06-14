@@ -28,12 +28,6 @@ class CertificateUtilTests: XCTestCase {
         // XCTAssertEqual(result?.country, expected.country)
     }
 
-    func generateRandomString(length: Int) -> String {
-        let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        let randomString = String((0..<length).map { _ in letters.randomElement()! })
-        return randomString
-    }
-
     func testGenerateCertificate() {
         let subjectKey = KeyPairUtil.generateRandomP256KeyPair()
         let publicKey = Certificate.PublicKey(subjectKey.publicKey)
