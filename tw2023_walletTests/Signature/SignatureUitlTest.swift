@@ -180,7 +180,8 @@ final class SignatureUitlTests: XCTestCase {
     }
 
     func testConvertPemToX509Certificates() {
-        let result = try! SignatureUtil.convertPemToX509Certificates(pemChain: fullChain)
+        let result = try! SignatureUtil.convertPemWithDelimitersToX509Certificates(
+            pemChain: fullChain)
         XCTAssertTrue(result.count == 4)
     }
 
@@ -316,7 +317,8 @@ final class SignatureUitlTests: XCTestCase {
             8qn0dNW44bOwgeThpWOjzOoEeJBuv/c=
             -----END CERTIFICATE-----
             """
-        let chain = try! SignatureUtil.convertPemToX509Certificates(pemChain: pemChain)
+        let chain = try! SignatureUtil.convertPemWithDelimitersToX509Certificates(
+            pemChain: pemChain)
         XCTAssertTrue(try! SignatureUtil.validateCertificateChain(certificates: chain))
     }
 }

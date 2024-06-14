@@ -6,9 +6,11 @@
 //
 
 import ASN1Decoder
+import CryptoKit
 import Foundation
 import JWTDecode
 import SwiftASN1
+import X509
 
 enum SignatureError: Error {
     case UnsupportedAlgorithmError
@@ -156,6 +158,59 @@ enum JWTUtil {
             return .failure(
                 JWTVerificationError.verificationFailed("result of SecKeyVerifySignature is false"))
         }
+    }
+
+    typealias VerifiedX5CJwt = (decoded: JWT, certs: [Certificate])
+    static func verifyJwtByX5C(jwt: String, verifyCertChain: Bool = true) -> Result<
+        VerifiedX5CJwt, JWTVerificationError
+    > {
+        guard let decodedJwt = try? decode(jwt: jwt) else {
+            return .failure(.verificationFailed("Unable to decode jwt"))
+        }
+
+        guard let x5c = decodedJwt.header["x5c"] as? [String] else {
+            return .failure(.verificationFailed("Unable to get x5c property"))
+        }
+        guard let certificates = try? SignatureUtil.convertPemToX509Certificates(pemChain: x5c)
+        else {
+            return .failure(.verificationFailed("Unable to convert x5c"))
+        }
+
+        let firstCert = certificates[0]
+        let subjectPublicKeyInfoBytes = firstCert.publicKey.subjectPublicKeyInfoBytes
+        let publicKeyData = Data(subjectPublicKeyInfoBytes)
+        // CFDataにキャスト
+        let publicKeyCFData = publicKeyData as CFData
+
+        var error: Unmanaged<CFError>?
+        guard
+            let secKey = SecKeyCreateWithData(
+                publicKeyCFData,
+                [
+                    kSecAttrKeyType: kSecAttrKeyTypeEC,
+                    kSecAttrKeyClass: kSecAttrKeyClassPublic,
+                ] as CFDictionary, &error)
+        else {
+            return .failure(.verificationFailed("Unable to Convert Public Key"))
+        }
+
+        let jwtValidation = JWTUtil.verifyJwt(jwt: jwt, publicKey: secKey)
+        if case .success = jwtValidation {
+            if verifyCertChain {
+                let chainValidaton = try! SignatureUtil.validateCertificateChain(
+                    certificates: certificates
+                )
+                if !chainValidaton {
+                    return .failure(.verificationFailed("Unable to verify chain of trust"))
+                }
+            }
+            else {
+                print("Skip ValidateCertificateChain!!!")
+            }
+            return .success((decodedJwt, certificates))
+        }
+
+        return .failure(.verificationFailed("Unable to verify jwt"))
     }
 
     static func verifyJwtByX5U(jwt: String) -> Result<JWT, JWTVerificationError> {

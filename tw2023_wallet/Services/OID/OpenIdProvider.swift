@@ -101,14 +101,61 @@ class OpenIdProvider {
                 let clientScheme = requestObj.clientIdScheme ?? authRequest.clientIdScheme
 
                 if processedRequestData.requestIsSigned {
+                    print("verify request jwt")
+                    let jwt = processedRequestData.requestObjectJwt
                     if clientScheme == "x509_san_dns" {
-                        // TODO("extract certs")
-                        // TODO("verify jwt")
-                        // TODO("verify certs")
+                        let result = JWTUtil.verifyJwtByX5C(jwt: jwt)
+                        switch result {
+                            case .success(let verifedX5CJwt):
+                                print("verify request jwt success")
+                                // https://openid.net/specs/openid-4-verifiable-presentations-1_0.html
+                                /*
+                            the Client Identifier MUST be a DNS name and match a dNSName Subject Alternative Name (SAN) [RFC5280] entry in the leaf certificate passed with the request.
+                             */
+                                let (decoded, certificates) = verifedX5CJwt
+                                if isDomainInSAN(certificate: certificates[0], domain: _clientId) {
+                                    print("verify san entry success")
+                                }
+                                else {
+                                    return .failure(
+                                        .authRequestInputError(
+                                            reason: .compliantError(
+                                                reason: "Invalid client_id not in san entry of cert"
+                                            )
+                                        ))
+                                }
+
+                                if let urlString = requestObj.responseUri ?? requestObj.redirectUri,
+                                    let url = URL(string: urlString)
+                                {
+                                    if let clientUrl = URL(string: _clientId),
+                                        let urlHost = url.host, let clientIdHost = clientUrl.host,
+                                        urlHost == clientIdHost
+                                    {
+
+                                        print("verify client_id and url success")
+                                    }
+                                    else {
+                                        return .failure(
+                                            .authRequestInputError(
+                                                reason: .compliantError(
+                                                    reason:
+                                                        "Invalid client_id or response_uri(redirect_uri)"
+                                                )
+                                            ))
+                                    }
+                                }
+
+                            case .failure(let error):
+                                print("\(error)")
+                                return .failure(
+                                    .authRequestInputError(
+                                        reason: .compliantError(
+                                            reason: "Invalid client_id or response_uri")
+                                    ))
+                        }
                     }
                     else {
-                        print("verify request jwt")
-                        let jwt = processedRequestData.requestObjectJwt
                         let clientMetadata = processedRequestData.clientMetadata
                         let result = await verifyRequestObject(
                             jwt: jwt, clientMetadata: clientMetadata)
@@ -838,7 +885,6 @@ struct VpJwtPayload {
         self.nonce = nonce
         self.vp = vp
     }
-
 
     // 手動で辞書を構築し、エンコードするメソッド
     func toDictionary() -> [String: Any] {

@@ -138,6 +138,7 @@
 		8BB513942B3BB69A00D4EFB3 /* AsynTestRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BB513932B3BB69A00D4EFB3 /* AsynTestRunner.swift */; };
 		8BB513972B3BB88900D4EFB3 /* VCIMetadataUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BB513962B3BB88900D4EFB3 /* VCIMetadataUtil.swift */; };
 		8BB513982B3BB88900D4EFB3 /* VCIMetadataUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BB513962B3BB88900D4EFB3 /* VCIMetadataUtil.swift */; };
+		8BEE638F2C19A48D00821543 /* CertificateUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = A892975A2B3AA81C007315BE /* CertificateUtil.swift */; };
 		8BF745992B4FF85F000F74A9 /* JOSESwift in Frameworks */ = {isa = PBXBuildFile; productRef = 8BF745982B4FF85F000F74A9 /* JOSESwift */; };
 		A81087142B3B0AB3004425DE /* SDJwtUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = A81087132B3B0AB3004425DE /* SDJwtUtil.swift */; };
 		A81087182B3BBA0C004425DE /* ES256K.swift in Sources */ = {isa = PBXBuildFile; fileRef = A81087172B3BBA0C004425DE /* ES256K.swift */; };
@@ -1556,6 +1557,7 @@
 				8B43AE322B3A5B880016CF83 /* VCIMetadataClientTests.swift in Sources */,
 				8B5C65912B515BC300D72289 /* JWTUtil.swift in Sources */,
 				A83039BE2B4E4229004139A7 /* CertificateUtilTest.swift in Sources */,
+				8BEE638F2C19A48D00821543 /* CertificateUtil.swift in Sources */,
 				A84AB70D2B50C2DD00E8C88B /* IdTokenSharingHistoryManagerTest.swift in Sources */,
 				8BB2BA7A2B4BC95700C668BA /* AuthenticationView.swift in Sources */,
 				8B5C659F2B552C2700D72289 /* VerificationArgs.swift in Sources */,
