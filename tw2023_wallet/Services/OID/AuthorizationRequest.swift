@@ -204,53 +204,90 @@ func processRequestObject(
 }
 
 func processClientMetadata(
-    _ authorizationRequest: AuthorizationRequestPayload, _ requestObject: RequestObjectPayload,
+    _ authorizationRequest: AuthorizationRequestPayload, _ requestObject: RequestObjectPayload?,
     using session: URLSession = URLSession.shared
 ) async throws -> RPRegistrationMetadataPayload {
 
-    if let clientMetadata = requestObject.clientMetadata ?? authorizationRequest.clientMetadata {
-        return clientMetadata
-    }
-    else {
-        let clientMetadataUri =
-            requestObject.clientMetadataUri ?? authorizationRequest.clientMetadataUri
-        if let uri = clientMetadataUri, let requestUri = URL(string: uri) {
-            let json = try await fetchJson(from: requestUri, using: session)
-            return try RPRegistrationMetadataPayload(from: json)
+    if let ro = requestObject {
+        if let clientMetadata = ro.clientMetadata {
+            return clientMetadata
         }
         else {
-            throw AuthorizationError.invalidClientMetadata
+            let clientMetadataUri = ro.clientMetadataUri
+            if let uri = clientMetadataUri, let requestUri = URL(string: uri) {
+                let json = try await fetchJson(from: requestUri, using: session)
+                return try RPRegistrationMetadataPayload(from: json)
+            }
+            else {
+                throw AuthorizationError.invalidClientMetadata
+            }
         }
+    }
+    else {
+        if let clientMetadata = authorizationRequest.clientMetadata {
+            return clientMetadata
+        }
+        else {
+            let clientMetadataUri = authorizationRequest.clientMetadataUri
+            if let uri = clientMetadataUri, let requestUri = URL(string: uri) {
+                let json = try await fetchJson(from: requestUri, using: session)
+                return try RPRegistrationMetadataPayload(from: json)
+            }
+            else {
+                throw AuthorizationError.invalidClientMetadata
+            }
+        }
+
     }
 }
 
 func processPresentationDefinition(
-    _ authorizationRequest: AuthorizationRequestPayload, _ requestObject: RequestObjectPayload,
+    _ authorizationRequest: AuthorizationRequestPayload, _ requestObject: RequestObjectPayload?,
     using session: URLSession = URLSession.shared
 ) async throws -> PresentationDefinition? {
 
-    if let presentationDefinition = requestObject.presentationDefinition
-        ?? authorizationRequest.presentationDefinition
-    {
-        return presentationDefinition
-    }
-    else {
-        let presentationDefinitionUri =
-            requestObject.presentationDefinitionUri
-            ?? authorizationRequest.presentationDefinitionUri
-        if let uri = presentationDefinitionUri, let requestUri = URL(string: uri) {
-            do {
-                let data = try await fetchData(from: requestUri, using: session)
-                let decoder = JSONDecoder()
-                decoder.keyDecodingStrategy = .convertFromSnakeCase
-                return try decoder.decode(PresentationDefinition.self, from: data)
-            }
-            catch {
-                throw AuthorizationError.invalidClientMetadata
-            }
+    if let ro = requestObject {
+        if let presentationDefinition = ro.presentationDefinition {
+            return presentationDefinition
         }
         else {
-            return nil
+            let presentationDefinitionUri = ro.presentationDefinitionUri
+            if let uri = presentationDefinitionUri, let requestUri = URL(string: uri) {
+                do {
+                    let data = try await fetchData(from: requestUri, using: session)
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    return try decoder.decode(PresentationDefinition.self, from: data)
+                }
+                catch {
+                    throw AuthorizationError.invalidClientMetadata
+                }
+            }
+            else {
+                return nil
+            }
+        }
+    }
+    else {
+        if let presentationDefinition = authorizationRequest.presentationDefinition {
+            return presentationDefinition
+        }
+        else {
+            let presentationDefinitionUri = authorizationRequest.presentationDefinitionUri
+            if let uri = presentationDefinitionUri, let requestUri = URL(string: uri) {
+                do {
+                    let data = try await fetchData(from: requestUri, using: session)
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    return try decoder.decode(PresentationDefinition.self, from: data)
+                }
+                catch {
+                    throw AuthorizationError.invalidClientMetadata
+                }
+            }
+            else {
+                return nil
+            }
         }
     }
 }
@@ -262,27 +299,33 @@ func parseAndResolve(from uri: String, using session: URLSession = URLSession.sh
         print("parse")
         let (_, authorizationRequest) = try parse(uri: uri)
 
-        print("process request object")
-        let (jwt, requestObject) = try await processRequestObject(
-            authorizationRequest, using: session)
-        print(requestObject)
+        var _jwt: String? = nil
+        var _requestObject: RequestObjectPayload? = nil
+        if authorizationRequest.request != nil || authorizationRequest.requestUri != nil {
+            print("process request object")
+            let (jwt, requestObject) = try await processRequestObject(
+                authorizationRequest, using: session)
+            print(requestObject)
+            _jwt = jwt
+            _requestObject = requestObject
+        }
 
         print("process client metadata")
         let clientMetadata = try await processClientMetadata(
-            authorizationRequest, requestObject, using: session)
+            authorizationRequest, _requestObject, using: session)
 
         print("process presentation definition")
         let presentationDefinition = try await processPresentationDefinition(
-            authorizationRequest, requestObject, using: session)
+            authorizationRequest, _requestObject, using: session)
 
         return .success(
             ProcessedRequestData(
                 authorizationRequest: authorizationRequest,
-                requestObjectJwt: jwt,
-                requestObject: requestObject,
+                requestObjectJwt: _jwt ?? "",
+                requestObject: _requestObject,
                 clientMetadata: clientMetadata,
                 presentationDefinition: presentationDefinition,
-                requestIsSigned: jwt.split(separator: ".").count == 3
+                requestIsSigned: _requestObject != nil
             )
         )
     }
@@ -300,7 +343,7 @@ func parseAndResolve(from uri: String, using session: URLSession = URLSession.sh
 struct ProcessedRequestData {
     var authorizationRequest: AuthorizationRequestPayload
     var requestObjectJwt: String
-    var requestObject: RequestObjectPayload
+    var requestObject: RequestObjectPayload?
     var clientMetadata: RPRegistrationMetadataPayload
     var presentationDefinition: PresentationDefinition?
     var requestIsSigned: Bool
