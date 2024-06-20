@@ -121,6 +121,83 @@ final class AuthorizationRquestTests: XCTestCase {
         }
     }
 
+    func testProcessClientMetadataFromQueryParameter() {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [MockURLProtocol.self]
+        let mockSession = URLSession(configuration: configuration)
+
+        let testURL = URL(string: "https://example.com/.well-known/client-metadata.json")!
+        guard let url = Bundle.main.url(forResource: "client_metadata", withExtension: "json"),
+            let mockData = try? Data(contentsOf: url)
+        else {
+            XCTFail("Cannot read client_metadata.json")
+            return
+        }
+        guard let jsonString = String(data: mockData, encoding: .utf8) else {
+            XCTFail("Failed to convert JSON data to string")
+            return
+        }
+
+        do {
+            let clientId = "https://client.com"
+            guard
+                let encodedClientId = clientId.addingPercentEncoding(
+                    withAllowedCharacters: .urlQueryAllowed)
+            else {
+                fatalError("Failed to encode clientId")
+            }
+            let uri =
+                "openid4vp:///vp/auth-request?client_id=\(encodedClientId)&client_metadata=\(jsonString)"
+            let (_, authorizationRequest) = try parse(uri: uri)
+
+            runAsyncTest {
+                do {
+                    let metadata = try await processClientMetadata(
+                        authorizationRequest, nil, using: mockSession)
+                    XCTAssertEqual(metadata.jwksUri, "https://example.com/jwks.json")
+                }
+                catch {
+                    XCTFail("Request should not fail")
+                }
+            }
+        }
+        catch {
+            XCTFail("\(error)")
+        }
+    }
+
+    func testProcessClientMetadataUriFromQueryParameter() {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [MockURLProtocol.self]
+        let mockSession = URLSession(configuration: configuration)
+
+        let testURL = URL(string: "https://example.com/.well-known/client-metadata.json")!
+        guard let url = Bundle.main.url(forResource: "client_metadata", withExtension: "json"),
+            let mockData = try? Data(contentsOf: url)
+        else {
+            XCTFail("Cannot read client_metadata.json")
+            return
+        }
+        let response = HTTPURLResponse(
+            url: url, statusCode: 200, httpVersion: nil, headerFields: nil)
+        MockURLProtocol.mockResponses[testURL.absoluteString] = (mockData, response)
+
+        let authorizationRequest = AuthorizationRequestPayloadImpl(
+            clientMetadataUri: testURL.absoluteString
+        )
+
+        runAsyncTest {
+            do {
+                let metadata = try await processClientMetadata(
+                    authorizationRequest, nil, using: mockSession)
+                XCTAssertEqual(metadata.jwksUri, "https://example.com/jwks.json")
+            }
+            catch {
+                XCTFail("Request should not fail")
+            }
+        }
+    }
+
     func testPresentationDefinition() {
         let configuration = URLSessionConfiguration.ephemeral
         configuration.protocolClasses = [MockURLProtocol.self]
@@ -150,6 +227,96 @@ final class AuthorizationRquestTests: XCTestCase {
             do {
                 let pdOptional = try await processPresentationDefinition(
                     authorizationRequest, requestObject, using: mockSession)
+                let pd = try XCTUnwrap(pdOptional, "PresentationDefinition should not be nil.")
+                XCTAssertEqual(pd.id, "12345")
+            }
+            catch {
+                XCTFail("Request should not fail. \(error)")
+            }
+        }
+    }
+
+    func testPresentationDefinitionFromQueryParameter() {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [MockURLProtocol.self]
+        let mockSession = URLSession(configuration: configuration)
+
+        let testURL = URL(string: "https://example.com/presentation_definition.json")!
+        guard
+            let url = Bundle.main.url(
+                forResource: "presentation_definition", withExtension: "json"),
+            let mockData = try? Data(contentsOf: url)
+        else {
+            XCTFail("Cannot read presentation_definition.json")
+            return
+        }
+        let response = HTTPURLResponse(
+            url: url, statusCode: 200, httpVersion: nil, headerFields: nil)
+        MockURLProtocol.mockResponses[testURL.absoluteString] = (mockData, response)
+
+        let authorizationRequest = AuthorizationRequestPayloadImpl(
+            presentationDefinitionUri: testURL.absoluteString
+        )
+        guard let jsonString = String(data: mockData, encoding: .utf8) else {
+            XCTFail("Failed to convert JSON data to string")
+            return
+        }
+
+        let clientId = "https://client.com"
+        guard
+            let encodedClientId = clientId.addingPercentEncoding(
+                withAllowedCharacters: .urlQueryAllowed)
+        else {
+            fatalError("Failed to encode clientId")
+        }
+        let uri =
+            "openid4vp:///vp/auth-request?client_id=\(encodedClientId)&presentation_definition=\(jsonString)"
+        do {
+            let (_, authorizationRequest) = try parse(uri: uri)
+
+            runAsyncTest {
+                do {
+                    let pdOptional = try await processPresentationDefinition(
+                        authorizationRequest, nil, using: mockSession)
+                    let pd = try XCTUnwrap(pdOptional, "PresentationDefinition should not be nil.")
+                    XCTAssertEqual(pd.id, "12345")
+                }
+                catch {
+                    XCTFail("Request should not fail. \(error)")
+                }
+            }
+        }
+        catch {
+            XCTFail("\(error)")
+        }
+    }
+
+    func testPresentationDefinitionUriFromQueryParameter() {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [MockURLProtocol.self]
+        let mockSession = URLSession(configuration: configuration)
+
+        let testURL = URL(string: "https://example.com/presentation_definition.json")!
+        guard
+            let url = Bundle.main.url(
+                forResource: "presentation_definition", withExtension: "json"),
+            let mockData = try? Data(contentsOf: url)
+        else {
+            XCTFail("Cannot read presentation_definition.json")
+            return
+        }
+        let response = HTTPURLResponse(
+            url: url, statusCode: 200, httpVersion: nil, headerFields: nil)
+        MockURLProtocol.mockResponses[testURL.absoluteString] = (mockData, response)
+
+        let authorizationRequest = AuthorizationRequestPayloadImpl(
+            presentationDefinitionUri: testURL.absoluteString
+        )
+
+        runAsyncTest {
+            do {
+                let pdOptional = try await processPresentationDefinition(
+                    authorizationRequest, nil, using: mockSession)
                 let pd = try XCTUnwrap(pdOptional, "PresentationDefinition should not be nil.")
                 XCTAssertEqual(pd.id, "12345")
             }

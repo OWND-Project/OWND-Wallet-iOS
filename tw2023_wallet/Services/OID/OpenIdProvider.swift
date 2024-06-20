@@ -91,17 +91,16 @@ class OpenIdProvider {
             case .success(let processedRequestData):
                 let authRequest = processedRequestData.authorizationRequest
                 let requestObj = processedRequestData.requestObject
-                guard let _clientId = requestObj.clientId ?? authRequest.clientId else {
+                guard let _clientId = authRequest.clientId else {
                     return .failure(
                         .authRequestInputError(
                             reason: .compliantError(reason: "can not get client id")))
                 }
                 clientId = _clientId
 
-                let clientScheme = requestObj.clientIdScheme ?? authRequest.clientIdScheme
-
                 if processedRequestData.requestIsSigned {
                     print("verify request jwt")
+                    let clientScheme = requestObj!.clientIdScheme
                     let jwt = processedRequestData.requestObjectJwt
                     if clientScheme == "x509_san_dns" {
                         let result = JWTUtil.verifyJwtByX5C(jwt: jwt)
@@ -125,7 +124,8 @@ class OpenIdProvider {
                                         ))
                                 }
 
-                                if let urlString = requestObj.responseUri ?? requestObj.redirectUri,
+                                if let urlString = requestObj?.responseUri
+                                    ?? requestObj?.redirectUri,
                                     let url = URL(string: urlString)
                                 {
                                     if let clientUrl = URL(string: _clientId),
@@ -168,8 +168,10 @@ class OpenIdProvider {
                     }
                 }
 
+                let clientScheme =
+                    requestObj?.clientIdScheme ?? authRequest.clientIdScheme ?? "redirect_uri"
                 if clientScheme == "redirect_uri" {
-                    let responseUri = requestObj.responseUri ?? authRequest.responseUri
+                    let responseUri = requestObj?.responseUri ?? authRequest.responseUri
                     if clientId != responseUri {
                         return .failure(
                             .authRequestInputError(
@@ -178,7 +180,7 @@ class OpenIdProvider {
                     }
                 }
 
-                guard let responseType = requestObj.responseType ?? authRequest.responseType else {
+                guard let responseType = requestObj?.responseType ?? authRequest.responseType else {
                     return .failure(
                         .authRequestInputError(
                             reason: .compliantError(reason: "can not get response type")))
@@ -186,19 +188,19 @@ class OpenIdProvider {
                 // https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#section-5-11.6
                 // response_mode:
                 // OPTIONAL. Defined in [OAuth.Responses]. This parameter is used (through the new Response Mode direct_post) to ask the Wallet to send the response to the Verifier via an HTTPS connection (see Section 6.2 for more details). It is also used to request signing and encrypting (see Section 6.3 for more details). If the parameter is not present, the default value is fragment.
-                if let _responseMode = requestObj.responseMode ?? authRequest.responseMode {
+                if let _responseMode = requestObj?.responseMode ?? authRequest.responseMode {
                     responseMode = _responseMode
                 }
                 else {
                     responseMode = ResponseMode.fragment
                 }
-                guard let _nonce = requestObj.nonce ?? authRequest.nonce else {
+                guard let _nonce = requestObj?.nonce ?? authRequest.nonce else {
                     return .failure(
                         .authRequestInputError(reason: .compliantError(reason: "can not get nonce"))
                     )
                 }
                 nonce = _nonce
-                state = requestObj.state ?? authRequest.state ?? ""
+                state = requestObj?.state ?? authRequest.state ?? ""
                 if responseType.contains("vp_token") {
                     guard let _presentationDefinition = processedRequestData.presentationDefinition
                     else {
@@ -209,12 +211,23 @@ class OpenIdProvider {
                     }
                     presentationDefinition = _presentationDefinition
                 }
-                guard let _redirectUri = requestObj.redirectUri ?? authRequest.requestUri else {
-                    return .failure(
-                        .authRequestInputError(
-                            reason: .compliantError(reason: "can not get redirect uri")))
+                if responseMode == ResponseMode.directPost {
+                    guard let _responseUri = requestObj?.responseUri ?? authRequest.responseUri
+                    else {
+                        return .failure(
+                            .authRequestInputError(
+                                reason: .compliantError(reason: "can not get response uri")))
+                    }
                 }
-                redirectUri = _redirectUri
+                else {
+                    guard let _redirectUri = requestObj?.redirectUri ?? authRequest.redirectUri
+                    else {
+                        return .failure(
+                            .authRequestInputError(
+                                reason: .compliantError(reason: "can not get redirect uri")))
+                    }
+                    redirectUri = _redirectUri
+                }
                 self.authRequestProcessedData = processedRequestData
                 return .success(processedRequestData)
             case .failure(let error):
@@ -231,13 +244,13 @@ class OpenIdProvider {
         }
         let authRequest = authRequestProcessedData.authorizationRequest
         let requestObj = authRequestProcessedData.requestObject
-        guard let clientId = requestObj.clientId ?? authRequest.clientId else {
+        guard let clientId = requestObj?.clientId ?? authRequest.clientId else {
             return .failure(OpenIdProviderIllegalStateException.illegalClientIdState)
         }
-        guard let nonce = requestObj.nonce ?? authRequest.nonce else {
+        guard let nonce = requestObj?.nonce ?? authRequest.nonce else {
             return .failure(OpenIdProviderIllegalStateException.illegalNonceState)
         }
-        guard let redirectUri = requestObj.redirectUri ?? authRequest.requestUri else {
+        guard let redirectUri = requestObj?.redirectUri ?? authRequest.requestUri else {
             return .failure(OpenIdProviderIllegalStateException.illegalRedirectUriState)
         }
 
@@ -389,7 +402,8 @@ class OpenIdProvider {
             let responseMode = responseMode,
             let nonce = nonce,
             let presentationDefinition = presentationDefinition,
-            let responseUri = authRequestProcessedData?.requestObject.responseUri
+            let responseUri = authRequestProcessedData?.requestObject?.responseUri
+                ?? authRequestProcessedData?.authorizationRequest.responseUri
         else {
             return .failure(OpenIdProviderIllegalStateException.illegalState)
         }

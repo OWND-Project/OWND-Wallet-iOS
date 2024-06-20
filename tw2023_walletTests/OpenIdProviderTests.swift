@@ -317,9 +317,9 @@ final class OpenIdProviderTests: XCTestCase {
 
             let requestObj = authRequestProcessedData.requestObject
             let authRequest = authRequestProcessedData.authorizationRequest
-            idProvider.clientId = requestObj.clientId ?? authRequest.clientId
-            idProvider.responseMode = requestObj.responseMode ?? authRequest.responseMode
-            idProvider.nonce = requestObj.nonce ?? authRequest.nonce
+            idProvider.clientId = requestObj?.clientId ?? authRequest.clientId
+            idProvider.responseMode = requestObj?.responseMode ?? authRequest.responseMode
+            idProvider.nonce = requestObj?.nonce ?? authRequest.nonce
             idProvider.presentationDefinition = authRequestProcessedData.presentationDefinition
 
             try KeyPairUtil.generateSignVerifyKeyPair(alias: Constants.Cryptography.KEY_BINDING)
