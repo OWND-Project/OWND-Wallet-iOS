@@ -125,7 +125,7 @@ extension CredentialConfiguration {
 
         return defaultCredentialDisplay
     }
-    
+
     func getClaimNames(locale: String = "ja-JP") -> [String] {
         return []
     }
@@ -283,14 +283,13 @@ func getLocalizedClaimNames(claims: ClaimMap, locale: String) -> [String] {
 }
 
 func decodeCredentialSupported(from jsonData: Data) throws -> CredentialConfiguration {
-    
+
     let decoder = JSONDecoder()
     // decoder.keyDecodingStrategy = .convertFromSnakeCase
-    
 
     // 一時的なコンテナ構造体をデコードして、formatフィールドを読み取る
     let formatContainer = try decoder.decode(CredentialSupportedFormat.self, from: jsonData)
-    
+
     print(formatContainer)
 
     switch formatContainer.format {
@@ -368,8 +367,8 @@ struct CredentialIssuerMetadata: Codable {
         display = try container.decodeIfPresent([IssuerDisplay].self, forKey: .display)
         credentialConfigurationsSupported = credentialsSupportedDict
     }
-    
-    func getCredentialIssuerDisplayName(locale: String = "ja-jp") -> String{
+
+    func getCredentialIssuerDisplayName(locale: String = "ja-jp") -> String {
         let defaultIssuerDisplay = "Unknown Issuer"
         guard let issuerDisplays = self.display, issuerDisplays.count > 0 else {
             return defaultIssuerDisplay
@@ -382,13 +381,13 @@ struct CredentialIssuerMetadata: Codable {
             }
         }
         if let firstDisplay = issuerDisplays.first,
-           let name = firstDisplay.name {
+            let name = firstDisplay.name
+        {
             return name
         }
 
         return defaultIssuerDisplay
     }
-    
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
@@ -467,7 +466,7 @@ struct CredentialOffer: Codable {
     let credentialIssuer: String
     let credentialConfigurationIds: [String]
     let grants: Grant?
-    
+
     enum CodingKeys: String, CodingKey {
         case credentialIssuer = "credential_issuer"
         case credentialConfigurationIds = "credential_configuration_ids"
@@ -552,7 +551,7 @@ struct OAuthTokenResponse: Codable {
     let expiresIn: Int
     let cNonce: String?
     let cNonceExpiresIn: Int?
-    
+
     enum CodingKeys: String, CodingKey {
         case accessToken = "access_token"
         case tokenType = "token_type"

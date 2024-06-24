@@ -77,7 +77,6 @@ enum VCIClientError: Error {
     case jwtProofRequired
 }
 
-
 class VCIClient {
 
     private var metadata: Metadata
@@ -135,13 +134,13 @@ class VCIClient {
 }
 
 struct CredentialRequestCredentialResponseEncryption: Codable {
-    
+
     // todo: Add the JWK property with the appropriate data type.
     // let jwk: ...
-    
+
     let alg: String
     let enc: String
-    
+
     enum CodingKeys: String, CodingKey {
         case alg, enc
     }
@@ -149,10 +148,10 @@ struct CredentialRequestCredentialResponseEncryption: Codable {
 
 struct LdpVpProofClaim: Codable {
     let domain: String
-    
+
     // REQUIRED when the Credential Issuer has provided a c_nonce. It MUST NOT be used otherwise
     let challenge: String?
-    
+
     enum CodingKeys: String, CodingKey {
         case domain, challenge
     }
@@ -160,7 +159,7 @@ struct LdpVpProofClaim: Codable {
 
 struct LdpVp: Codable {
     // todo: improve type definition
-    let holder: String;
+    let holder: String
     let proof: [LdpVpProofClaim]
 }
 
@@ -168,11 +167,10 @@ protocol Proofable: Codable {
     var proofType: String { get }
 }
 
-
 struct JwtProof: Proofable {
     let proofType: String
     let jwt: String
-    
+
     enum CodingKeys: String, CodingKey {
         case proofType = "proof_type"
         case jwt
@@ -182,14 +180,14 @@ struct JwtProof: Proofable {
 struct CwtProof: Proofable {
     let proofType: String
     let cwt: String
-    
+
     enum CodingKeys: String, CodingKey {
         case proofType = "proof_type"
         case cwt
     }
 }
 
-struct LdpVpProof: Proofable{
+struct LdpVpProof: Proofable {
     let proofType: String
     let ldpVp: LdpVp
     enum CodingKeys: String, CodingKey {
@@ -198,25 +196,23 @@ struct LdpVpProof: Proofable{
     }
 }
 
-
 protocol CredentialRequest: Encodable {
     associatedtype ProofType: Proofable
     var format: String { get }
     var proof: ProofType? { get }
-    
-    // REQUIRED when credential_identifiers parameter was returned from the Token Response. 
+
+    // REQUIRED when credential_identifiers parameter was returned from the Token Response.
     // It MUST NOT be used otherwise
     var credentialIdentifier: String? { get }
     var credentialResponseEncryption: CredentialRequestCredentialResponseEncryption? { get }
 }
-
 
 struct CredentialRequestVcSdJwt: CredentialRequest {
     let format: String
     let proof: JwtProof?
     let credentialIdentifier: String?
     let credentialResponseEncryption: CredentialRequestCredentialResponseEncryption?
-    
+
     // REQUIRED when the format parameter is present in the Credential Request. It MUST NOT be used otherwise
     let vct: String?
     let claims: [String: Claim]?
@@ -232,11 +228,11 @@ struct CredentialRequestJwtVcJson: CredentialRequest {
     let proof: JwtProof?
     var credentialIdentifier: String?
     var credentialResponseEncryption: CredentialRequestCredentialResponseEncryption?
-    
+
     // REQUIRED when the format parameter is present in the Credential Request.
     // It MUST NOT be used otherwise
     let credentialDefinition: CredentialDefinitionJwtVcJson?
-    
+
     enum CodingKeys: String, CodingKey {
         case format, proof
         case credentialIdentifier = "credential_identifier"
@@ -302,7 +298,7 @@ func createCredentialRequest(formatValue: String, credentialType: String, proofa
                     CredentialDefinitionJwtVcJson(
                         type: [credentialType],
                         credentialSubject: nil)
-        )
+            )
         default:
             throw VCIClientError.unsupportedCredentialFormat(format: formatValue)
     }

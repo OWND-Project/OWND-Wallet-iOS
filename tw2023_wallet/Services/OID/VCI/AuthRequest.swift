@@ -87,8 +87,10 @@ struct RPRegistrationMetadataPayload: Codable {
         case jwksUri = "jwks_uri"
         case logoUri = "logo_uri"
         case policyUri = "policy_uri"
-        case requestObjectEncryptionAlgValuesSupported = "request_object_encryption_alg_values_supported"
-        case requestObjectEncryptionEncValuesSupported = "request_object_encryption_enc_values_supported"
+        case requestObjectEncryptionAlgValuesSupported =
+            "request_object_encryption_alg_values_supported"
+        case requestObjectEncryptionEncValuesSupported =
+            "request_object_encryption_enc_values_supported"
         case requestObjectSigningAlgValuesSupported = "request_object_signing_alg_values_supported"
         case scopesSupported = "scopes_supported"
         case subjectSyntaxTypesSupported = "subject_syntax_types_supported"
@@ -130,7 +132,7 @@ struct RequestObjectPayloadImpl: RequestObjectPayload {
     var presentationDefinition: PresentationDefinition?
     var presentationDefinitionUri: String?
     var clientIdScheme: String?
-    
+
     enum CodingKeys: String, CodingKey {
         case iss, sub, aud, iat, nbf, type, exp, jti, scope, nonce, state
         case responseType = "response_type"

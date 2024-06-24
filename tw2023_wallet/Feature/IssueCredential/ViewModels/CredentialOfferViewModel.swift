@@ -10,9 +10,9 @@ import SwiftUI
 
 enum CredentialOfferViewModelError: Error {
     case LoadDataDidNotFinishuccessfully
-    
+
     case CredentialOfferConfigurationIsEmpty
-    
+
     case ProofGenerationFailed
 
     // credential offer format
@@ -123,7 +123,7 @@ class CredentialOfferViewModel {
         guard let firstOfferCredential = offerIds.first else {
             throw CredentialOfferViewModelError.CredentialOfferConfigurationIsEmpty
         }
-        
+
         dataModel.targetCredentialId = firstOfferCredential
 
         for (_, supportedInMetadata) in metadata.credentialIssuerMetadata

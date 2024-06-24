@@ -108,7 +108,8 @@ final class CredentialIssuerMetadataTests: XCTestCase {
             do {
                 let metadata = try await retrieveAllMetadata(issuer: issuer, using: mockSession)
                 XCTAssertEqual(metadata.credentialIssuerMetadata.credentialIssuer, issuer)
-                XCTAssertEqual(metadata.authorizationServerMetadata.tokenEndpoint, "\(issuer)/token")
+                XCTAssertEqual(
+                    metadata.authorizationServerMetadata.tokenEndpoint, "\(issuer)/token")
             }
             catch {
                 XCTFail("Request should not fail")
@@ -130,7 +131,7 @@ final class CredentialIssuerMetadataTests: XCTestCase {
                 print("Error: unable to convert JSON string to Data")
                 return
             }
-            
+
             let metadata = try decoder.decode(AuthorizationServerMetadata.self, from: jsonData)
             XCTAssertEqual("https://example.com", metadata.issuer)
             XCTAssertEqual(ResponseMode.fragment, metadata.responseMode)

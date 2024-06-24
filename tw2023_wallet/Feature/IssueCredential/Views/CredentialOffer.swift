@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 struct CredentialOfferView: View {
     @Environment(\.presentationMode) var presentationMode
     @Environment(CredentialOfferArgs.self) var args
@@ -88,8 +87,10 @@ struct CredentialOfferView: View {
     @ViewBuilder
     private var content: some View {
         if let issuerMetaData = viewModel.dataModel.metaData?.credentialIssuerMetadata,
-           let targetCredentialId = viewModel.dataModel.targetCredentialId,
-           let targetCredential = issuerMetaData.credentialConfigurationsSupported[targetCredentialId] {
+            let targetCredentialId = viewModel.dataModel.targetCredentialId,
+            let targetCredential = issuerMetaData.credentialConfigurationsSupported[
+                targetCredentialId]
+        {
             contentWithMetaData(issuerMetaData, targetCredential)
         }
         else {
@@ -100,7 +101,9 @@ struct CredentialOfferView: View {
         }
     }
 
-    private func contentWithMetaData(_ issuerMetaData: CredentialIssuerMetadata, _ targetCredential: CredentialConfiguration) -> some View {
+    private func contentWithMetaData(
+        _ issuerMetaData: CredentialIssuerMetadata, _ targetCredential: CredentialConfiguration
+    ) -> some View {
         let issuerDisplayName = issuerMetaData.getCredentialIssuerDisplayName()
         let credentialDisplayName = targetCredential.getCredentialDisplayName()
         let displayNames = targetCredential.getClaimNames()

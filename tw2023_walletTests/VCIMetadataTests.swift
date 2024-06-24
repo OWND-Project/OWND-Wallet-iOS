@@ -18,8 +18,9 @@ final class VCIMetadataTests: XCTestCase {
     }
 
     func testDeserializeFilledCredentialDisplay() throws {
-        guard let url = Bundle.main.url(forResource: "filled_all_parameters", withExtension: "json"),
-              let jsonData = try? Data(contentsOf: url)
+        guard
+            let url = Bundle.main.url(forResource: "filled_all_parameters", withExtension: "json"),
+            let jsonData = try? Data(contentsOf: url)
         else {
             XCTFail("Cannot read test data")
             return
@@ -27,7 +28,7 @@ final class VCIMetadataTests: XCTestCase {
 
         let decoder = JSONDecoder()
         let display = try decoder.decode(CredentialDisplay.self, from: jsonData)
-        
+
         XCTAssertEqual(display.name, "Credential Example")
         XCTAssertEqual(display.locale, "en-US")
         XCTAssertEqual(display.logo?.uri, "https://example.com/logo.png")
@@ -37,18 +38,18 @@ final class VCIMetadataTests: XCTestCase {
         XCTAssertEqual(display.backgroundImage?.uri, "https://example.com/background.png")
         XCTAssertEqual(display.textColor, "#000000")
     }
-    
+
     func testDeserializeMinimumCredentialDisplay() throws {
         guard let url = Bundle.main.url(forResource: "minimum", withExtension: "json"),
-              let jsonData = try? Data(contentsOf: url)
+            let jsonData = try? Data(contentsOf: url)
         else {
             XCTFail("Cannot read test data")
             return
         }
-        
+
         let decoder = JSONDecoder()
         let display = try decoder.decode(CredentialDisplay.self, from: jsonData)
-        
+
         XCTAssertEqual(display.name, "Credential Example")
         XCTAssertNil(display.locale)
         XCTAssertNil(display.logo)
@@ -76,17 +77,19 @@ final class VCIMetadataTests: XCTestCase {
             XCTAssertEqual(givenNameClaim.display?.count, 1)
             XCTAssertEqual(givenNameClaim.display?.first?.name, "Given Name")
             XCTAssertEqual(givenNameClaim.display?.first?.locale, "en-US")
-        } else {
+        }
+        else {
             XCTFail("given_name claim is missing")
         }
-        
+
         if let lastNameClaim = claimMap["last_name"] {
             XCTAssertNil(lastNameClaim.mandatory)
             XCTAssertNil(lastNameClaim.valueType)
             XCTAssertEqual(lastNameClaim.display?.count, 1)
             XCTAssertEqual(lastNameClaim.display?.first?.name, "Surname")
             XCTAssertEqual(lastNameClaim.display?.first?.locale, "en-US")
-        } else {
+        }
+        else {
             XCTFail("last_name claim is missing")
         }
 
@@ -96,7 +99,8 @@ final class VCIMetadataTests: XCTestCase {
             XCTAssertEqual(addressClaim.display?.count, 1)
             XCTAssertEqual(addressClaim.display?.first?.name, "Address")
             XCTAssertEqual(addressClaim.display?.first?.locale, "en-US")
-        } else {
+        }
+        else {
             XCTFail("address claim is missing")
         }
 
@@ -106,7 +110,8 @@ final class VCIMetadataTests: XCTestCase {
             XCTAssertEqual(ageClaim.display?.count, 1)
             XCTAssertEqual(ageClaim.display?.first?.name, "Age")
             XCTAssertEqual(ageClaim.display?.first?.locale, "en-US")
-        } else {
+        }
+        else {
             XCTFail("age claim is missing")
         }
 
@@ -116,7 +121,8 @@ final class VCIMetadataTests: XCTestCase {
             XCTAssertEqual(gpaClaim.display?.count, 1)
             XCTAssertEqual(gpaClaim.display?.first?.name, "GPA")
             XCTAssertNil(gpaClaim.display?.first?.locale)
-        } else {
+        }
+        else {
             XCTFail("gpa claim is missing")
         }
 
@@ -124,10 +130,11 @@ final class VCIMetadataTests: XCTestCase {
             XCTAssertNil(degreeClaim.mandatory)
             XCTAssertNil(degreeClaim.valueType)
             XCTAssertNil(degreeClaim.display)
-        } else {
+        }
+        else {
             XCTFail("degree claim is missing")
         }
-        
+
     }
 
     func testDecodeCredentialSupportedJwtVcJson() throws {
@@ -279,7 +286,7 @@ final class VCIMetadataTests: XCTestCase {
         XCTAssertEqual(grants?.authorizationCode?.issuerState, "eyJhbGciOiJSU0Et...FYUaBy")
         XCTAssertEqual(grants?.preAuthorizedCode?.preAuthorizedCode, "adhjhdjajkdkhjhdj")
         XCTAssertTrue(credentialOffer.isTxCodeRequired())
-        
+
         XCTAssertEqual(grants?.preAuthorizedCode?.txCode?.inputMode, "numeric")
     }
 

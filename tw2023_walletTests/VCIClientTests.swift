@@ -8,7 +8,9 @@
 import XCTest
 
 let issuer = "https://datasign-demo-vci.tunnelto.dev"
-let credentialOffer = CredentialOffer.fromString("openid-credential-offer://?credential_offer=%7B%22credential_issuer%22%3A%22https%3A%2F%2Fdatasign-demo-vci.tunnelto.dev%22%2C%22credential_configuration_ids%22%3A%5B%22IdentityCredential%22%5D%2C%22grants%22%3A%7B%22urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Apre-authorized_code%22%3A%7B%22pre-authorized_code%22%3A%22SplxlOBeZQQYbYS6WxSbIA%22%2C%22tx_code%22%3A%7B%7D%7D%7D%7D")
+let credentialOffer = CredentialOffer.fromString(
+    "openid-credential-offer://?credential_offer=%7B%22credential_issuer%22%3A%22https%3A%2F%2Fdatasign-demo-vci.tunnelto.dev%22%2C%22credential_configuration_ids%22%3A%5B%22IdentityCredential%22%5D%2C%22grants%22%3A%7B%22urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Apre-authorized_code%22%3A%7B%22pre-authorized_code%22%3A%22SplxlOBeZQQYbYS6WxSbIA%22%2C%22tx_code%22%3A%7B%7D%7D%7D%7D"
+)
 
 final class VCIClientTests: XCTestCase {
 
@@ -104,7 +106,8 @@ final class VCIClientTests: XCTestCase {
             let mockSession = URLSession(configuration: configuration)
             let tokenUrl = URL(string: "\(issuer)/token")!
             guard
-                let resourceUrl = Bundle.main.url(forResource: "token_response", withExtension: "json"),
+                let resourceUrl = Bundle.main.url(
+                    forResource: "token_response", withExtension: "json"),
                 let mockData = try? Data(contentsOf: resourceUrl)
             else {
                 XCTFail("Cannot read resource json")
@@ -113,7 +116,7 @@ final class VCIClientTests: XCTestCase {
             let response = HTTPURLResponse(
                 url: tokenUrl, statusCode: 200, httpVersion: nil, headerFields: nil)
             MockURLProtocol.mockResponses[tokenUrl.absoluteString] = (mockData, response)
-            
+
             // setup metadata
             let decoder = JSONDecoder()
             guard
@@ -124,17 +127,22 @@ final class VCIClientTests: XCTestCase {
                 let authorizationServerMetadataUrl = Bundle.main.url(
                     forResource: "authorization_server",
                     withExtension: "json"),
-                let jsonAuthorizationServerData = try? Data(contentsOf: authorizationServerMetadataUrl)
-                    
+                let jsonAuthorizationServerData = try? Data(
+                    contentsOf: authorizationServerMetadataUrl)
+
             else {
                 XCTFail("Cannot read resource json")
                 return
 
             }
-            let credentialIssuerMetadata = try decoder.decode(CredentialIssuerMetadata.self, from: jsonIssuerMetaData)
-            let authorizationServerMetadata = try decoder.decode(AuthorizationServerMetadata.self, from: jsonAuthorizationServerData)
-            let metadata = Metadata(credentialIssuerMetadata: credentialIssuerMetadata, authorizationServerMetadata: authorizationServerMetadata)
-            
+            let credentialIssuerMetadata = try decoder.decode(
+                CredentialIssuerMetadata.self, from: jsonIssuerMetaData)
+            let authorizationServerMetadata = try decoder.decode(
+                AuthorizationServerMetadata.self, from: jsonAuthorizationServerData)
+            let metadata = Metadata(
+                credentialIssuerMetadata: credentialIssuerMetadata,
+                authorizationServerMetadata: authorizationServerMetadata)
+
             // create credential offer
             guard let offer = credentialOffer else {
                 XCTFail("credential offer is not initialized properly")
@@ -175,7 +183,7 @@ final class VCIClientTests: XCTestCase {
             let response = HTTPURLResponse(
                 url: credentialUrl, statusCode: 200, httpVersion: nil, headerFields: nil)
             MockURLProtocol.mockResponses[credentialUrl.absoluteString] = (mockData, response)
-            
+
             // setup metadata
             let decoder = JSONDecoder()
             guard
@@ -186,27 +194,33 @@ final class VCIClientTests: XCTestCase {
                 let authorizationServerMetadataUrl = Bundle.main.url(
                     forResource: "authorization_server",
                     withExtension: "json"),
-                let jsonAuthorizationServerData = try? Data(contentsOf: authorizationServerMetadataUrl)
-                    
+                let jsonAuthorizationServerData = try? Data(
+                    contentsOf: authorizationServerMetadataUrl)
+
             else {
                 XCTFail("Cannot read resource json")
                 return
             }
-            let credentialIssuerMetadata = try decoder.decode(CredentialIssuerMetadata.self, from: jsonIssuerMetaData)
-            let authorizationServerMetadata = try decoder.decode(AuthorizationServerMetadata.self, from: jsonAuthorizationServerData)
-            let metadata = Metadata(credentialIssuerMetadata: credentialIssuerMetadata, authorizationServerMetadata: authorizationServerMetadata)
-            
+            let credentialIssuerMetadata = try decoder.decode(
+                CredentialIssuerMetadata.self, from: jsonIssuerMetaData)
+            let authorizationServerMetadata = try decoder.decode(
+                AuthorizationServerMetadata.self, from: jsonAuthorizationServerData)
+            let metadata = Metadata(
+                credentialIssuerMetadata: credentialIssuerMetadata,
+                authorizationServerMetadata: authorizationServerMetadata)
+
             // payload generation
             let proof = JwtProof(proofType: "jwt", jwt: "dummy-proof")
             let payload = try createCredentialRequest(
-                formatValue: "vc+sd-jwt", credentialType: "UniversityDegreeCredential", proofable: proof)
+                formatValue: "vc+sd-jwt", credentialType: "UniversityDegreeCredential",
+                proofable: proof)
 
             do {
                 guard let offer = credentialOffer else {
                     XCTFail("credential offer is not initialized properly")
                     return
                 }
-                
+
                 let vciClient = try await VCIClient(
                     credentialOffer: offer, metaData: metadata)
                 let credentialResponse = try await vciClient.issueCredential(

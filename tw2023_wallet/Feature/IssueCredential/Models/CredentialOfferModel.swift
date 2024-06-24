@@ -11,7 +11,7 @@ import Foundation
 class CredentialOfferModel {
     var metaData: Metadata? = nil
     var credentialOffer: CredentialOffer? = nil
-    
+
     // The parameter `credentialConfigurationIds` is array.
     // todo: This variable should be an array as well.
     var targetCredentialId: String? = nil

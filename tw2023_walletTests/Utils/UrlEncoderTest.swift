@@ -45,8 +45,9 @@ class URLEncodedFormEncoderTests: XCTestCase {
         let expectedString =
             "grant_type=authorization_code&code=12345&redirect_uri=https://example.com/callback&client_id=client_id"
 
-        XCTAssertEqual(convertQueryToDictionary(query: encodedString),
-                       convertQueryToDictionary(query:  expectedString))
+        XCTAssertEqual(
+            convertQueryToDictionary(query: encodedString),
+            convertQueryToDictionary(query: expectedString))
     }
 
     func testURLEncodedFormEncoderWithOptionalValues() throws {
@@ -58,17 +59,17 @@ class URLEncodedFormEncoderTests: XCTestCase {
             preAuthorizedCode: "1234",
             txCode: "9999"
         )
-        
+
         let encoder = URLEncodedFormEncoder()
         let encodedData = try encoder.encode(tokenRequest)
         guard let encodedString = String(data: encodedData, encoding: .utf8) else {
             XCTFail("unable to convert to String")
             return
         }
-        
+
         let expectedString =
-        "grant_type=urn:ietf:params:oauth:grant-type:pre-authorized_code&pre-authorized_code=1234&tx_code=9999"
-        
+            "grant_type=urn:ietf:params:oauth:grant-type:pre-authorized_code&pre-authorized_code=1234&tx_code=9999"
+
         XCTAssertEqual(
             convertQueryToDictionary(query: encodedString),
             convertQueryToDictionary(query: expectedString))
