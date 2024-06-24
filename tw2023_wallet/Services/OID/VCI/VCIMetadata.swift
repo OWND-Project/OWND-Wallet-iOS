@@ -11,21 +11,17 @@ import SwiftyJSON
 struct Logo: Codable {
     let uri: String
     let altText: String?
-    /*
     enum CodingKeys: String, CodingKey {
         case uri
         case altText = "alt_text"
     }
-     */
 }
 
 struct BackgroundImage: Codable {
     let uri: String?
-    /*
     enum CodingKeys: String, CodingKey {
         case uri
     }
-     */
 }
 
 protocol Displayable: Codable {
@@ -37,21 +33,17 @@ class IssuerDisplay: Displayable {
     let name: String?
     let locale: String?
     let logo: Logo?
-    /*
     enum CodingKeys: String, CodingKey {
         case name, locale, logo
     }
-     */
 }
 
 class ClaimDisplay: Displayable {
     let name: String?
     let locale: String?
-    /*
     enum CodingKeys: String, CodingKey {
         case name, locale
     }
-     */
 }
 
 class CredentialDisplay: Codable {
@@ -62,26 +54,22 @@ class CredentialDisplay: Codable {
     let backgroundColor: String?
     let backgroundImage: BackgroundImage?
     let textColor: String?
-    /*
     enum CodingKeys: String, CodingKey {
         case name, locale, logo, description
         case backgroundColor = "background_color"
         case backgroundImage = "background_image"
         case textColor = "text_color"
     }
-     */
 }
 
 struct Claim: Codable {
     let mandatory: Bool?
     let valueType: String?
     let display: [ClaimDisplay]?
-    /*
     enum CodingKeys: String, CodingKey {
         case mandatory, display
         case valueType = "value_type"
     }
-     */
 }
 
 struct ClaimOnlyMandatory: Codable {
@@ -90,24 +78,20 @@ struct ClaimOnlyMandatory: Codable {
 
 struct ProofSigningAlgValuesSupported: Codable {
     let proofSigningAlgValuesSupported: [String]
-    /*
     enum CodingKeys: String, CodingKey {
         case proofSigningAlgValuesSupported = "proof_signing_alg_values_supported"
     }
-     */
 }
 
 struct CredentialResponseEncryption: Codable {
     let algValuesSupported: [String]
     let encValuesSupported: [String]
     let encryptionRequired: Bool
-/*
     enum CodingKeys: String, CodingKey {
         case algValuesSupported = "alg_values_supported"
         case encValuesSupported = "enc_values_supported"
         case encryptionRequired = "encryption_required"
     }
- */
 }
 
 protocol CredentialConfiguration: Codable {
@@ -161,14 +145,12 @@ struct CredentialSupportedVcSdJwt: CredentialConfiguration {
     let claims: ClaimMap?
     let order: [String]?
 
-    /*
     enum CodingKeys: String, CodingKey {
         case format, scope, display, order, vct, claims
         case cryptographicBindingMethodsSupported = "cryptographic_binding_methods_supported"
         case credentialSigningAlgValuesSupported = "credential_signing_alg_values_supported"
         case proofTypesSupported = "proof_types_supported"
     }
-     */
 
     func getClaimNames(locale: String = "ja-JP") -> [String] {
         guard let claims = self.claims else {
@@ -209,7 +191,6 @@ struct CredentialSupportedJwtVcJson: CredentialConfiguration {
     let credentialDefinition: JwtVcJsonCredentialDefinition
     let order: [String]?
 
-    /*
     enum CodingKeys: String, CodingKey {
         case format, scope, display, order
         case cryptographicBindingMethodsSupported = "cryptographic_binding_methods_supported"
@@ -217,7 +198,6 @@ struct CredentialSupportedJwtVcJson: CredentialConfiguration {
         case proofTypesSupported = "proof_types_supported"
         case credentialDefinition = "credential_definition"
     }
-     */
 
     func getClaimNames(locale: String = "ja-JP") -> [String] {
         return self.credentialDefinition.getClaimNames(locale: locale)
@@ -247,7 +227,6 @@ struct CredentialSupportedLdpVc: CredentialConfiguration {
     let credentialDefinition: LdpVcCredentialDefinition
     let order: [String]?
 
-    /*
     enum CodingKeys: String, CodingKey {
         case format, scope, display, order
         case cryptographicBindingMethodsSupported = "cryptographic_binding_methods_supported"
@@ -255,7 +234,6 @@ struct CredentialSupportedLdpVc: CredentialConfiguration {
         case proofTypesSupported = "proof_type_supported"
         case credentialDefinition = "credential_definition"
     }
-     */
 
     func getClaimNames(locale: String = "ja-JP") -> [String] {
         // todo: implement
@@ -307,7 +285,8 @@ func getLocalizedClaimNames(claims: ClaimMap, locale: String) -> [String] {
 func decodeCredentialSupported(from jsonData: Data) throws -> CredentialConfiguration {
     
     let decoder = JSONDecoder()
-    decoder.keyDecodingStrategy = .convertFromSnakeCase
+    // decoder.keyDecodingStrategy = .convertFromSnakeCase
+    
 
     // 一時的なコンテナ構造体をデコードして、formatフィールドを読み取る
     let formatContainer = try decoder.decode(CredentialSupportedFormat.self, from: jsonData)
@@ -449,35 +428,28 @@ struct DynamicKey: CodingKey {
 struct GrantAuthorizationCode: Codable {
     let issuerState: String?
     let authorizationServer: String?
-
-    /*
     enum CodingKeys: String, CodingKey {
         case issuerState = "issuer_state"
         case authorizationServer = "authorization_server"
     }
-     */
 }
 
 struct TxCode: Codable {
     let inputMode: String?
     let length: Int?
     let description: String?
-    
-    /*
     enum CodingKeys: String, CodingKey {
         case inputMode = "input_mode"
         case length, description
     }
-     */
 }
 
 struct GrantPreAuthorizedCode: Codable {
     let preAuthorizedCode: String
     let txCode: TxCode?
-
     enum CodingKeys: String, CodingKey {
-        case preAuthorizedCode = "pre-authorizedCode"
-        case txCode = "txCode"
+        case preAuthorizedCode = "pre-authorized_code"
+        case txCode = "tx_code"
     }
 }
 
@@ -486,8 +458,8 @@ struct Grant: Codable {
     let preAuthorizedCode: GrantPreAuthorizedCode?
 
     enum CodingKeys: String, CodingKey {
-        case authorizationCode = "authorizationCode"
-        case preAuthorizedCode = "urn:ietf:params:oauth:grant-type:pre-authorizedCode"
+        case authorizationCode = "authorization_code"
+        case preAuthorizedCode = "urn:ietf:params:oauth:grant-type:pre-authorized_code"
     }
 }
 
@@ -496,13 +468,11 @@ struct CredentialOffer: Codable {
     let credentialConfigurationIds: [String]
     let grants: Grant?
     
-    /*
     enum CodingKeys: String, CodingKey {
         case credentialIssuer = "credential_issuer"
         case credentialConfigurationIds = "credential_configuration_ids"
         case grants
     }
-     */
 
     func isTxCodeRequired() -> Bool {
         if let grants = self.grants,
@@ -582,4 +552,12 @@ struct OAuthTokenResponse: Codable {
     let expiresIn: Int
     let cNonce: String?
     let cNonceExpiresIn: Int?
+    
+    enum CodingKeys: String, CodingKey {
+        case accessToken = "access_token"
+        case tokenType = "token_type"
+        case expiresIn = "expires_in"
+        case cNonce = "c_nonce"
+        case cNonceExpiresIn = "c_nonce_expires_in"
+    }
 }

@@ -8,7 +8,7 @@
 import XCTest
 
 let issuer = "https://datasign-demo-vci.tunnelto.dev"
-let credentialOffer = CredentialOffer.fromString("openid-credential-offer://?credential_offer=%7B%22credential_issuer%22%3A+%22https%3A%2F%2Fdatasign-demo-vci.tunnelto.dev%22%2C+%22credential_configurations_supported%22%3A+%5B%22IdentityCredential%22%5D%2C%22grants%22%3A+%7B%22urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Apre-authorized_code%22%3A+%7B%22pre-authorized_code%22%3A+%22SplxlOBeZQQYbYS6WxSbIA%22%2C%22tx_code%22%3A+%7B%7D%7D%7D%7D")
+let credentialOffer = CredentialOffer.fromString("openid-credential-offer://?credential_offer=%7B%22credential_issuer%22%3A%22https%3A%2F%2Fdatasign-demo-vci.tunnelto.dev%22%2C%22credential_configuration_ids%22%3A%5B%22IdentityCredential%22%5D%2C%22grants%22%3A%7B%22urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Apre-authorized_code%22%3A%7B%22pre-authorized_code%22%3A%22SplxlOBeZQQYbYS6WxSbIA%22%2C%22tx_code%22%3A%7B%7D%7D%7D%7D")
 
 final class VCIClientTests: XCTestCase {
 

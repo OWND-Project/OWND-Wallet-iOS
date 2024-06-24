@@ -119,7 +119,6 @@ final class CredentialIssuerMetadataTests: XCTestCase {
     // todo とりあえずenum変換の方式を試すだけの仮コード(VCIの発行時点ではtokenEndpointだけあれば良いので全プロパティの変換は後回しにする)
     func testEnumDocode() {
         let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
         do {
             let jsonString = """
                 {
@@ -131,12 +130,7 @@ final class CredentialIssuerMetadataTests: XCTestCase {
                 print("Error: unable to convert JSON string to Data")
                 return
             }
-            guard let url = Bundle.main.url(forResource: "", withExtension: "json"),
-                let mockData = try? Data(contentsOf: url)
-            else {
-                XCTFail("Cannot read credential_issuer_metadata.json")
-                return
-            }
+            
             let metadata = try decoder.decode(AuthorizationServerMetadata.self, from: jsonData)
             XCTAssertEqual("https://example.com", metadata.issuer)
             XCTAssertEqual(ResponseMode.fragment, metadata.responseMode)

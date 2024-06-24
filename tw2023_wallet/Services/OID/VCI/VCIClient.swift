@@ -24,7 +24,7 @@ func postTokenRequest(
     }
 
     let decoder = JSONDecoder()
-    decoder.keyDecodingStrategy = .convertFromSnakeCase
+    // decoder.keyDecodingStrategy = .convertFromSnakeCase
     return try decoder.decode(OAuthTokenResponse.self, from: data)
 }
 
@@ -142,11 +142,9 @@ struct CredentialRequestCredentialResponseEncryption: Codable {
     let alg: String
     let enc: String
     
-    /*
     enum CodingKeys: String, CodingKey {
         case alg, enc
     }
-     */
 }
 
 struct LdpVpProofClaim: Codable {
@@ -155,11 +153,9 @@ struct LdpVpProofClaim: Codable {
     // REQUIRED when the Credential Issuer has provided a c_nonce. It MUST NOT be used otherwise
     let challenge: String?
     
-    /*
     enum CodingKeys: String, CodingKey {
         case domain, challenge
     }
-     */
 }
 
 struct LdpVp: Codable {
@@ -177,35 +173,29 @@ struct JwtProof: Proofable {
     let proofType: String
     let jwt: String
     
-    /*
     enum CodingKeys: String, CodingKey {
         case proofType = "proof_type"
         case jwt
     }
-     */
 }
 
 struct CwtProof: Proofable {
     let proofType: String
     let cwt: String
     
-    /*
     enum CodingKeys: String, CodingKey {
         case proofType = "proof_type"
         case cwt
     }
-     */
 }
 
 struct LdpVpProof: Proofable{
     let proofType: String
     let ldpVp: LdpVp
-    /*
     enum CodingKeys: String, CodingKey {
         case proofType = "proof_type"
         case ldpVp = "ldp_vp"
     }
-     */
 }
 
 
@@ -230,15 +220,11 @@ struct CredentialRequestVcSdJwt: CredentialRequest {
     // REQUIRED when the format parameter is present in the Credential Request. It MUST NOT be used otherwise
     let vct: String?
     let claims: [String: Claim]?
-
-    /*
     enum CodingKeys: String, CodingKey {
         case format, proof, vct, claims
         case credentialIdentifier = "credential_identifier"
         case credentialResponseEncryption = "credential_response_encryption"
     }
-     */
-
 }
 
 struct CredentialRequestJwtVcJson: CredentialRequest {
@@ -251,14 +237,12 @@ struct CredentialRequestJwtVcJson: CredentialRequest {
     // It MUST NOT be used otherwise
     let credentialDefinition: CredentialDefinitionJwtVcJson?
     
-    /*
     enum CodingKeys: String, CodingKey {
         case format, proof
         case credentialIdentifier = "credential_identifier"
         case credentialResponseEncryption = "credential_response_encryption"
         case credentialDefinition = "credential_definition"
     }
-     */
 }
 
 struct CredentialResponse: Codable {
@@ -267,8 +251,6 @@ struct CredentialResponse: Codable {
     let cNonce: String?
     let cNonceExpiresIn: Int?
     let notificationId: String?
-
-    /*
     enum CodingKeys: String, CodingKey {
         case credential
         case transactionId = "transaction_id"
@@ -276,7 +258,6 @@ struct CredentialResponse: Codable {
         case cNonceExpiresIn = "c_nonce_expires_in"
         case notificationId = "notification_id"
     }
-     */
 }
 
 struct CredentialDefinitionJwtVcJson: Encodable {

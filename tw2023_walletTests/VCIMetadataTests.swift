@@ -26,7 +26,6 @@ final class VCIMetadataTests: XCTestCase {
         }
 
         let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
         let display = try decoder.decode(CredentialDisplay.self, from: jsonData)
         
         XCTAssertEqual(display.name, "Credential Example")
@@ -48,7 +47,6 @@ final class VCIMetadataTests: XCTestCase {
         }
         
         let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
         let display = try decoder.decode(CredentialDisplay.self, from: jsonData)
         
         XCTAssertEqual(display.name, "Credential Example")
@@ -69,7 +67,6 @@ final class VCIMetadataTests: XCTestCase {
         }
 
         let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
         let claimMap = try decoder.decode(ClaimMap.self, from: jsonData)
 
         // 各プロパティに対するテストケース
@@ -272,7 +269,6 @@ final class VCIMetadataTests: XCTestCase {
         }
 
         let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
         let credentialOffer = try decoder.decode(CredentialOffer.self, from: jsonData)
 
         XCTAssertEqual(credentialOffer.credentialIssuer, "https://datasign-demo-vci.tunnelto.dev")
@@ -280,8 +276,6 @@ final class VCIMetadataTests: XCTestCase {
         XCTAssertEqual(credentialOffer.credentialConfigurationIds[0], "IdentityCredential")
 
         let grants = credentialOffer.grants
-        print("========================")
-        print(grants)
         XCTAssertEqual(grants?.authorizationCode?.issuerState, "eyJhbGciOiJSU0Et...FYUaBy")
         XCTAssertEqual(grants?.preAuthorizedCode?.preAuthorizedCode, "adhjhdjajkdkhjhdj")
         XCTAssertTrue(credentialOffer.isTxCodeRequired())

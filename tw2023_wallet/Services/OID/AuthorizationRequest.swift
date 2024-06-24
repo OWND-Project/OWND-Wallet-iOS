@@ -242,7 +242,6 @@ func processPresentationDefinition(
             do {
                 let data = try await fetchData(from: requestUri, using: session)
                 let decoder = JSONDecoder()
-                decoder.keyDecodingStrategy = .convertFromSnakeCase
                 return try decoder.decode(PresentationDefinition.self, from: data)
             }
             catch {
