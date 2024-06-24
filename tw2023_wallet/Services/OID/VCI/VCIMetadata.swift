@@ -29,7 +29,7 @@ protocol Displayable: Codable {
     var locale: String? { get }
 }
 
-class IssuerDisplay: Displayable {
+struct IssuerDisplay: Displayable {
     let name: String?
     let locale: String?
     let logo: Logo?
@@ -38,7 +38,7 @@ class IssuerDisplay: Displayable {
     }
 }
 
-class ClaimDisplay: Displayable {
+struct ClaimDisplay: Displayable {
     let name: String?
     let locale: String?
     enum CodingKeys: String, CodingKey {
@@ -46,7 +46,7 @@ class ClaimDisplay: Displayable {
     }
 }
 
-class CredentialDisplay: Codable {
+struct CredentialDisplay: Codable {
     let name: String
     let locale: String?
     let logo: Logo?
