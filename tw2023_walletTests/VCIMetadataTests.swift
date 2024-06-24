@@ -7,7 +7,7 @@
 
 import XCTest
 
-final class CredentialOfferTests: XCTestCase {
+final class DecodingCredentialOfferTests: XCTestCase {
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
@@ -16,7 +16,7 @@ final class CredentialOfferTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
     
-    func testDeserializeFilledCredentialOffer() throws {
+    func testDecodeFilledCredentialOffer() throws {
         let jsonData = try loadJsonTestData(fileName: "credential_offer_filled")
         let decoder = JSONDecoder()
         let credentialOffer = try decoder.decode(CredentialOffer.self, from: jsonData)
@@ -36,7 +36,7 @@ final class CredentialOfferTests: XCTestCase {
         XCTAssertEqual(grants?.preAuthorizedCode?.authorizationServer, "https://datasign-demo-vci.tunnelto.dev")
     }
     
-    func testDeserializeMinimumCredentialOffer() throws {
+    func testDecodeMinimumCredentialOffer() throws {
         let jsonData = try loadJsonTestData(fileName: "credential_offer_minimum")
         let decoder = JSONDecoder()
         let credentialOffer = try decoder.decode(CredentialOffer.self, from: jsonData)
@@ -47,7 +47,7 @@ final class CredentialOfferTests: XCTestCase {
 
         XCTAssertNil(credentialOffer.grants)
     }
-    func testDeserializeCredentialOfferWithTxCode() throws {
+    func testDecodeCredentialOfferWithTxCode() throws {
         let jsonData = try loadJsonTestData(fileName: "credential_offer_tx_code_required")
         let decoder = JSONDecoder()
         let credentialOffer = try decoder.decode(CredentialOffer.self, from: jsonData)
@@ -56,7 +56,7 @@ final class CredentialOfferTests: XCTestCase {
     }
 }
 
-final class CredentialDisplayTests: XCTestCase {
+final class DecodingCredentialDisplayTests: XCTestCase {
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
@@ -65,7 +65,7 @@ final class CredentialDisplayTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
     
-    func testDeserializeFilledCredentialDisplay() throws {
+    func testDecodeFilledCredentialDisplay() throws {
         let jsonData = try loadJsonTestData(fileName: "credential_display_filled")
         let decoder = JSONDecoder()
         let display = try decoder.decode(CredentialDisplay.self, from: jsonData)
@@ -80,7 +80,7 @@ final class CredentialDisplayTests: XCTestCase {
         XCTAssertEqual(display.textColor, "#000000")
     }
 
-    func testDeserializeMinimumCredentialDisplay() throws {
+    func testDecodeMinimumCredentialDisplay() throws {
         let jsonData = try loadJsonTestData(fileName: "credential_display_minimum")
         let decoder = JSONDecoder()
         let display = try decoder.decode(CredentialDisplay.self, from: jsonData)
@@ -96,7 +96,7 @@ final class CredentialDisplayTests: XCTestCase {
 }
 
 
-final class CredentialSupportedTests: XCTestCase {
+final class DecodingCredentialSupportedTests: XCTestCase {
      override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
@@ -192,9 +192,9 @@ final class CredentialSupportedTests: XCTestCase {
 }
 
 
-final class ClaimMapTests: XCTestCase {
+final class DecodingClaimMapTests: XCTestCase {
     
-    func testDeserializeEmptyClaimMap() throws {
+    func testDecodeEmptyClaimMap() throws {
         let jsonData = try loadJsonTestData(fileName: "claim_map_empty")
         let decoder = JSONDecoder()
         let claimMap = try decoder.decode(ClaimMap.self, from: jsonData)
@@ -202,7 +202,7 @@ final class ClaimMapTests: XCTestCase {
         XCTAssertTrue(claimMap.isEmpty)
     }
     
-    func testDeserializeFilledClaimMap() throws {
+    func testDecodeFilledClaimMap() throws {
         let jsonData = try loadJsonTestData(fileName: "claim_map_filled")
         let decoder = JSONDecoder()
         let claimMap = try decoder.decode(ClaimMap.self, from: jsonData)
@@ -239,7 +239,7 @@ final class ClaimMapTests: XCTestCase {
        
     }
     
-    func testDeserializeMixMandatoryAndNonMandatoryClaimMap() throws {
+    func testDecodeMixMandatoryAndNonMandatoryClaimMap() throws {
         let jsonData = try loadJsonTestData(fileName: "claim_map_mixed")
         let decoder = JSONDecoder()
         let claimMap = try decoder.decode(ClaimMap.self, from: jsonData)
@@ -318,8 +318,7 @@ final class ClaimMapTests: XCTestCase {
 
 
 
-
-final class VCIMetadataTests: XCTestCase {
+final class DecodingVCIMetadataTests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
