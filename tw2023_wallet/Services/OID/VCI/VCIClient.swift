@@ -267,7 +267,7 @@ struct CredentialRequestJwtVcJson: CredentialRequest {
 }
 
 struct CredentialResponse: Codable {
-    let credential: String
+    let credential: String?  // todo suppoert `ldp_vc`
     let transactionId: String?
     let cNonce: String?
     let cNonceExpiresIn: Int?
