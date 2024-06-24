@@ -29,10 +29,7 @@ final class VCIMetadataUtilTests: XCTestCase {
         }
         do {
             let decoder = JSONDecoder()
-            print("=======================================")
-            print("1")
             let metadata = try decoder.decode(CredentialIssuerMetadata.self, from: data)
-            print("2")
             XCTAssertEqual(metadata.credentialIssuer, issuer)
             let types = ["IdentityCredential"]
             let credentialSupported = VCIMetadataUtil.findMatchingCredentials(
