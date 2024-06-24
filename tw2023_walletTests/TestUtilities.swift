@@ -8,10 +8,9 @@
 import Foundation
 import XCTest
 
-enum TestUtilityError: Error{
+enum TestUtilityError: Error {
     case FailedToLoadResourceJson(fileName: String)
 }
-
 
 func loadJsonTestData(fileName: String) throws -> Data {
     guard let url = Bundle.main.url(forResource: fileName, withExtension: "json"),

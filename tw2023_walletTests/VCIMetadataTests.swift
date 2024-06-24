@@ -7,7 +7,6 @@
 
 import XCTest
 
-
 final class DecodingCredentialDisplayTests: XCTestCase {
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -16,7 +15,7 @@ final class DecodingCredentialDisplayTests: XCTestCase {
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
-    
+
     func testDecodeFilledCredentialDisplay() throws {
         let jsonData = try loadJsonTestData(fileName: "credential_display_filled")
         let decoder = JSONDecoder()
@@ -47,16 +46,15 @@ final class DecodingCredentialDisplayTests: XCTestCase {
     }
 }
 
-
 final class DecodingCredentialSupportedTests: XCTestCase {
-     override func setUpWithError() throws {
+    override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
 
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
-   
+
     func testDecodeCredentialSupportedJwtVcJson() throws {
         let jsonData = try loadJsonTestData(fileName: "credential_supported_jwt_vc")
 
@@ -143,33 +141,32 @@ final class DecodingCredentialSupportedTests: XCTestCase {
     }
 }
 
-
 final class DecodingClaimMapTests: XCTestCase {
-    
+
     func testDecodeEmptyClaimMap() throws {
         let jsonData = try loadJsonTestData(fileName: "claim_map_empty")
         let decoder = JSONDecoder()
         let claimMap = try decoder.decode(ClaimMap.self, from: jsonData)
-        
+
         XCTAssertTrue(claimMap.isEmpty)
     }
-    
+
     func testDecodeFilledClaimMap() throws {
         let jsonData = try loadJsonTestData(fileName: "claim_map_filled")
         let decoder = JSONDecoder()
         let claimMap = try decoder.decode(ClaimMap.self, from: jsonData)
-         // 各プロパティに対するテストケース
+        // 各プロパティに対するテストケース
         if let givenNameClaim = claimMap["given_name"] {
             XCTAssertEqual(givenNameClaim.mandatory, true)
             XCTAssertEqual(givenNameClaim.valueType, "string")
             XCTAssertEqual(givenNameClaim.display?.count, 2)
-            
+
             XCTAssertEqual(givenNameClaim.display?.first?.name, "Given Name")
             XCTAssertEqual(givenNameClaim.display?.first?.locale, "en-US")
-            
+
             XCTAssertEqual(givenNameClaim.display?[1].name, "名")
             XCTAssertEqual(givenNameClaim.display?[1].locale, "ja-JP")
-           
+
         }
         else {
             XCTFail("given_name claim is missing")
@@ -188,9 +185,9 @@ final class DecodingClaimMapTests: XCTestCase {
         else {
             XCTFail("last_name claim is missing")
         }
-       
+
     }
-    
+
     func testDecodeMixMandatoryAndNonMandatoryClaimMap() throws {
         let jsonData = try loadJsonTestData(fileName: "claim_map_mixed")
         let decoder = JSONDecoder()
@@ -265,12 +262,12 @@ final class DecodingClaimMapTests: XCTestCase {
 
 }
 
-
 final class localizedClaimNamesTests: XCTestCase {
     func testGetLocalizedClaimNames() {
         let claimDisplayEN = ClaimDisplay(name: "Given Name", locale: "en-US")
         let claimDisplayJP = ClaimDisplay(name: "名", locale: "ja_JP")
-        let claimGivenName = Claim(mandatory: true, valueType: nil, display: [claimDisplayEN, claimDisplayJP])
+        let claimGivenName = Claim(
+            mandatory: true, valueType: nil, display: [claimDisplayEN, claimDisplayJP])
 
         let claims: ClaimMap = ["given_name": claimGivenName]
 
@@ -283,21 +280,19 @@ final class localizedClaimNamesTests: XCTestCase {
         let localizedNamesDefault = getLocalizedClaimNames(claims: claims, locale: "fr-FR")
         XCTAssertEqual(localizedNamesDefault, ["Given Name"])
     }
-    
+
     func testFirstLocaleSelected() {
         let claimDisplayEN = ClaimDisplay(name: "Given Name", locale: "en-US")
         let claimDisplayJP = ClaimDisplay(name: "名", locale: "ja_JP")
-        let claimGivenName = Claim(mandatory: true, valueType: nil, display: [claimDisplayEN, claimDisplayJP])
+        let claimGivenName = Claim(
+            mandatory: true, valueType: nil, display: [claimDisplayEN, claimDisplayJP])
 
         let claims: ClaimMap = ["given_name": claimGivenName]
-        
+
         let localizedNamesDefault = getLocalizedClaimNames(claims: claims, locale: "fr-FR")
         XCTAssertEqual(localizedNamesDefault, ["Given Name"])
     }
 }
-
-
-
 
 final class DecodingVCIMetadataTests: XCTestCase {
 
@@ -308,16 +303,21 @@ final class DecodingVCIMetadataTests: XCTestCase {
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
-    
+
     func testDecodeVcSdJwtMetadata() throws {
         let jsonData = try loadJsonTestData(fileName: "credential_issuer_metadata_sd_jwt")
         let metadata = try JSONDecoder().decode(CredentialIssuerMetadata.self, from: jsonData)
 
         XCTAssertEqual(metadata.credentialIssuer, "https://datasign-demo-vci.tunnelto.dev")
         XCTAssertEqual(metadata.authorizationServers, ["https://datasign-demo-vci.tunnelto.dev"])
-        XCTAssertEqual(metadata.credentialEndpoint, "https://datasign-demo-vci.tunnelto.dev/credentials")
-        XCTAssertEqual(metadata.batchCredentialEndpoint, "https://datasign-demo-vci.tunnelto.dev/batch-credentials")
-        XCTAssertEqual(metadata.deferredCredentialEndpoint, "https://datasign-demo-vci.tunnelto.dev/deferred_credential")
+        XCTAssertEqual(
+            metadata.credentialEndpoint, "https://datasign-demo-vci.tunnelto.dev/credentials")
+        XCTAssertEqual(
+            metadata.batchCredentialEndpoint,
+            "https://datasign-demo-vci.tunnelto.dev/batch-credentials")
+        XCTAssertEqual(
+            metadata.deferredCredentialEndpoint,
+            "https://datasign-demo-vci.tunnelto.dev/deferred_credential")
 
         XCTAssertEqual(metadata.display?.count, 2)
         XCTAssertEqual(metadata.display?[0].name, "DataSign Inc.")
@@ -330,14 +330,16 @@ final class DecodingVCIMetadataTests: XCTestCase {
         XCTAssertEqual(metadata.display?[1].logo?.uri, "https://datasign.jp/public/logo.png")
         XCTAssertEqual(metadata.display?[1].logo?.altText, "a square logo of a company")
 
-        let credentialConfig = metadata.credentialConfigurationsSupported["EmployeeIdentificationCredential"] as? CredentialSupportedVcSdJwt
+        let credentialConfig =
+            metadata.credentialConfigurationsSupported["EmployeeIdentificationCredential"]
+            as? CredentialSupportedVcSdJwt
         XCTAssertNotNil(credentialConfig)
         XCTAssertEqual(credentialConfig?.format, "vc+sd-jwt")
         XCTAssertEqual(credentialConfig?.scope, "EmployeeIdentification")
         XCTAssertEqual(credentialConfig?.cryptographicBindingMethodsSupported, ["did"])
         XCTAssertEqual(credentialConfig?.credentialSigningAlgValuesSupported, ["ES256K"])
         XCTAssertEqual(credentialConfig?.vct, "EmployeeCredential")
-        
+
         let claims = credentialConfig?.claims
         XCTAssertNotNil(claims)
         XCTAssertEqual(claims?["company_name"]?.display?.first?.name, "Company Name")
@@ -349,22 +351,22 @@ final class DecodingVCIMetadataTests: XCTestCase {
         XCTAssertEqual(claims?["employee_no"]?.display?.first?.locale, "en-US")
         XCTAssertEqual(claims?["employee_no"]?.display?.last?.name, "社員番号")
         XCTAssertEqual(claims?["employee_no"]?.display?.last?.locale, "ja-JP")
-        
+
         XCTAssertEqual(claims?["given_name"]?.display?.first?.name, "Given Name")
         XCTAssertEqual(claims?["given_name"]?.display?.first?.locale, "en-US")
         XCTAssertEqual(claims?["given_name"]?.display?.last?.name, "名")
         XCTAssertEqual(claims?["given_name"]?.display?.last?.locale, "ja-JP")
-        
+
         XCTAssertEqual(claims?["family_name"]?.display?.first?.name, "Family Name")
         XCTAssertEqual(claims?["family_name"]?.display?.first?.locale, "en-US")
         XCTAssertEqual(claims?["family_name"]?.display?.last?.name, "姓")
         XCTAssertEqual(claims?["family_name"]?.display?.last?.locale, "ja-JP")
-        
+
         XCTAssertEqual(claims?["gender"]?.display?.first?.name, "Gender")
         XCTAssertEqual(claims?["gender"]?.display?.first?.locale, "en-US")
         XCTAssertEqual(claims?["gender"]?.display?.last?.name, "性別")
         XCTAssertEqual(claims?["gender"]?.display?.last?.locale, "ja-JP")
-        
+
         XCTAssertEqual(claims?["division"]?.display?.first?.name, "Division")
         XCTAssertEqual(claims?["division"]?.display?.first?.locale, "en-US")
         XCTAssertEqual(claims?["division"]?.display?.last?.name, "部署")
@@ -377,24 +379,33 @@ final class DecodingVCIMetadataTests: XCTestCase {
 
         XCTAssertEqual(metadata.credentialIssuer, "https://datasign-demo-vci.tunnelto.dev")
         XCTAssertEqual(metadata.authorizationServers, ["https://datasign-demo-vci.tunnelto.dev"])
-        XCTAssertEqual(metadata.credentialEndpoint, "https://datasign-demo-vci.tunnelto.dev/credentials")
-        XCTAssertEqual(metadata.batchCredentialEndpoint, "https://datasign-demo-vci.tunnelto.dev/batch-credentials")
-        XCTAssertEqual(metadata.deferredCredentialEndpoint, "https://datasign-demo-vci.tunnelto.dev/deferred_credential")
-        
+        XCTAssertEqual(
+            metadata.credentialEndpoint, "https://datasign-demo-vci.tunnelto.dev/credentials")
+        XCTAssertEqual(
+            metadata.batchCredentialEndpoint,
+            "https://datasign-demo-vci.tunnelto.dev/batch-credentials")
+        XCTAssertEqual(
+            metadata.deferredCredentialEndpoint,
+            "https://datasign-demo-vci.tunnelto.dev/deferred_credential")
+
         XCTAssertEqual(metadata.display?.count, 2)
         XCTAssertEqual(metadata.display?[0].name, "OWND Project")
         XCTAssertEqual(metadata.display?[0].locale, "en-US")
         XCTAssertEqual(metadata.display?[1].name, "オウンドプロジェクト")
         XCTAssertEqual(metadata.display?[1].locale, "ja_JP")
-        
-        let credentialConfigurations = metadata.credentialConfigurationsSupported["UniversityDegreeCredential"] as? CredentialSupportedJwtVcJson
+
+        let credentialConfigurations =
+            metadata.credentialConfigurationsSupported["UniversityDegreeCredential"]
+            as? CredentialSupportedJwtVcJson
         XCTAssertNotNil(credentialConfigurations)
         XCTAssertEqual(credentialConfigurations?.format, "jwt_vc_json")
         XCTAssertEqual(credentialConfigurations?.scope, "UniversityDegree")
         XCTAssertEqual(credentialConfigurations?.cryptographicBindingMethodsSupported, ["did"])
         XCTAssertEqual(credentialConfigurations?.credentialSigningAlgValuesSupported, ["ES256K"])
-        XCTAssertEqual(credentialConfigurations?.proofTypesSupported?["jwt"]?.proofSigningAlgValuesSupported, ["ES256"])
-        
+        XCTAssertEqual(
+            credentialConfigurations?.proofTypesSupported?["jwt"]?.proofSigningAlgValuesSupported,
+            ["ES256"])
+
         XCTAssertEqual(credentialConfigurations?.display?.count, 2)
         XCTAssertEqual(credentialConfigurations?.display?[0].name, "IdentityCredential")
         XCTAssertEqual(credentialConfigurations?.display?[0].locale, "en-US")
@@ -403,7 +414,7 @@ final class DecodingVCIMetadataTests: XCTestCase {
 
         let credentialDefinition = credentialConfigurations?.credentialDefinition
         XCTAssertEqual(credentialDefinition?.type, ["IdentityCredential", "VerifiableCredential"])
-        
+
         let givenNameClaim = credentialDefinition?.credentialSubject?["given_name"]
         XCTAssertNotNil(givenNameClaim)
         XCTAssertEqual(givenNameClaim?.display?.count, 2)
@@ -411,7 +422,7 @@ final class DecodingVCIMetadataTests: XCTestCase {
         XCTAssertEqual(givenNameClaim?.display?[0].locale, "en-US")
         XCTAssertEqual(givenNameClaim?.display?[1].name, "名")
         XCTAssertEqual(givenNameClaim?.display?[1].locale, "ja_JP")
-        
+
         let lastNameClaim = credentialDefinition?.credentialSubject?["last_name"]
         XCTAssertNotNil(lastNameClaim)
         XCTAssertEqual(lastNameClaim?.display?.count, 2)
@@ -419,7 +430,7 @@ final class DecodingVCIMetadataTests: XCTestCase {
         XCTAssertEqual(lastNameClaim?.display?[0].locale, "en-US")
         XCTAssertEqual(lastNameClaim?.display?[1].name, "姓")
         XCTAssertEqual(lastNameClaim?.display?[1].locale, "ja_JP")
-        
+
         let gpaClaim = credentialDefinition?.credentialSubject?["gpa"]
         XCTAssertNotNil(gpaClaim)
         XCTAssertEqual(gpaClaim?.display?.count, 1)

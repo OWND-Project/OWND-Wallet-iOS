@@ -7,7 +7,6 @@
 
 import XCTest
 
-
 final class DecodingCredentialOfferTests: XCTestCase {
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -16,7 +15,7 @@ final class DecodingCredentialOfferTests: XCTestCase {
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
-    
+
     func testDecodeFilledCredentialOffer() throws {
         let jsonData = try loadJsonTestData(fileName: "credential_offer_filled")
         let decoder = JSONDecoder()
@@ -28,15 +27,17 @@ final class DecodingCredentialOfferTests: XCTestCase {
 
         let grants = credentialOffer.grants
         XCTAssertEqual(grants?.authorizationCode?.issuerState, "eyJhbGciOiJSU0Et...FYUaBy")
-        
+
         XCTAssertEqual(grants?.preAuthorizedCode?.preAuthorizedCode, "adhjhdjajkdkhjhdj")
         XCTAssertEqual(grants?.preAuthorizedCode?.txCode?.inputMode, "numeric")
         XCTAssertEqual(grants?.preAuthorizedCode?.txCode?.length, 4)
         XCTAssertEqual(grants?.preAuthorizedCode?.txCode?.description, "description")
         XCTAssertEqual(grants?.preAuthorizedCode?.interval, 10)
-        XCTAssertEqual(grants?.preAuthorizedCode?.authorizationServer, "https://datasign-demo-vci.tunnelto.dev")
+        XCTAssertEqual(
+            grants?.preAuthorizedCode?.authorizationServer, "https://datasign-demo-vci.tunnelto.dev"
+        )
     }
-    
+
     func testDecodeMinimumCredentialOffer() throws {
         let jsonData = try loadJsonTestData(fileName: "credential_offer_minimum")
         let decoder = JSONDecoder()
@@ -52,43 +53,46 @@ final class DecodingCredentialOfferTests: XCTestCase {
         let jsonData = try loadJsonTestData(fileName: "credential_offer_tx_code_required")
         let decoder = JSONDecoder()
         let credentialOffer = try decoder.decode(CredentialOffer.self, from: jsonData)
-        
+
         XCTAssertTrue(credentialOffer.isTxCodeRequired())
     }
-    
+
     func testFromStringCredentialOfferFilled() throws {
         let jsonData = try loadJsonTestData(fileName: "credential_offer_filled")
         guard let jsonString = String(data: jsonData, encoding: .utf8) else {
             XCTFail("unable to convert json data to string")
             return
         }
-        
+
         let allowedCharacters = NSCharacterSet.alphanumerics.union(.init(charactersIn: "-._~"))
-        let url = URL(string: jsonString.addingPercentEncoding(withAllowedCharacters: allowedCharacters)!)!
+        let url = URL(
+            string: jsonString.addingPercentEncoding(withAllowedCharacters: allowedCharacters)!)!
         let offerString = "openid-credential-offer://?credential_offer=\(url.absoluteString)"
         guard let credentialOffer = CredentialOffer.fromString(offerString) else {
             XCTFail("failed to `fromString`")
             return
         }
-        
+
         XCTAssertEqual(credentialOffer.credentialIssuer, "https://datasign-demo-vci.tunnelto.dev")
         XCTAssertFalse(credentialOffer.credentialConfigurationIds.isEmpty)
         XCTAssertEqual(credentialOffer.credentialConfigurationIds[0], "IdentityCredential")
 
         let grants = credentialOffer.grants
         XCTAssertEqual(grants?.authorizationCode?.issuerState, "eyJhbGciOiJSU0Et...FYUaBy")
-        
+
         XCTAssertEqual(grants?.preAuthorizedCode?.preAuthorizedCode, "adhjhdjajkdkhjhdj")
         XCTAssertEqual(grants?.preAuthorizedCode?.txCode?.inputMode, "numeric")
         XCTAssertEqual(grants?.preAuthorizedCode?.txCode?.length, 4)
         XCTAssertEqual(grants?.preAuthorizedCode?.txCode?.description, "description")
         XCTAssertEqual(grants?.preAuthorizedCode?.interval, 10)
-        XCTAssertEqual(grants?.preAuthorizedCode?.authorizationServer, "https://datasign-demo-vci.tunnelto.dev")
+        XCTAssertEqual(
+            grants?.preAuthorizedCode?.authorizationServer, "https://datasign-demo-vci.tunnelto.dev"
+        )
     }
 }
 
 final class VCIClientTests: XCTestCase {
-    
+
     private var issuer = ""
     private var credentialOffer: CredentialOffer? = nil
 
@@ -96,7 +100,8 @@ final class VCIClientTests: XCTestCase {
         // Put setup code here. This method is called before the invocation of each test method in the class.
         issuer = "https://datasign-demo-vci.tunnelto.dev"
         credentialOffer = CredentialOffer.fromString(
-            "openid-credential-offer://?credential_offer=%7B%22credential_issuer%22%3A%22https%3A%2F%2Fdatasign-demo-vci.tunnelto.dev%22%2C%22credential_configuration_ids%22%3A%5B%22IdentityCredential%22%5D%2C%22grants%22%3A%7B%22urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Apre-authorized_code%22%3A%7B%22pre-authorized_code%22%3A%22SplxlOBeZQQYbYS6WxSbIA%22%2C%22tx_code%22%3A%7B%7D%7D%7D%7D")
+            "openid-credential-offer://?credential_offer=%7B%22credential_issuer%22%3A%22https%3A%2F%2Fdatasign-demo-vci.tunnelto.dev%22%2C%22credential_configuration_ids%22%3A%5B%22IdentityCredential%22%5D%2C%22grants%22%3A%7B%22urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Apre-authorized_code%22%3A%7B%22pre-authorized_code%22%3A%22SplxlOBeZQQYbYS6WxSbIA%22%2C%22tx_code%22%3A%7B%7D%7D%7D%7D"
+        )
 
     }
 

@@ -158,8 +158,6 @@ struct OAuthTokenResponse: Codable {
     }
 }
 
-
-
 struct CredentialRequestCredentialResponseEncryption: Codable {
 
     // todo: Add the JWK property with the appropriate data type.
@@ -287,7 +285,6 @@ struct CredentialDefinitionJwtVcJson: Encodable {
     let type: [String]
     let credentialSubject: [String: ClaimOnlyMandatory]?
 }
-
 
 func createCredentialRequest(formatValue: String, credentialType: String, proofable: Proofable?)
     throws -> any CredentialRequest
@@ -447,4 +444,3 @@ class VCIClient {
             payload, to: credentialEndpoint, accessToken: accessToken, using: session)
     }
 }
-
