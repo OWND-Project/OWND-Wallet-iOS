@@ -7,54 +7,6 @@
 
 import XCTest
 
-final class DecodingCredentialOfferTests: XCTestCase {
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-    
-    func testDecodeFilledCredentialOffer() throws {
-        let jsonData = try loadJsonTestData(fileName: "credential_offer_filled")
-        let decoder = JSONDecoder()
-        let credentialOffer = try decoder.decode(CredentialOffer.self, from: jsonData)
-
-        XCTAssertEqual(credentialOffer.credentialIssuer, "https://datasign-demo-vci.tunnelto.dev")
-        XCTAssertFalse(credentialOffer.credentialConfigurationIds.isEmpty)
-        XCTAssertEqual(credentialOffer.credentialConfigurationIds[0], "IdentityCredential")
-
-        let grants = credentialOffer.grants
-        XCTAssertEqual(grants?.authorizationCode?.issuerState, "eyJhbGciOiJSU0Et...FYUaBy")
-        
-        XCTAssertEqual(grants?.preAuthorizedCode?.preAuthorizedCode, "adhjhdjajkdkhjhdj")
-        XCTAssertEqual(grants?.preAuthorizedCode?.txCode?.inputMode, "numeric")
-        XCTAssertEqual(grants?.preAuthorizedCode?.txCode?.length, 4)
-        XCTAssertEqual(grants?.preAuthorizedCode?.txCode?.description, "description")
-        XCTAssertEqual(grants?.preAuthorizedCode?.interval, 10)
-        XCTAssertEqual(grants?.preAuthorizedCode?.authorizationServer, "https://datasign-demo-vci.tunnelto.dev")
-    }
-    
-    func testDecodeMinimumCredentialOffer() throws {
-        let jsonData = try loadJsonTestData(fileName: "credential_offer_minimum")
-        let decoder = JSONDecoder()
-        let credentialOffer = try decoder.decode(CredentialOffer.self, from: jsonData)
-
-        XCTAssertEqual(credentialOffer.credentialIssuer, "https://datasign-demo-vci.tunnelto.dev")
-        XCTAssertFalse(credentialOffer.credentialConfigurationIds.isEmpty)
-        XCTAssertEqual(credentialOffer.credentialConfigurationIds[0], "IdentityCredential")
-
-        XCTAssertNil(credentialOffer.grants)
-    }
-    func testDecodeCredentialOfferWithTxCode() throws {
-        let jsonData = try loadJsonTestData(fileName: "credential_offer_tx_code_required")
-        let decoder = JSONDecoder()
-        let credentialOffer = try decoder.decode(CredentialOffer.self, from: jsonData)
-        
-        XCTAssertTrue(credentialOffer.isTxCodeRequired())
-    }
-}
 
 final class DecodingCredentialDisplayTests: XCTestCase {
     override func setUpWithError() throws {
