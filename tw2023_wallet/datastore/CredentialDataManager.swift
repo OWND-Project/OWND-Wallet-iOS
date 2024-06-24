@@ -120,16 +120,16 @@ extension Datastore_CredentialData {
 
     private func getBackgroundImage() -> String? {
         guard let metaData = self.parsedMetaData(),
-            let supportedName = metaData.credentialsSupported.keys.first,  // todo: 1つめを前提としている
-            let supported = metaData.credentialsSupported[supportedName],
+            let supportedName = metaData.credentialConfigurationsSupported.keys.first,  // todo: 1つめを前提としている
+            let supported = metaData.credentialConfigurationsSupported[supportedName],
             let displays = supported.display,
             let firstDisplay = displays.first,  // todo: 1つめを前提としている
-            let backgroundImageUrl = firstDisplay.backgroundImage
+            let backgroundImage = firstDisplay.backgroundImage
         else {
             return nil
         }
 
-        return backgroundImageUrl
+        return backgroundImage.uri
     }
 
     private func convertUnixTimestampToDate(unixTimestamp: Int64) -> String {

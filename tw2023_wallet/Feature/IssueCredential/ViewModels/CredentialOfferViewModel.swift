@@ -8,53 +8,41 @@
 import Foundation
 import SwiftUI
 
-enum CredentialOfferParseError: Error {
-    case ParameterNotFound
-    case NoQueryItems
+enum CredentialOfferViewModelError: Error {
+    case LoadDataDidNotFinishuccessfully
+    
+    case CredentialOfferConfigurationIsEmpty
+    
+    case ProofGenerationFailed
+
+    // credential offer format
+    case CredentialOfferQueryItemsNotFound
+    case CredentialOfferParameterNotFound
     case InvalidCredentialOffer
 }
 
 class CredentialOfferViewModel {
     var dataModel: CredentialOfferModel = .init()
-    var rawCredentialOfferString: String? = nil
 
-    var credentialOffer: [String: Any]? = nil
-    var credential_format: String? = nil
-    var credential_vct: String? = nil
+    var credentialFormat: String? = nil
+    var credentialType: String? = nil
 
     private let credentialDataManager = CredentialDataManager(container: nil)
 
-    func initialize(rawCredentialOfferString: String) throws {
-        self.rawCredentialOfferString = rawCredentialOfferString
+    func sendRequest(txCode: String?) async throws {
 
-        let jsonStr = try parseCredentialOfferJsonString()
-        let jsonData = jsonStr.data(using: .utf8)
-        self.credentialOffer =
-            try JSONSerialization.jsonObject(with: jsonData!, options: []) as? [String: Any]
-    }
-
-    func checkIfPinIsRequired() -> Bool {
-        if let grants = credentialOffer!["grants"] as? [String: Any],
-            let preAuthCodeInfo = grants["urn:ietf:params:oauth:grant-type:pre-authorized_code"]
-                as? [String: Any],
-            let userPinRequired = preAuthCodeInfo["user_pin_required"] as? Bool
-        {
-            return userPinRequired
-        }
+        guard let offer = dataModel.credentialOffer,
+            let metadata = dataModel.metaData,
+            let credFormat = credentialFormat,
+            let credType = credentialType
         else {
-            return false
+            throw CredentialOfferViewModelError.LoadDataDidNotFinishuccessfully
         }
-    }
 
-    func sendRequest(userPin: String?) async throws {
         do {
-            interpretMetadataAndOffer()
+            let vciClient = try await VCIClient(credentialOffer: offer, metaData: metadata)
 
-            let vciClient = try await VCIClient(
-                credentialOfferJson:
-                    try parseCredentialOfferJsonString())
-
-            let token = try await vciClient.issueToken(userPin: userPin)
+            let token = try await vciClient.issueToken(txCode: txCode)
             let accessToken = token.accessToken
             let cNonce = token.cNonce
 
@@ -67,18 +55,25 @@ class CredentialOfferViewModel {
             }
 
             // proof generation
-            var proofObject: Proof? = nil
-            if proofRequired && cNonce != nil {
-                let credentialIssuer = credentialOffer!["credential_issuer"] as! String
-                let proofJwt = try KeyPairUtil.createProofJwt(
-                    keyAlias: Constants.Cryptography.KEY_BINDING, audience: credentialIssuer,
-                    nonce: cNonce!)
-                proofObject = Proof(proofType: "jwt", jwt: proofJwt)
+            var proofObject: Proofable? = nil
+            if proofRequired {
+                if let nonce = cNonce {
+                    let credentialIssuer = offer.credentialIssuer
+                    let proofJwt = try KeyPairUtil.createProofJwt(
+                        keyAlias: Constants.Cryptography.KEY_BINDING, audience: credentialIssuer,
+                        nonce: nonce)
+                    switch credFormat {
+                        case "vc+sd-jwt", "jwt_vc_json":
+                            proofObject = JwtProof(proofType: "jwt", jwt: proofJwt)
+                        default:
+                            throw CredentialOfferViewModelError.ProofGenerationFailed
+                    }
+                }
             }
 
             // Credential Request Generation
-            let credentialRequest = createCredentialRequest(
-                formatValue: credential_format!, vctValue: credential_vct!, proof: proofObject)
+            let credentialRequest = try createCredentialRequest(
+                formatValue: credFormat, credentialType: credType, proofable: proofObject)
 
             // 発行
             let credentialResponse = try await vciClient.issueCredential(
@@ -94,34 +89,76 @@ class CredentialOfferViewModel {
         }
     }
 
-    func loadData() async throws {
+    func loadData(_ credentialOffer: CredentialOffer) async throws {
         guard ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] != "1" else {
             print("now previewing")
             return
         }
         guard !dataModel.hasLoadedData else { return }
+
         dataModel.isLoading = true
         print("load data..")
 
-        let credentialIssuer = credentialOffer!["credential_issuer"] as! String
-        self.dataModel.metaData = try await retrieveAllMetadata(issuer: credentialIssuer)
+        dataModel.credentialOffer = credentialOffer
+
+        dataModel.metaData = try await retrieveAllMetadata(issuer: credentialOffer.credentialIssuer)
+
+        try interpretMetadataAndCredentialOffer()
 
         dataModel.isLoading = false
         dataModel.hasLoadedData = true
         print("done")
     }
 
+    private func interpretMetadataAndCredentialOffer() throws {
+        guard let offer = dataModel.credentialOffer,
+            let metadata = dataModel.metaData
+        else {
+            throw CredentialOfferViewModelError.LoadDataDidNotFinishuccessfully
+        }
+
+        let offerIds = offer.credentialConfigurationIds
+
+        // todo: support multiple credential offer
+        guard let firstOfferCredential = offerIds.first else {
+            throw CredentialOfferViewModelError.CredentialOfferConfigurationIsEmpty
+        }
+        
+        dataModel.targetCredentialId = firstOfferCredential
+
+        for (_, supportedInMetadata) in metadata.credentialIssuerMetadata
+            .credentialConfigurationsSupported
+        {
+            switch supportedInMetadata {
+                case let credentialSupported as CredentialSupportedJwtVcJson:
+                    if credentialSupported.credentialDefinition.type.contains(firstOfferCredential)
+                    {
+                        credentialFormat = "jwt_vc_json"
+                        credentialType = firstOfferCredential
+                    }
+
+                case let credentialSupported as CredentialSupportedVcSdJwt:
+                    if credentialSupported.vct == firstOfferCredential {
+                        credentialFormat = "vc+sd-jwt"
+                        credentialType = firstOfferCredential
+                    }
+                default:
+                    break
+            }
+        }
+    }
+
     private func convertToProtoBuf(accessToken: String, credentialResponse: CredentialResponse)
         -> Datastore_CredentialData
     {
         let basicInfo: [String: Any] =
-            credential_format == "vc+sd-jwt"
+            credentialFormat == "vc+sd-jwt"
             ? extractSDJwtInfo(
-                credential: credentialResponse.credential, format: credential_format!)
-            : extractInfoFromJwt(jwt: credentialResponse.credential, format: credential_format!)
+                credential: credentialResponse.credential, format: credentialFormat!)
+            : extractInfoFromJwt(jwt: credentialResponse.credential, format: credentialFormat!)
 
         let encoder = JSONEncoder()
-        let encodedMetadata = try! encoder.encode(self.dataModel.metaData)
+        let encodedMetadata = try! encoder.encode(self.dataModel.metaData?.credentialIssuerMetadata)
         let jsonString = String(data: encodedMetadata, encoding: .utf8)
         let expiresIn =
             credentialResponse.cNonceExpiresIn == nil
@@ -129,7 +166,7 @@ class CredentialOfferViewModel {
         var credentialData = Datastore_CredentialData()
         credentialData.id = UUID().uuidString
 
-        credentialData.format = credential_format!
+        credentialData.format = credentialFormat!
         credentialData.credential = credentialResponse.credential
         credentialData.iss = basicInfo["iss"] as! String
         credentialData.iat = basicInfo["iat"] as! Int64
@@ -141,60 +178,6 @@ class CredentialOfferViewModel {
         credentialData.credentialIssuerMetadata = jsonString!
 
         return credentialData
-    }
-
-    private func parseCredentialOfferJsonString() throws -> String {
-        guard let urlString = rawCredentialOfferString,
-            let url = URL(string: urlString),
-            let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
-        else {
-            throw CredentialOfferParseError.InvalidCredentialOffer
-        }
-
-        guard let queryItems = components.queryItems else {
-            throw CredentialOfferParseError.NoQueryItems
-        }
-
-        guard
-            let credentialOfferValue = queryItems.first(where: { $0.name == "credential_offer" })?
-                .value
-        else {
-            throw CredentialOfferParseError.ParameterNotFound
-        }
-
-        return credentialOfferValue
-    }
-
-    private func interpretMetadataAndOffer() {
-        // todo: メタデータとオファーの内容から、適切な値を設定する
-        // self.credential_format = "jwt_vc_json"
-        // self.credential_vct = "ParticipationCertificate"
-        for (key, credentialSupported) in self.dataModel.metaData!.credentialsSupported {
-            switch credentialSupported {
-                case let credentialSupported as CredentialSupportedJwtVcJson:
-                    print("Format: jwt_vc_json")
-                    let credentials = self.credentialOffer!["credentials"] as! [String]
-                    let firstCredential = credentials.first ?? ""
-                    if credentialSupported.credentialDefinition.type.contains(firstCredential) {
-                        // Handle the case for CredentialSupportedJwtVcJson
-                        self.credential_format = "jwt_vc_json"
-                        self.credential_vct = firstCredential
-                    }
-
-                case let credentialSupported as CredentialSupportedVcSdJwt:
-                    print("Format: vc+sd-jwt")
-                    let credentials = self.credentialOffer!["credentials"] as! [String]
-                    let firstCredential = credentials.first ?? ""
-                    if credentialSupported.credentialDefinition.vct == firstCredential {
-                        // Handle the case for CredentialSupportedVcSdJwt
-                        self.credential_format = "vc+sd-jwt"
-                        self.credential_vct = firstCredential
-                    }
-                default:
-                    // Handle other types if needed
-                    break
-            }
-        }
     }
 
     private func extractSDJwtInfo(credential: String, format: String) -> [String: Any] {

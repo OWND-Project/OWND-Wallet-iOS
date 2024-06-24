@@ -7,71 +7,117 @@
 
 import Foundation
 
-func fetchCredentialIssuerMetadata(from url: URL, using session: URLSession = URLSession.shared)
-    async throws -> CredentialIssuerMetadata
-{
-    let (data, response) = try await session.data(for: URLRequest(url: url))
+enum MetadataError: Error {
+    // networking error
+    case invalidIssuerUrl(issuer: String)
+    case httpRequestError(url: URL)
+    case httpResponseError(response: URLResponse)
+
+    // data handling error
+    case decodingError(data: Data)
+    case missingAuthorizationEndpoint(authorizationServer: URL)
+    case missingTokenEndpoint(authorizationServer: URL)
+
+    case unexpectedError
+}
+
+func fetchMetadata<T: Decodable>(
+    from url: URL, to type: T.Type, using session: URLSession = URLSession.shared
+) async throws -> T {
+    var data: Data
+    var response: URLResponse
+
+    do {
+        (data, response) = try await session.data(for: URLRequest(url: url))
+    }
+    catch {
+        throw MetadataError.httpRequestError(url: url)
+    }
 
     guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-        throw URLError(.badServerResponse)
+        throw MetadataError.httpResponseError(response: response)
     }
 
     let decoder = JSONDecoder()
-    return try decoder.decode(CredentialIssuerMetadata.self, from: data)
+
+    do {
+        let metaData = try decoder.decode(T.self, from: data)
+        return metaData
+    }
+    catch {
+        throw MetadataError.decodingError(data: data)
+    }
+}
+
+func fetchCredentialIssuerMetadata(from url: URL, using session: URLSession = URLSession.shared)
+    async throws -> CredentialIssuerMetadata
+{
+    return try await fetchMetadata(from: url, to: CredentialIssuerMetadata.self, using: session)
 }
 
 func fetchAuthServerMetadata(from url: URL, using session: URLSession = URLSession.shared)
     async throws -> AuthorizationServerMetadata
 {
-    let (data, response) = try await session.data(for: URLRequest(url: url))
-
-    guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-        throw URLError(.badServerResponse)
-    }
-
-    let decoder = JSONDecoder()
-    decoder.keyDecodingStrategy = .convertFromSnakeCase
-    return try decoder.decode(AuthorizationServerMetadata.self, from: data)
+    return try await fetchMetadata(from: url, to: AuthorizationServerMetadata.self, using: session)
 }
 
-enum MetadataError: Error {
-    case separateAuthorizationServerError(issuer: String, authorizationServer: String)
-    case missingAuthorizationEndpoint(authorizationServer: String)
-    case missingTokenEndpoint(authorizationServer: String)
-}
-
-func retrieveAllMetadata(issuer: String, using session: URLSession = URLSession.shared) async throws
-    -> CredentialIssuerMetadata
+func retrieveAllMetadata(issuer: String, using session: URLSession = URLSession.shared)
+    async
+    throws -> Metadata
 {
-    let url =
-        "\(issuer.hasSuffix("/") ? String(issuer.dropLast()) : issuer)/.well-known/openid-credential-issuer"
-
-    var authorizationServer: String = issuer
-    var credentialIssuerMetadata: CredentialIssuerMetadata =
-        try await fetchCredentialIssuerMetadata(from: URL(string: url)!, using: session)
-
-    if let az = credentialIssuerMetadata.authorizationServers?.first {
-        authorizationServer = az
+    guard let issuerUrl = URL(string: issuer) else {
+        throw MetadataError.invalidIssuerUrl(issuer: issuer)
     }
 
-    let authUrl =
-        "\(authorizationServer.hasSuffix("/") ? String(authorizationServer.dropLast()) : authorizationServer)/.well-known/oauth-authorization-server"
-    let authMetadata = try await fetchAuthServerMetadata(
-        from: URL(string: authUrl)!, using: session)
-    if authMetadata.authorizationEndpoint == nil {
-        throw MetadataError.missingAuthorizationEndpoint(authorizationServer: authorizationServer)
-    }
-    if issuer != authorizationServer {
-        throw MetadataError.separateAuthorizationServerError(
-            issuer: issuer, authorizationServer: authorizationServer)
+    let credentialIssuerMetadataUrl =
+        issuerUrl
+        .appendingPathComponent(".well-known")
+        .appendingPathComponent("openid-credential-issuer")
+
+    let credentialIssuerMetadata = try await fetchCredentialIssuerMetadata(
+        from: credentialIssuerMetadataUrl, using: session)
+
+    var authorizationServerUrl: URL = issuerUrl
+    if let authorizationServers = credentialIssuerMetadata.authorizationServers {
+        for server in authorizationServers {
+            if let tmpAuthorizationServerUrl = URL(string: server) {
+                authorizationServerUrl = tmpAuthorizationServerUrl
+                break
+            }
+        }
     }
 
-    if let tokenEndpoint = authMetadata.tokenEndpoint {
-        credentialIssuerMetadata.tokenEndpoint = tokenEndpoint
-    }
-    else {
-        throw MetadataError.missingTokenEndpoint(authorizationServer: authorizationServer)
+    let authorizationServerMetadataUrl =
+        authorizationServerUrl
+        .appendingPathComponent(".well-known")
+        .appendingPathComponent("oauth-authorization-server")
+
+    let authorizationServerMetadata = try await fetchAuthServerMetadata(
+        from: authorizationServerMetadataUrl, using: session)
+
+    let grantTypesSupported = authorizationServerMetadata.grantTypesSupported
+    let authorizationEndpoint = authorizationServerMetadata.authorizationEndpoint
+    let tokenEndpoint = authorizationServerMetadata.tokenEndpoint
+
+    if authorizationEndpoint == nil {
+        // todo: Check the `grantTypes` and if all of them are types that do not use the
+        //   Authorization Endpoint, there is no need to generate an error.
+        throw
+            MetadataError.missingAuthorizationEndpoint(authorizationServer: authorizationServerUrl)
     }
 
-    return credentialIssuerMetadata
+    if tokenEndpoint == nil {
+        if grantTypesSupported == nil || grantTypesSupported != ["implicit"] {
+            // If omitted, the default value is "["authorization_code", "implicit"]".
+            throw
+                MetadataError.missingTokenEndpoint(
+                    authorizationServer: authorizationServerMetadataUrl)
+        }
+    }
+
+    let result = Metadata(
+        credentialIssuerMetadata: credentialIssuerMetadata,
+        authorizationServerMetadata: authorizationServerMetadata)
+
+    return result
 }

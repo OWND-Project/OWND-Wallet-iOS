@@ -8,12 +8,14 @@
 import Foundation
 
 func postTokenRequest(
-    to url: URL, with parameters: [String: String], using session: URLSession = URLSession.shared
+    to url: URL, with tokenRequest: OAuthTokenRequest, using session: URLSession = URLSession.shared
 ) async throws -> OAuthTokenResponse {
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
     request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-    request.httpBody = parameters.map { "\($0)=\($1)" }.joined(separator: "&").data(using: .utf8)
+
+    let encoder = URLEncodedFormEncoder()
+    request.httpBody = try encoder.encode(tokenRequest)
 
     let (data, response) = try await session.data(for: request)
 
@@ -27,7 +29,7 @@ func postTokenRequest(
 }
 
 func postCredentialRequest(
-    _ credentialRequest: CredentialRequest, to url: URL, accessToken: String,
+    _ credentialRequest: any CredentialRequest, to url: URL, accessToken: String,
     using session: URLSession = URLSession.shared
 ) async throws -> CredentialResponse {
     var request = URLRequest(url: url)
@@ -65,119 +67,262 @@ func postCredentialRequest(
     return try decoder.decode(CredentialResponse.self, from: data)
 }
 
+enum VCIClientError: Error {
+    case undecodableCredentialOffer(json: String)
+    case retrieveMetaDataError(error: MetadataError)
+    case tokenEndpointIsRequired
+    case credentialEndpointIsRequiredG
+    case unsupportedCredentialFormat(format: String)
+    case credentialEndpointIsRequired
+    case jwtProofRequired
+}
+
+
 class VCIClient {
+
+    private var metadata: Metadata
+    private var tokenEndpoint: URL
+    private var credentialEndpoint: URL
     private(set) var credentialOffer: CredentialOffer
-    private var metadata: CredentialIssuerMetadata
-    private var tokenEndpoint: String
 
-    init(credentialOfferJson: String, using session: URLSession = URLSession.shared) async throws {
-        let decoder = JSONDecoder()
-        guard let jsonData = credentialOfferJson.data(using: .utf8) else {
-            throw NSError(
-                domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid JSON"])
+    init(credentialOffer: CredentialOffer, metaData: Metadata) async throws {
+        // set `credentialOffer`
+        self.credentialOffer = credentialOffer
+        // set `metadata`
+        self.metadata = metaData
+        // set `tokenEndpoint`
+        guard let tokenUrlString = metadata.authorizationServerMetadata.tokenEndpoint,
+            let tokenUrl = URL(string: tokenUrlString)
+        else {
+            throw VCIClientError.tokenEndpointIsRequired
         }
-
-        credentialOffer = try decoder.decode(CredentialOffer.self, from: jsonData)
-        metadata = try await retrieveAllMetadata(
-            issuer: credentialOffer.credentialIssuer, using: session)
-        guard let unwrappedTokenEndpoint = metadata.tokenEndpoint else {
-            throw NSError(
-                domain: "", code: 0,
-                userInfo: [NSLocalizedDescriptionKey: "Token endpoint URL is missing"])
+        tokenEndpoint = tokenUrl
+        // set `credentialEndpoint`
+        guard
+            let credentialEndpointUrl = URL(
+                string: metadata.credentialIssuerMetadata.credentialEndpoint)
+        else {
+            throw VCIClientError.credentialEndpointIsRequired
         }
-        tokenEndpoint = unwrappedTokenEndpoint
+        credentialEndpoint = credentialEndpointUrl
     }
 
-    func issueToken(userPin: String?, using session: URLSession = URLSession.shared) async throws
+    func issueToken(txCode: String?, using session: URLSession = URLSession.shared) async throws
         -> OAuthTokenResponse
     {
         let grants = credentialOffer.grants
-        let parameters: [String: String] = [
-            "grant_type": "urn:ietf:params:oauth:grant-type:pre-authorized_code",
-            "pre-authorized_code": grants?.urnIetfParams?.preAuthorizedCode ?? "",
-            "user_pin": userPin ?? "",
-        ]
+
+        let tokenRequest: OAuthTokenRequest = OAuthTokenRequest(
+            grantType: "urn:ietf:params:oauth:grant-type:pre-authorized_code",
+            code: nil,
+            redirectUri: nil,
+            clientId: nil,
+            preAuthorizedCode: grants?.preAuthorizedCode?.preAuthorizedCode,
+            txCode: txCode
+        )
+
         return try await postTokenRequest(
-            to: URL(string: tokenEndpoint)!, with: parameters, using: session)
+            to: tokenEndpoint, with: tokenRequest, using: session)
     }
 
     func issueCredential(
-        payload: CredentialRequest, accessToken: String,
+        payload: any CredentialRequest, accessToken: String,
         using session: URLSession = URLSession.shared
     ) async throws -> CredentialResponse {
-        guard let credentialEndpont = metadata.credentialEndpoint else {
-            throw NSError(
-                domain: "", code: 0,
-                userInfo: [NSLocalizedDescriptionKey: "Credential endpoint URL is missing"])
-        }
-        let url = URL(string: credentialEndpont)!
         return try await postCredentialRequest(
-            payload, to: url, accessToken: accessToken, using: session)
+            payload, to: credentialEndpoint, accessToken: accessToken, using: session)
     }
 }
 
-protocol CredentialRequest: Encodable {
-    var format: String { get }
-    var proof: Proof? { get }
+struct CredentialRequestCredentialResponseEncryption: Codable {
+    
+    // todo: Add the JWK property with the appropriate data type.
+    // let jwk: ...
+    
+    let alg: String
+    let enc: String
+    
+    /*
+    enum CodingKeys: String, CodingKey {
+        case alg, enc
+    }
+     */
 }
 
-struct Proof: Encodable {
+struct LdpVpProofClaim: Codable {
+    let domain: String
+    
+    // REQUIRED when the Credential Issuer has provided a c_nonce. It MUST NOT be used otherwise
+    let challenge: String?
+    
+    /*
+    enum CodingKeys: String, CodingKey {
+        case domain, challenge
+    }
+     */
+}
+
+struct LdpVp: Codable {
+    // todo: improve type definition
+    let holder: String;
+    let proof: [LdpVpProofClaim]
+}
+
+protocol Proofable: Codable {
+    var proofType: String { get }
+}
+
+
+struct JwtProof: Proofable {
     let proofType: String
     let jwt: String
-
+    
+    /*
     enum CodingKeys: String, CodingKey {
         case proofType = "proof_type"
         case jwt
     }
+     */
 }
 
-struct CredentialRequestSdJwtVc: CredentialRequest {
-    let format: String
-    let proof: Proof?
-    let credentialDefinition: [String: String]
+struct CwtProof: Proofable {
+    let proofType: String
+    let cwt: String
+    
+    /*
+    enum CodingKeys: String, CodingKey {
+        case proofType = "proof_type"
+        case cwt
+    }
+     */
 }
 
-struct CredentialRequestJwtVc: CredentialRequest {
+struct LdpVpProof: Proofable{
+    let proofType: String
+    let ldpVp: LdpVp
+    /*
+    enum CodingKeys: String, CodingKey {
+        case proofType = "proof_type"
+        case ldpVp = "ldp_vp"
+    }
+     */
+}
+
+
+protocol CredentialRequest: Encodable {
+    associatedtype ProofType: Proofable
+    var format: String { get }
+    var proof: ProofType? { get }
+    
+    // REQUIRED when credential_identifiers parameter was returned from the Token Response. 
+    // It MUST NOT be used otherwise
+    var credentialIdentifier: String? { get }
+    var credentialResponseEncryption: CredentialRequestCredentialResponseEncryption? { get }
+}
+
+
+struct CredentialRequestVcSdJwt: CredentialRequest {
     let format: String
-    let proof: Proof?
-    let credentialDefinition: CredentialDefinitionJwtVc
+    let proof: JwtProof?
+    let credentialIdentifier: String?
+    let credentialResponseEncryption: CredentialRequestCredentialResponseEncryption?
+    
+    // REQUIRED when the format parameter is present in the Credential Request. It MUST NOT be used otherwise
+    let vct: String?
+    let claims: [String: Claim]?
+
+    /*
+    enum CodingKeys: String, CodingKey {
+        case format, proof, vct, claims
+        case credentialIdentifier = "credential_identifier"
+        case credentialResponseEncryption = "credential_response_encryption"
+    }
+     */
+
+}
+
+struct CredentialRequestJwtVcJson: CredentialRequest {
+    let format: String
+    let proof: JwtProof?
+    var credentialIdentifier: String?
+    var credentialResponseEncryption: CredentialRequestCredentialResponseEncryption?
+    
+    // REQUIRED when the format parameter is present in the Credential Request.
+    // It MUST NOT be used otherwise
+    let credentialDefinition: CredentialDefinitionJwtVcJson?
+    
+    /*
+    enum CodingKeys: String, CodingKey {
+        case format, proof
+        case credentialIdentifier = "credential_identifier"
+        case credentialResponseEncryption = "credential_response_encryption"
+        case credentialDefinition = "credential_definition"
+    }
+     */
 }
 
 struct CredentialResponse: Codable {
-    let format: String
     let credential: String
+    let transactionId: String?
     let cNonce: String?
     let cNonceExpiresIn: Int?
+    let notificationId: String?
 
+    /*
     enum CodingKeys: String, CodingKey {
-        case format
         case credential
+        case transactionId = "transaction_id"
         case cNonce = "c_nonce"
         case cNonceExpiresIn = "c_nonce_expires_in"
+        case notificationId = "notification_id"
     }
+     */
 }
 
-struct CredentialDefinitionJwtVc: Encodable {
+struct CredentialDefinitionJwtVcJson: Encodable {
     let type: [String]
-    let credentialSubject: [String: String]
+    let credentialSubject: [String: ClaimOnlyMandatory]?
 }
 
-func createCredentialRequest(formatValue: String, vctValue: String, proof: Proof?)
-    -> CredentialRequest
+func createCredentialRequest(formatValue: String, credentialType: String, proofable: Proofable?)
+    throws -> any CredentialRequest
 {
-    if formatValue == "vc+sd-jwt" {
-        return CredentialRequestSdJwtVc(
-            format: formatValue,
-            proof: proof,
-            credentialDefinition: ["vct": vctValue]
+    switch formatValue {
+        case "vc+sd-jwt":
+            // Proof is optional. Only if present, convert to the appropriate type.
+            var proof: JwtProof? = nil
+            if let someProof = proofable {
+                guard let jwtProof = someProof as? JwtProof else {
+                    throw VCIClientError.jwtProofRequired
+                }
+                proof = jwtProof
+            }
+            return CredentialRequestVcSdJwt(
+                format: formatValue,
+                proof: proof,
+                credentialIdentifier: nil,
+                credentialResponseEncryption: nil,
+                vct: credentialType,
+                claims: nil
+            )
+        case "jwt_vc_json":
+            // Proof is optional. Only if present, convert to the appropriate type.
+            var proof: JwtProof? = nil
+            if let someProof = proofable {
+                guard let jwtProof = someProof as? JwtProof else {
+                    throw VCIClientError.jwtProofRequired
+                }
+                proof = jwtProof
+            }
+            return CredentialRequestJwtVcJson(
+                format: formatValue,
+                proof: proof,
+                credentialDefinition:
+                    CredentialDefinitionJwtVcJson(
+                        type: [credentialType],
+                        credentialSubject: nil)
         )
-    }
-    else {
-        return CredentialRequestJwtVc(
-            format: formatValue,
-            proof: proof,
-            credentialDefinition: CredentialDefinitionJwtVc(
-                type: [vctValue], credentialSubject: [:])
-        )
+        default:
+            throw VCIClientError.unsupportedCredentialFormat(format: formatValue)
     }
 }

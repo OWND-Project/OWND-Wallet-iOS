@@ -9,7 +9,13 @@ import Foundation
 
 @Observable
 class CredentialOfferModel {
-    var metaData: CredentialIssuerMetadata? = nil
+    var metaData: Metadata? = nil
+    var credentialOffer: CredentialOffer? = nil
+    
+    // The parameter `credentialConfigurationIds` is array.
+    // todo: This variable should be an array as well.
+    var targetCredentialId: String? = nil
+
     var isLoading = false
     var hasLoadedData = false
 }

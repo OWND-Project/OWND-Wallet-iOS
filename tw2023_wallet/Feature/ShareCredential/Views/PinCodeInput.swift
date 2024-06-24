@@ -50,7 +50,7 @@ struct PinCodeInput: View {
                             title: "authentication",
                             action: {
                                 Task {
-                                    try await viewModel.sendRequest(userPin: pinCode)
+                                    try await viewModel.sendRequest(txCode: pinCode)
                                     self.navigateToCredentialList = true
                                 }
                             }
