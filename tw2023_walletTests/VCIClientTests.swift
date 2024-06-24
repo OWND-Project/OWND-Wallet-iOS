@@ -116,14 +116,13 @@ final class VCIClientTests: XCTestCase {
             let mockSession = URLSession(configuration: configuration)
 
             let testURL = URL(string: "https://example.com/token")!
-            guard let url = Bundle.main.url(forResource: "token_response", withExtension: "json"),
-                let mockData = try? Data(contentsOf: url)
+            guard let mockData = try? loadJsonTestData(fileName: "token_response")
             else {
                 XCTFail("Cannot read token_response.json")
                 return
             }
             let response = HTTPURLResponse(
-                url: url, statusCode: 200, httpVersion: nil, headerFields: nil)
+                url: testURL.absoluteURL, statusCode: 200, httpVersion: nil, headerFields: nil)
             MockURLProtocol.mockResponses[testURL.absoluteString] = (mockData, response)
             do {
                 let tokenRequest = OAuthTokenRequest(
@@ -151,15 +150,13 @@ final class VCIClientTests: XCTestCase {
             // テスト用URLとモックレスポンスデータの設定
             let testURL = URL(string: "https://example.com/credential")!
             guard
-                let url = Bundle.main.url(
-                    forResource: "credential_response", withExtension: "json"),
-                let mockData = try? Data(contentsOf: url)
+                let mockData = try? loadJsonTestData(fileName: "credential_response")
             else {
                 XCTFail("Cannot read credential_response.json")
                 return
             }
             let response = HTTPURLResponse(
-                url: url, statusCode: 200, httpVersion: nil, headerFields: nil)
+                url: testURL.absoluteURL, statusCode: 200, httpVersion: nil, headerFields: nil)
             MockURLProtocol.mockResponses[testURL.absoluteString] = (mockData, response)
 
             // CredentialRequestのインスタンスを作成
@@ -193,9 +190,7 @@ final class VCIClientTests: XCTestCase {
             let mockSession = URLSession(configuration: configuration)
             let tokenUrl = URL(string: "\(self.issuer)/token")!
             guard
-                let resourceUrl = Bundle.main.url(
-                    forResource: "token_response", withExtension: "json"),
-                let mockData = try? Data(contentsOf: resourceUrl)
+                let mockData = try? loadJsonTestData(fileName: "token_response")
             else {
                 XCTFail("Cannot read resource json")
                 return
@@ -207,16 +202,8 @@ final class VCIClientTests: XCTestCase {
             // setup metadata
             let decoder = JSONDecoder()
             guard
-                let issuerMetadataUrl = Bundle.main.url(
-                    forResource: "credential_issuer_metadata_jwt_vc",
-                    withExtension: "json"),
-                let jsonIssuerMetaData = try? Data(contentsOf: issuerMetadataUrl),
-                let authorizationServerMetadataUrl = Bundle.main.url(
-                    forResource: "authorization_server",
-                    withExtension: "json"),
-                let jsonAuthorizationServerData = try? Data(
-                    contentsOf: authorizationServerMetadataUrl)
-
+                let jsonIssuerMetaData = try? loadJsonTestData(fileName: "credential_issuer_metadata_jwt_vc"),
+                let jsonAuthorizationServerData = try? loadJsonTestData(fileName: "authorization_server")
             else {
                 XCTFail("Cannot read resource json")
                 return
@@ -260,9 +247,7 @@ final class VCIClientTests: XCTestCase {
             let issuer = "https://datasign-demo-vci.tunnelto.dev"
             let credentialUrl = URL(string: "\(issuer)/credentials")!
             guard
-                let resourceUrl = Bundle.main.url(
-                    forResource: "credential_response", withExtension: "json"),
-                let mockData = try? Data(contentsOf: resourceUrl)
+                let mockData = try? loadJsonTestData(fileName: "credential_response")
             else {
                 XCTFail("Cannot read resource json")
                 return
@@ -274,16 +259,8 @@ final class VCIClientTests: XCTestCase {
             // setup metadata
             let decoder = JSONDecoder()
             guard
-                let issuerMetadataUrl = Bundle.main.url(
-                    forResource: "credential_issuer_metadata_sd_jwt",
-                    withExtension: "json"),
-                let jsonIssuerMetaData = try? Data(contentsOf: issuerMetadataUrl),
-                let authorizationServerMetadataUrl = Bundle.main.url(
-                    forResource: "authorization_server",
-                    withExtension: "json"),
-                let jsonAuthorizationServerData = try? Data(
-                    contentsOf: authorizationServerMetadataUrl)
-
+                let jsonIssuerMetaData = try? loadJsonTestData(fileName: "credential_issuer_metadata_sd_jwt"),
+                let jsonAuthorizationServerData = try? loadJsonTestData(fileName: "authorization_server")
             else {
                 XCTFail("Cannot read resource json")
                 return
