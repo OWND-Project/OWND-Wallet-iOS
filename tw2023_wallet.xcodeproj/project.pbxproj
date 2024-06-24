@@ -39,8 +39,8 @@
 		8B4265952B564B2D00A07F2B /* IssuerDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B4265942B564B2D00A07F2B /* IssuerDetailViewModel.swift */; };
 		8B4265982B57677600A07F2B /* SDJwtUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = A81087132B3B0AB3004425DE /* SDJwtUtil.swift */; };
 		8B42659A2B576CA500A07F2B /* IssuerDetailPreviewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B4265992B576CA500A07F2B /* IssuerDetailPreviewModel.swift */; };
-		8B43AE292B3A4F650016CF83 /* credential_offer.json in Resources */ = {isa = PBXBuildFile; fileRef = 8B43AE282B3A4F650016CF83 /* credential_offer.json */; };
-		8B43AE2A2B3A4FB30016CF83 /* credential_offer.json in Resources */ = {isa = PBXBuildFile; fileRef = 8B43AE282B3A4F650016CF83 /* credential_offer.json */; };
+		8B43AE292B3A4F650016CF83 /* credential_offer_filled.json in Resources */ = {isa = PBXBuildFile; fileRef = 8B43AE282B3A4F650016CF83 /* credential_offer_filled.json */; };
+		8B43AE2A2B3A4FB30016CF83 /* credential_offer_filled.json in Resources */ = {isa = PBXBuildFile; fileRef = 8B43AE282B3A4F650016CF83 /* credential_offer_filled.json */; };
 		8B43AE2C2B3A5A730016CF83 /* VCIMetadataClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B43AE2B2B3A5A730016CF83 /* VCIMetadataClient.swift */; };
 		8B43AE2D2B3A5A730016CF83 /* VCIMetadataClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B43AE2B2B3A5A730016CF83 /* VCIMetadataClient.swift */; };
 		8B43AE2F2B3A5B2C0016CF83 /* MockURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B43AE2E2B3A5B2C0016CF83 /* MockURLProtocol.swift */; };
@@ -145,9 +145,9 @@
 		A8137C3D2B478710008CA5AC /* KeyPairUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8137C3C2B478710008CA5AC /* KeyPairUtil.swift */; };
 		A8137C412B47D611008CA5AC /* JWTUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8137C402B47D611008CA5AC /* JWTUtil.swift */; };
 		A8137C482B484454008CA5AC /* JWTDecode in Frameworks */ = {isa = PBXBuildFile; productRef = A8137C472B484454008CA5AC /* JWTDecode */; };
-		A82601A92C267A2A00BF8139 /* filled_all_parameters.json in Resources */ = {isa = PBXBuildFile; fileRef = A82601A82C267A2A00BF8139 /* filled_all_parameters.json */; };
-		A82601AB2C267B1000BF8139 /* minimum.json in Resources */ = {isa = PBXBuildFile; fileRef = A82601AA2C267B1000BF8139 /* minimum.json */; };
-		A82601AE2C2685F200BF8139 /* partial_optional.json in Resources */ = {isa = PBXBuildFile; fileRef = A82601AD2C2685F200BF8139 /* partial_optional.json */; };
+		A82601A92C267A2A00BF8139 /* credential_display_filled.json in Resources */ = {isa = PBXBuildFile; fileRef = A82601A82C267A2A00BF8139 /* credential_display_filled.json */; };
+		A82601AB2C267B1000BF8139 /* credential_display_minimum.json in Resources */ = {isa = PBXBuildFile; fileRef = A82601AA2C267B1000BF8139 /* credential_display_minimum.json */; };
+		A82601AE2C2685F200BF8139 /* claim_map_mixed.json in Resources */ = {isa = PBXBuildFile; fileRef = A82601AD2C2685F200BF8139 /* claim_map_mixed.json */; };
 		A82ECC792C22738900B9784B /* Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = A82ECC782C22738900B9784B /* Metadata.swift */; };
 		A82ECC802C23A6AB00B9784B /* UrlEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A82ECC7F2C23A6AB00B9784B /* UrlEncoder.swift */; };
 		A82ECC822C23A81C00B9784B /* UrlEncoderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A82ECC812C23A81C00B9784B /* UrlEncoderTest.swift */; };
@@ -177,9 +177,9 @@
 		A857C25A2C0DD3200059A82F /* swift-format in Frameworks */ = {isa = PBXBuildFile; productRef = A857C2592C0DD3200059A82F /* swift-format */; };
 		A88D323A2C26997700429E75 /* Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = A82ECC782C22738900B9784B /* Metadata.swift */; };
 		A88D323C2C26B0DF00429E75 /* UrlEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A82ECC7F2C23A6AB00B9784B /* UrlEncoder.swift */; };
-		A88D32442C27001B00429E75 /* filled_all_parameters.json in Resources */ = {isa = PBXBuildFile; fileRef = A82601A82C267A2A00BF8139 /* filled_all_parameters.json */; };
-		A88D32452C27001F00429E75 /* minimum.json in Resources */ = {isa = PBXBuildFile; fileRef = A82601AA2C267B1000BF8139 /* minimum.json */; };
-		A88D32462C27002300429E75 /* partial_optional.json in Resources */ = {isa = PBXBuildFile; fileRef = A82601AD2C2685F200BF8139 /* partial_optional.json */; };
+		A88D32442C27001B00429E75 /* credential_display_filled.json in Resources */ = {isa = PBXBuildFile; fileRef = A82601A82C267A2A00BF8139 /* credential_display_filled.json */; };
+		A88D32452C27001F00429E75 /* credential_display_minimum.json in Resources */ = {isa = PBXBuildFile; fileRef = A82601AA2C267B1000BF8139 /* credential_display_minimum.json */; };
+		A88D32462C27002300429E75 /* claim_map_mixed.json in Resources */ = {isa = PBXBuildFile; fileRef = A82601AD2C2685F200BF8139 /* claim_map_mixed.json */; };
 		A89108022B82D1650060DD71 /* RecipientClaimsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89108012B82D1650060DD71 /* RecipientClaimsViewModel.swift */; };
 		A89108042B82D2880060DD71 /* RecipientClaimsPreviewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89108032B82D2880060DD71 /* RecipientClaimsPreviewModel.swift */; };
 		A891080C2B84785F0060DD71 /* credential_sharing_history.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = A891080B2B84785F0060DD71 /* credential_sharing_history.pb.swift */; };
@@ -189,6 +189,15 @@
 		A89297622B3AF26F007315BE /* SwiftASN1 in Frameworks */ = {isa = PBXBuildFile; productRef = A89297612B3AF26F007315BE /* SwiftASN1 */; };
 		A89297652B3AF487007315BE /* ASN1Decoder in Frameworks */ = {isa = PBXBuildFile; productRef = A89297642B3AF487007315BE /* ASN1Decoder */; };
 		A89463E12B555C910069EF21 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89463E02B555C910069EF21 /* Constants.swift */; };
+		A8AB4BC52C294FFD00C009A1 /* credential_offer_minimum.json in Resources */ = {isa = PBXBuildFile; fileRef = A8AB4BC42C294FFC00C009A1 /* credential_offer_minimum.json */; };
+		A8AB4BC62C294FFD00C009A1 /* credential_offer_minimum.json in Resources */ = {isa = PBXBuildFile; fileRef = A8AB4BC42C294FFC00C009A1 /* credential_offer_minimum.json */; };
+		A8AB4BC82C295C9500C009A1 /* credential_offer_tx_code_required.json in Resources */ = {isa = PBXBuildFile; fileRef = A8AB4BC72C295C9500C009A1 /* credential_offer_tx_code_required.json */; };
+		A8AB4BC92C295C9500C009A1 /* credential_offer_tx_code_required.json in Resources */ = {isa = PBXBuildFile; fileRef = A8AB4BC72C295C9500C009A1 /* credential_offer_tx_code_required.json */; };
+		A8AB4BCB2C295DAF00C009A1 /* TestUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8AB4BCA2C295DAF00C009A1 /* TestUtilities.swift */; };
+		A8AB4BCF2C296AB000C009A1 /* claim_map_empty.json in Resources */ = {isa = PBXBuildFile; fileRef = A8AB4BCE2C296AB000C009A1 /* claim_map_empty.json */; };
+		A8AB4BD02C296AB900C009A1 /* claim_map_empty.json in Resources */ = {isa = PBXBuildFile; fileRef = A8AB4BCE2C296AB000C009A1 /* claim_map_empty.json */; };
+		A8AB4BD22C296C7800C009A1 /* claim_map_filled.json in Resources */ = {isa = PBXBuildFile; fileRef = A8AB4BD12C296C7800C009A1 /* claim_map_filled.json */; };
+		A8AB4BD32C296C9800C009A1 /* claim_map_filled.json in Resources */ = {isa = PBXBuildFile; fileRef = A8AB4BD12C296C7800C009A1 /* claim_map_filled.json */; };
 		A8ADC6992BCE3CDA0077A0C4 /* IdTokenSharingHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8ADC6982BCE3CDA0077A0C4 /* IdTokenSharingHistory.swift */; };
 		A8ADC69B2BCEAD090077A0C4 /* idTokenSharingHistories.json in Resources */ = {isa = PBXBuildFile; fileRef = A8ADC69A2BCEAD090077A0C4 /* idTokenSharingHistories.json */; };
 		A8AF22882C12A59B00D6EDA5 /* RestoreHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8AF22872C12A59B00D6EDA5 /* RestoreHelper.swift */; };
@@ -293,7 +302,7 @@
 		8B297C462B39825100D2998D /* credential_issuer_metadata_jwt_vc.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = credential_issuer_metadata_jwt_vc.json; sourceTree = "<group>"; };
 		8B4265942B564B2D00A07F2B /* IssuerDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IssuerDetailViewModel.swift; sourceTree = "<group>"; };
 		8B4265992B576CA500A07F2B /* IssuerDetailPreviewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IssuerDetailPreviewModel.swift; sourceTree = "<group>"; };
-		8B43AE282B3A4F650016CF83 /* credential_offer.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = credential_offer.json; sourceTree = "<group>"; };
+		8B43AE282B3A4F650016CF83 /* credential_offer_filled.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = credential_offer_filled.json; sourceTree = "<group>"; };
 		8B43AE2B2B3A5A730016CF83 /* VCIMetadataClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VCIMetadataClient.swift; sourceTree = "<group>"; };
 		8B43AE2E2B3A5B2C0016CF83 /* MockURLProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLProtocol.swift; sourceTree = "<group>"; };
 		8B43AE312B3A5B880016CF83 /* VCIMetadataClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VCIMetadataClientTests.swift; sourceTree = "<group>"; };
@@ -374,9 +383,9 @@
 		A81087212B3D33F5004425DE /* SignatureUitlTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignatureUitlTest.swift; sourceTree = "<group>"; };
 		A8137C3C2B478710008CA5AC /* KeyPairUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPairUtil.swift; sourceTree = "<group>"; };
 		A8137C402B47D611008CA5AC /* JWTUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JWTUtil.swift; sourceTree = "<group>"; };
-		A82601A82C267A2A00BF8139 /* filled_all_parameters.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = filled_all_parameters.json; sourceTree = "<group>"; };
-		A82601AA2C267B1000BF8139 /* minimum.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = minimum.json; sourceTree = "<group>"; };
-		A82601AD2C2685F200BF8139 /* partial_optional.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = partial_optional.json; sourceTree = "<group>"; };
+		A82601A82C267A2A00BF8139 /* credential_display_filled.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = credential_display_filled.json; sourceTree = "<group>"; };
+		A82601AA2C267B1000BF8139 /* credential_display_minimum.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = credential_display_minimum.json; sourceTree = "<group>"; };
+		A82601AD2C2685F200BF8139 /* claim_map_mixed.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = claim_map_mixed.json; sourceTree = "<group>"; };
 		A82ECC782C22738900B9784B /* Metadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Metadata.swift; sourceTree = "<group>"; };
 		A82ECC7F2C23A6AB00B9784B /* UrlEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlEncoder.swift; sourceTree = "<group>"; };
 		A82ECC812C23A81C00B9784B /* UrlEncoderTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlEncoderTest.swift; sourceTree = "<group>"; };
@@ -407,6 +416,11 @@
 		A89297532B3AA151007315BE /* ZipUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZipUtil.swift; sourceTree = "<group>"; };
 		A892975A2B3AA81C007315BE /* CertificateUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CertificateUtil.swift; sourceTree = "<group>"; };
 		A89463E02B555C910069EF21 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		A8AB4BC42C294FFC00C009A1 /* credential_offer_minimum.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = credential_offer_minimum.json; sourceTree = "<group>"; };
+		A8AB4BC72C295C9500C009A1 /* credential_offer_tx_code_required.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = credential_offer_tx_code_required.json; sourceTree = "<group>"; };
+		A8AB4BCA2C295DAF00C009A1 /* TestUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUtilities.swift; sourceTree = "<group>"; };
+		A8AB4BCE2C296AB000C009A1 /* claim_map_empty.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = claim_map_empty.json; sourceTree = "<group>"; };
+		A8AB4BD12C296C7800C009A1 /* claim_map_filled.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = claim_map_filled.json; sourceTree = "<group>"; };
 		A8ADC6982BCE3CDA0077A0C4 /* IdTokenSharingHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdTokenSharingHistory.swift; sourceTree = "<group>"; };
 		A8ADC69A2BCEAD090077A0C4 /* idTokenSharingHistories.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = idTokenSharingHistories.json; sourceTree = "<group>"; };
 		A8AF22872C12A59B00D6EDA5 /* RestoreHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreHelper.swift; sourceTree = "<group>"; };
@@ -687,6 +701,7 @@
 				8B0E0AA82B3ED7D20080F6A3 /* AuthorizationRquestTests.swift */,
 				8B6C3B862B47BED600B5D784 /* OpenIdProviderTests.swift */,
 				8B6C3B882B481BEC00B5D784 /* VCIMetadataUtilTests.swift */,
+				A8AB4BCA2C295DAF00C009A1 /* TestUtilities.swift */,
 			);
 			path = tw2023_walletTests;
 			sourceTree = "<group>";
@@ -952,8 +967,8 @@
 		A82601A72C2679F800BF8139 /* credential_display */ = {
 			isa = PBXGroup;
 			children = (
-				A82601A82C267A2A00BF8139 /* filled_all_parameters.json */,
-				A82601AA2C267B1000BF8139 /* minimum.json */,
+				A82601A82C267A2A00BF8139 /* credential_display_filled.json */,
+				A82601AA2C267B1000BF8139 /* credential_display_minimum.json */,
 			);
 			path = credential_display;
 			sourceTree = "<group>";
@@ -961,7 +976,9 @@
 		A82601AC2C2684DA00BF8139 /* claim_map */ = {
 			isa = PBXGroup;
 			children = (
-				A82601AD2C2685F200BF8139 /* partial_optional.json */,
+				A82601AD2C2685F200BF8139 /* claim_map_mixed.json */,
+				A8AB4BCE2C296AB000C009A1 /* claim_map_empty.json */,
+				A8AB4BD12C296C7800C009A1 /* claim_map_filled.json */,
 			);
 			path = claim_map;
 			sourceTree = "<group>";
@@ -979,7 +996,9 @@
 		A82601B02C26908A00BF8139 /* credential_offer */ = {
 			isa = PBXGroup;
 			children = (
-				8B43AE282B3A4F650016CF83 /* credential_offer.json */,
+				8B43AE282B3A4F650016CF83 /* credential_offer_filled.json */,
+				A8AB4BC42C294FFC00C009A1 /* credential_offer_minimum.json */,
+				A8AB4BC72C295C9500C009A1 /* credential_offer_tx_code_required.json */,
 			);
 			path = credential_offer;
 			sourceTree = "<group>";
@@ -1375,15 +1394,18 @@
 				8B297C482B39825800D2998D /* credential_issuer_metadata_jwt_vc.json in Resources */,
 				8B297C452B39779000D2998D /* credential_supported_ldp_vc.json in Resources */,
 				8B297C3F2B39746000D2998D /* credential_supported_jwt_vc.json in Resources */,
+				A8AB4BC52C294FFD00C009A1 /* credential_offer_minimum.json in Resources */,
 				8B43AE3B2B3AA1300016CF83 /* authorization_server.json in Resources */,
 				8B0E0AB22B4054E80080F6A3 /* presentation_definition.json in Resources */,
 				8B81E2A42B33CC4200ED3B4E /* Preview Assets.xcassets in Resources */,
 				8B6C3B8C2B48239B00B5D784 /* credential_issuer_metadata_sd_jwt.json in Resources */,
 				F657D5C72B3C44F100901A6A /* sharingHistoryData.json in Resources */,
+				A8AB4BC82C295C9500C009A1 /* credential_offer_tx_code_required.json in Resources */,
+				A8AB4BD02C296AB900C009A1 /* claim_map_empty.json in Resources */,
 				8BB513902B3B24C400D4EFB3 /* credential_response.json in Resources */,
 				F6A239A62B4E2A6500B09F17 /* clientInfo.json in Resources */,
 				8B81E2E62B34413A00ED3B4E /* credentialData.json in Resources */,
-				A88D32452C27001F00429E75 /* minimum.json in Resources */,
+				A88D32452C27001F00429E75 /* credential_display_minimum.json in Resources */,
 				8B0E0AAC2B3FD6660080F6A3 /* client_metadata.json in Resources */,
 				A82ECC842C25059900B9784B /* authorizationMetaDataList.json in Resources */,
 				8B81E2A12B33CC4200ED3B4E /* Assets.xcassets in Resources */,
@@ -1391,10 +1413,11 @@
 				A8ADC69B2BCEAD090077A0C4 /* idTokenSharingHistories.json in Resources */,
 				8B81E2D82B34131C00ED3B4E /* Launch Screen.storyboard in Resources */,
 				F6D913D92B53D5EE001D804D /* jwtVcJsonClaim.json in Resources */,
-				8B43AE2A2B3A4FB30016CF83 /* credential_offer.json in Resources */,
+				8B43AE2A2B3A4FB30016CF83 /* credential_offer_filled.json in Resources */,
 				F699A8CF2B3FEB8000F60B91 /* tempIssureMetalData.json in Resources */,
-				A88D32442C27001B00429E75 /* filled_all_parameters.json in Resources */,
-				A88D32462C27002300429E75 /* partial_optional.json in Resources */,
+				A8AB4BD32C296C9800C009A1 /* claim_map_filled.json in Resources */,
+				A88D32442C27001B00429E75 /* credential_display_filled.json in Resources */,
+				A88D32462C27002300429E75 /* claim_map_mixed.json in Resources */,
 				8B81E2D32B33ED5400ED3B4E /* Localizable.xcstrings in Resources */,
 				F6BB10492B5130F70063DBBF /* presentationDefinition.json in Resources */,
 			);
@@ -1405,18 +1428,22 @@
 			buildActionMask = 2147483647;
 			files = (
 				8B0E0AB32B4054E80080F6A3 /* presentation_definition.json in Resources */,
-				A82601A92C267A2A00BF8139 /* filled_all_parameters.json in Resources */,
+				A82601A92C267A2A00BF8139 /* credential_display_filled.json in Resources */,
+				A8AB4BD22C296C7800C009A1 /* claim_map_filled.json in Resources */,
 				8B43AE3A2B3A9DD20016CF83 /* authorization_server.json in Resources */,
 				8B297C442B39778B00D2998D /* credential_supported_ldp_vc.json in Resources */,
 				8B0E0AAD2B3FD6660080F6A3 /* client_metadata.json in Resources */,
 				8BB513892B3ACDAC00D4EFB3 /* token_response.json in Resources */,
-				A82601AB2C267B1000BF8139 /* minimum.json in Resources */,
+				A8AB4BC92C295C9500C009A1 /* credential_offer_tx_code_required.json in Resources */,
+				A82601AB2C267B1000BF8139 /* credential_display_minimum.json in Resources */,
+				A8AB4BC62C294FFD00C009A1 /* credential_offer_minimum.json in Resources */,
 				8B297C412B39760600D2998D /* credential_supported_vc_sd_jwt.json in Resources */,
+				A8AB4BCF2C296AB000C009A1 /* claim_map_empty.json in Resources */,
 				8B297C472B39825100D2998D /* credential_issuer_metadata_jwt_vc.json in Resources */,
 				8B297C3E2B39745400D2998D /* credential_supported_jwt_vc.json in Resources */,
 				8BB5138F2B3B24BF00D4EFB3 /* credential_response.json in Resources */,
-				8B43AE292B3A4F650016CF83 /* credential_offer.json in Resources */,
-				A82601AE2C2685F200BF8139 /* partial_optional.json in Resources */,
+				8B43AE292B3A4F650016CF83 /* credential_offer_filled.json in Resources */,
+				A82601AE2C2685F200BF8139 /* claim_map_mixed.json in Resources */,
 				8B6C3B8B2B4822A200B5D784 /* credential_issuer_metadata_sd_jwt.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1631,6 +1658,7 @@
 				8B81E2AE2B33CC4300ED3B4E /* tw2023_walletTests.swift in Sources */,
 				A83039C02B4E4229004139A7 /* SDJwtUtilTest.swift in Sources */,
 				8B0E0A9A2B3BDDF40080F6A3 /* KeyRingTests.swift in Sources */,
+				A8AB4BCB2C295DAF00C009A1 /* TestUtilities.swift in Sources */,
 				8B4265982B57677600A07F2B /* SDJwtUtil.swift in Sources */,
 				8B80569D2B5F7815009A87C8 /* SharingCredentialArgs.swift in Sources */,
 				8B43AE302B3A5B2C0016CF83 /* MockURLProtocol.swift in Sources */,
