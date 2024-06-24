@@ -91,6 +91,66 @@ final class DecodingCredentialOfferTests: XCTestCase {
     }
 }
 
+final class DecodingCredentialResponseTests: XCTestCase {
+    override func setUpWithError() throws {
+        // Put setup code here. This method is called before the invocation of each test method in the class.
+    }
+
+    override func tearDownWithError() throws {
+        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    }
+
+    func testDecodeJwtVcJsonResponse() throws {
+        let jsonData = try loadJsonTestData(fileName: "credential_response_jwt_vc_json")
+        let decoder = JSONDecoder()
+        let credentialResponseJwtVcJson = try decoder.decode(
+            CredentialResponse.self, from: jsonData)
+
+        guard let credential = credentialResponseJwtVcJson.credential else {
+            XCTFail("credential is required")
+            return
+        }
+
+        let (_, _, signature) = try JWTUtil.decodeJwt(jwt: credential)
+        XCTAssertEqual(
+            signature,
+            "z5vgMTK1nfizNCg5N-niCOL3WUIAL7nXy-nGhDZYO_-PNGeE-0djCpWAMH8fD8eWSID5PfkPBYkx_dfLJnQ7NA"
+        )
+    }
+
+    func testDecodeVcSdJwtResponse() throws {
+        let jsonData = try loadJsonTestData(fileName: "credential_response_vc_sd_jwt")
+        let decoder = JSONDecoder()
+        let credentialResponseVcSdJwt = try decoder.decode(CredentialResponse.self, from: jsonData)
+
+        guard let credential = credentialResponseVcSdJwt.credential else {
+            XCTFail("credential is required")
+            return
+        }
+
+        let divided = try SDJwtUtil.divideSDJwt(credential)
+        XCTAssertTrue(divided.disclosures.count > 0)
+    }
+
+    func testDeferredResponse() throws {
+        let jsonData = try loadJsonTestData(fileName: "credential_response_deferred")
+        let decoder = JSONDecoder()
+        let deferredResponse = try decoder.decode(CredentialResponse.self, from: jsonData)
+
+        XCTAssertEqual(deferredResponse.transactionId, "12345")
+        XCTAssertNil(deferredResponse.credential)
+    }
+
+    func testNotificationResponse() throws {
+        let jsonData = try loadJsonTestData(fileName: "credential_response_notification")
+        let decoder = JSONDecoder()
+        let deferredResponse = try decoder.decode(CredentialResponse.self, from: jsonData)
+
+        XCTAssertEqual(deferredResponse.notificationId, "12345")
+        XCTAssertEqual(deferredResponse.credential, "example-credential")
+    }
+}
+
 final class VCIClientTests: XCTestCase {
 
     private var issuer = ""
@@ -150,7 +210,7 @@ final class VCIClientTests: XCTestCase {
             // テスト用URLとモックレスポンスデータの設定
             let testURL = URL(string: "https://example.com/credential")!
             guard
-                let mockData = try? loadJsonTestData(fileName: "credential_response")
+                let mockData = try? loadJsonTestData(fileName: "credential_response_mock")
             else {
                 XCTFail("Cannot read credential_response.json")
                 return
@@ -202,8 +262,10 @@ final class VCIClientTests: XCTestCase {
             // setup metadata
             let decoder = JSONDecoder()
             guard
-                let jsonIssuerMetaData = try? loadJsonTestData(fileName: "credential_issuer_metadata_jwt_vc"),
-                let jsonAuthorizationServerData = try? loadJsonTestData(fileName: "authorization_server")
+                let jsonIssuerMetaData = try? loadJsonTestData(
+                    fileName: "credential_issuer_metadata_jwt_vc"),
+                let jsonAuthorizationServerData = try? loadJsonTestData(
+                    fileName: "authorization_server")
             else {
                 XCTFail("Cannot read resource json")
                 return
@@ -247,7 +309,7 @@ final class VCIClientTests: XCTestCase {
             let issuer = "https://datasign-demo-vci.tunnelto.dev"
             let credentialUrl = URL(string: "\(issuer)/credentials")!
             guard
-                let mockData = try? loadJsonTestData(fileName: "credential_response")
+                let mockData = try? loadJsonTestData(fileName: "credential_response_mock")
             else {
                 XCTFail("Cannot read resource json")
                 return
@@ -259,8 +321,10 @@ final class VCIClientTests: XCTestCase {
             // setup metadata
             let decoder = JSONDecoder()
             guard
-                let jsonIssuerMetaData = try? loadJsonTestData(fileName: "credential_issuer_metadata_sd_jwt"),
-                let jsonAuthorizationServerData = try? loadJsonTestData(fileName: "authorization_server")
+                let jsonIssuerMetaData = try? loadJsonTestData(
+                    fileName: "credential_issuer_metadata_sd_jwt"),
+                let jsonAuthorizationServerData = try? loadJsonTestData(
+                    fileName: "authorization_server")
             else {
                 XCTFail("Cannot read resource json")
                 return
