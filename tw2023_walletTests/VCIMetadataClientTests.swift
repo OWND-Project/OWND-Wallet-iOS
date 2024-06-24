@@ -107,8 +107,8 @@ final class CredentialIssuerMetadataTests: XCTestCase {
             MockURLProtocol.mockResponses[testURL2.absoluteString] = (mockData2, response)
             do {
                 let metadata = try await retrieveAllMetadata(issuer: issuer, using: mockSession)
-                XCTAssertEqual(metadata.credentialIssuer, issuer)
-                XCTAssertEqual(metadata.tokenEndpoint, "\(issuer)/token")
+                XCTAssertEqual(metadata.credentialIssuerMetadata.credentialIssuer, issuer)
+                XCTAssertEqual(metadata.authorizationServerMetadata.tokenEndpoint, "\(issuer)/token")
             }
             catch {
                 XCTFail("Request should not fail")
