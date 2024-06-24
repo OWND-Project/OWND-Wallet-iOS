@@ -10,10 +10,14 @@ import SwiftUI
 
 enum CredentialOfferViewModelError: Error {
     case LoadDataDidNotFinishuccessfully
-
     case CredentialOfferConfigurationIsEmpty
-
     case ProofGenerationFailed
+
+    case TransactionIdIsRequired
+    case DeferredIssuanceIsNotSupported
+    case CredentialToBeConvertedDoesNotExist
+
+    case FailedToConvertToInternalFormat
 
     // credential offer format
     case CredentialOfferQueryItemsNotFound
@@ -30,7 +34,6 @@ class CredentialOfferViewModel {
     private let credentialDataManager = CredentialDataManager(container: nil)
 
     func sendRequest(txCode: String?) async throws {
-
         guard let offer = dataModel.credentialOffer,
             let metadata = dataModel.metaData,
             let credFormat = credentialFormat,
@@ -39,53 +42,58 @@ class CredentialOfferViewModel {
             throw CredentialOfferViewModelError.LoadDataDidNotFinishuccessfully
         }
 
-        do {
-            let vciClient = try await VCIClient(credentialOffer: offer, metaData: metadata)
+        let vciClient = try await VCIClient(credentialOffer: offer, metaData: metadata)
 
-            let token = try await vciClient.issueToken(txCode: txCode)
-            let accessToken = token.accessToken
-            let cNonce = token.cNonce
+        let token = try await vciClient.issueToken(txCode: txCode)
+        let accessToken = token.accessToken
+        let cNonce = token.cNonce
 
-            // binding key generation
-            let proofRequired = cNonce != nil
-            let isKeyPairExist = KeyPairUtil.isKeyPairExist(
-                alias: Constants.Cryptography.KEY_BINDING)
-            if !isKeyPairExist && proofRequired {
-                try KeyPairUtil.generateSignVerifyKeyPair(alias: Constants.Cryptography.KEY_BINDING)
-            }
+        // binding key generation
+        let proofRequired = cNonce != nil
+        let isKeyPairExist = KeyPairUtil.isKeyPairExist(
+            alias: Constants.Cryptography.KEY_BINDING)
+        if !isKeyPairExist && proofRequired {
+            try KeyPairUtil.generateSignVerifyKeyPair(alias: Constants.Cryptography.KEY_BINDING)
+        }
 
-            // proof generation
-            var proofObject: Proofable? = nil
-            if proofRequired {
-                if let nonce = cNonce {
-                    let credentialIssuer = offer.credentialIssuer
-                    let proofJwt = try KeyPairUtil.createProofJwt(
-                        keyAlias: Constants.Cryptography.KEY_BINDING, audience: credentialIssuer,
-                        nonce: nonce)
-                    switch credFormat {
-                        case "vc+sd-jwt", "jwt_vc_json":
-                            proofObject = JwtProof(proofType: "jwt", jwt: proofJwt)
-                        default:
-                            throw CredentialOfferViewModelError.ProofGenerationFailed
-                    }
+        // proof generation
+        var proofObject: Proofable? = nil
+        if proofRequired {
+            if let nonce = cNonce {
+                let credentialIssuer = offer.credentialIssuer
+                let proofJwt = try KeyPairUtil.createProofJwt(
+                    keyAlias: Constants.Cryptography.KEY_BINDING, audience: credentialIssuer,
+                    nonce: nonce)
+                switch credFormat {
+                    case "vc+sd-jwt", "jwt_vc_json":
+                        proofObject = JwtProof(proofType: "jwt", jwt: proofJwt)
+                    default:
+                        throw CredentialOfferViewModelError.ProofGenerationFailed
                 }
             }
+        }
 
-            // Credential Request Generation
-            let credentialRequest = try createCredentialRequest(
-                formatValue: credFormat, credentialType: credType, proofable: proofObject)
+        // Credential Request Generation
+        let credentialRequest = try createCredentialRequest(
+            formatValue: credFormat, credentialType: credType, proofable: proofObject)
 
-            // 発行
-            let credentialResponse = try await vciClient.issueCredential(
-                payload: credentialRequest, accessToken: accessToken)
+        // Issue credential
+        let credentialResponse = try await vciClient.issueCredential(
+            payload: credentialRequest, accessToken: accessToken)
 
-            // 保存
-            let protoBuf = convertToProtoBuf(
+        if credentialResponse.credential == nil {
+            if credentialResponse.transactionId == nil {
+                throw CredentialOfferViewModelError.TransactionIdIsRequired
+            }
+
+            // todo: implement deferred issuance
+            throw CredentialOfferViewModelError.DeferredIssuanceIsNotSupported
+        }
+        else {
+            // save credential
+            let protoBuf = try convertToProtoBuf(
                 accessToken: accessToken, credentialResponse: credentialResponse)
             try credentialDataManager.saveCredentialData(credentialData: protoBuf)
-        }
-        catch {
-            print(error)
         }
     }
 
@@ -149,35 +157,47 @@ class CredentialOfferViewModel {
     }
 
     private func convertToProtoBuf(accessToken: String, credentialResponse: CredentialResponse)
-        -> Datastore_CredentialData
+        throws -> Datastore_CredentialData
     {
+        guard let credentialToSave = credentialResponse.credential else {
+            throw CredentialOfferViewModelError.CredentialToBeConvertedDoesNotExist
+        }
+
         let basicInfo: [String: Any] =
             credentialFormat == "vc+sd-jwt"
             ? extractSDJwtInfo(
-                credential: credentialResponse.credential, format: credentialFormat!)
-            : extractInfoFromJwt(jwt: credentialResponse.credential, format: credentialFormat!)
+                credential: credentialToSave, format: credentialFormat!)
+            : extractInfoFromJwt(jwt: credentialToSave, format: credentialFormat!)
 
         let encoder = JSONEncoder()
-        let encodedMetadata = try! encoder.encode(self.dataModel.metaData?.credentialIssuerMetadata)
-        let jsonString = String(data: encodedMetadata, encoding: .utf8)
-        let expiresIn =
-            credentialResponse.cNonceExpiresIn == nil
-            ? Int32(0) : Int32(credentialResponse.cNonceExpiresIn!)
-        var credentialData = Datastore_CredentialData()
-        credentialData.id = UUID().uuidString
 
-        credentialData.format = credentialFormat!
-        credentialData.credential = credentialResponse.credential
-        credentialData.iss = basicInfo["iss"] as! String
-        credentialData.iat = basicInfo["iat"] as! Int64
-        credentialData.exp = basicInfo["exp"] as! Int64
-        credentialData.type = basicInfo["typeOrVct"] as! String
-        credentialData.cNonce = credentialResponse.cNonce ?? ""
-        credentialData.cNonceExpiresIn = expiresIn
-        credentialData.accessToken = accessToken
-        credentialData.credentialIssuerMetadata = jsonString!
+        do {
+            let encodedMetadata = try encoder.encode(
+                self.dataModel.metaData?.credentialIssuerMetadata)
+            let jsonString = String(data: encodedMetadata, encoding: .utf8)
+            let expiresIn =
+                credentialResponse.cNonceExpiresIn == nil
+                ? Int32(0) : Int32(credentialResponse.cNonceExpiresIn!)
+            var credentialData = Datastore_CredentialData()
+            credentialData.id = UUID().uuidString
 
-        return credentialData
+            credentialData.format = credentialFormat!
+            credentialData.credential = credentialToSave
+            credentialData.iss = basicInfo["iss"] as! String
+            credentialData.iat = basicInfo["iat"] as! Int64
+            credentialData.exp = basicInfo["exp"] as! Int64
+            credentialData.type = basicInfo["typeOrVct"] as! String
+            credentialData.cNonce = credentialResponse.cNonce ?? ""
+            credentialData.cNonceExpiresIn = expiresIn
+            credentialData.accessToken = accessToken
+            credentialData.credentialIssuerMetadata = jsonString!
+
+            return credentialData
+
+        }
+        catch {
+            throw CredentialOfferViewModelError.FailedToConvertToInternalFormat
+        }
     }
 
     private func extractSDJwtInfo(credential: String, format: String) -> [String: Any] {
