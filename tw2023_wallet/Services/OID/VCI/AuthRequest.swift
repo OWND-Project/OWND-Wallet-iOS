@@ -78,27 +78,6 @@ struct RPRegistrationMetadataPayload: Codable {
     var jwks: String?  // todo jwksの配列型を指定する
     var jwksUri: String?
     var vpFormatsSupported: Format?
-    enum CodingKeys: String, CodingKey {
-        case clientId = "client_id"
-        case clientName = "client_name"
-        case clientPurpose = "client_purpose"
-        case idTokenSigningAlgValuesSupported = "id_token_signing_alg_values_supported"
-        case jwks
-        case jwksUri = "jwks_uri"
-        case logoUri = "logo_uri"
-        case policyUri = "policy_uri"
-        case requestObjectEncryptionAlgValuesSupported =
-            "request_object_encryption_alg_values_supported"
-        case requestObjectEncryptionEncValuesSupported =
-            "request_object_encryption_enc_values_supported"
-        case requestObjectSigningAlgValuesSupported = "request_object_signing_alg_values_supported"
-        case scopesSupported = "scopes_supported"
-        case subjectSyntaxTypesSupported = "subject_syntax_types_supported"
-        case subjectTypesSupported = "subject_types_supported"
-        case tosUri = "tos_uri"
-        case vpFormats = "vp_formats"
-        case vpFormatsSupported = "vp_formats_supported"
-    }
 }
 
 protocol RequestObjectPayload: AuthorizationRequestCommonPayload, JWTPayload {}
@@ -132,29 +111,13 @@ struct RequestObjectPayloadImpl: RequestObjectPayload {
     var presentationDefinition: PresentationDefinition?
     var presentationDefinitionUri: String?
     var clientIdScheme: String?
-
-    enum CodingKeys: String, CodingKey {
-        case iss, sub, aud, iat, nbf, type, exp, jti, scope, nonce, state
-        case responseType = "response_type"
-        case clientId = "client_id"
-        case redirectUri = "redirect_uri"
-        case idTokenHint = "id_token_hint"
-        case responseMode = "response_mode"
-        case maxAge = "max_age"
-        case clientMetadata = "client_metadata"
-        case clientMetadataUri = "client_metadata_uri"
-        case responseUri = "response_uri"
-        case presentationDefinition = "presentation_definition"
-        case presentationDefinitionUri = "presentation_definition_uri"
-        case clientIdScheme = "client_id_scheme"
-    }
 }
 
 extension RequestObjectPayloadImpl {
     init(from dictionary: [String: Any]) throws {
         let jsonData = try JSONSerialization.data(withJSONObject: dictionary)
         let decoder = JSONDecoder()
-        // decoder.keyDecodingStrategy = .convertFromSnakeCase
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
 
         self = try decoder.decode(RequestObjectPayloadImpl.self, from: jsonData)
     }
@@ -178,29 +141,13 @@ struct AuthorizationRequestPayloadImpl: AuthorizationRequestPayload, Codable {
     var presentationDefinition: PresentationDefinition?
     var presentationDefinitionUri: String?
     var clientIdScheme: String?
-    enum CodingKeys: String, CodingKey {
-        case scope, nonce, state, request
-        case responseType = "response_type"
-        case clientId = "client_id"
-        case redirectUri = "redirect_uri"
-        case idTokenHint = "id_token_hint"
-        case responseMode = "response_mode"
-        case maxAge = "max_age"
-        case clientMetadata = "client_metadata"
-        case clientMetadataUri = "client_metadata_uri"
-        case requestUri = "request_uri"
-        case responseUri = "response_uri"
-        case presentationDefinition = "presentation_definition"
-        case presentationDefinitionUri = "presentation_definition_uri"
-        case clientIdScheme = "client_id_scheme"
-    }
 }
 
 extension AuthorizationRequestPayloadImpl {
     init(from dictionary: [String: Any]) throws {
         let jsonData = try JSONSerialization.data(withJSONObject: dictionary)
         let decoder = JSONDecoder()
-        // decoder.keyDecodingStrategy = .convertFromSnakeCase
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
         // カスタムデコーディングロジックをここに追加することができます。
         // 例: decoder.dateDecodingStrategy = .iso8601
 
@@ -212,7 +159,7 @@ extension RPRegistrationMetadataPayload {
     init(from dictionary: [String: Any]) throws {
         let jsonData = try JSONSerialization.data(withJSONObject: dictionary)
         let decoder = JSONDecoder()
-        // decoder.keyDecodingStrategy = .convertFromSnakeCase
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
         self = try decoder.decode(RPRegistrationMetadataPayload.self, from: jsonData)
     }
 }

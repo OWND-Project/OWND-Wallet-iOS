@@ -93,6 +93,7 @@ final class OpenIdProviderTests: XCTestCase {
 
         let sdJwt = "issuer-jwt~dummy-claim1~"
         let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
         let presentationDefinition = try decoder.decode(
             PresentationDefinition.self, from: presentationDefinition1.data(using: .utf8)!)
         let selected = selectDisclosure(
@@ -106,6 +107,7 @@ final class OpenIdProviderTests: XCTestCase {
 
         let sdJwt = "issuer-jwt~dummy-claim1~"
         let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
         let presentationDefinition = try decoder.decode(
             PresentationDefinition.self, from: presentationDefinition1.data(using: .utf8)!)
         let selected = selectDisclosure(
@@ -127,6 +129,7 @@ final class OpenIdProviderTests: XCTestCase {
 
         let sdJwt = "issuer-jwt~dummy-claim1~"
         let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
         let presentationDefinition = try decoder.decode(
             PresentationDefinition.self, from: presentationDefinition2.data(using: .utf8)!)
         let selected = selectDisclosure(
@@ -148,6 +151,7 @@ final class OpenIdProviderTests: XCTestCase {
 
         let sdJwt = "issuer-jwt~dummy-claim1~dummy-claim2~"
         let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
         let presentationDefinition = try decoder.decode(
             PresentationDefinition.self, from: presentationDefinition1.data(using: .utf8)!)
 
@@ -194,6 +198,7 @@ final class OpenIdProviderTests: XCTestCase {
 
         let vcJwt = try! JWTUtil.sign(keyAlias: tag, header: header, payload: payload)
         let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
         let presentationDefinition = try decoder.decode(
             PresentationDefinition.self, from: presentationDefinition1.data(using: .utf8)!)
 
@@ -289,6 +294,7 @@ final class OpenIdProviderTests: XCTestCase {
 
         let sdJwt = "issuer-jwt~dummy-claim1~dummy-claim2~"
         let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
         let presentationDefinition = try decoder.decode(
             PresentationDefinition.self, from: presentationDefinition1.data(using: .utf8)!)
 

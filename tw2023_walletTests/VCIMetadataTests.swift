@@ -19,6 +19,7 @@ final class DecodingCredentialDisplayTests: XCTestCase {
     func testDecodeFilledCredentialDisplay() throws {
         let jsonData = try loadJsonTestData(fileName: "credential_display_filled")
         let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
         let display = try decoder.decode(CredentialDisplay.self, from: jsonData)
 
         XCTAssertEqual(display.name, "Credential Example")
@@ -34,6 +35,7 @@ final class DecodingCredentialDisplayTests: XCTestCase {
     func testDecodeMinimumCredentialDisplay() throws {
         let jsonData = try loadJsonTestData(fileName: "credential_display_minimum")
         let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
         let display = try decoder.decode(CredentialDisplay.self, from: jsonData)
 
         XCTAssertEqual(display.name, "Credential Example")
@@ -146,6 +148,7 @@ final class DecodingClaimMapTests: XCTestCase {
     func testDecodeEmptyClaimMap() throws {
         let jsonData = try loadJsonTestData(fileName: "claim_map_empty")
         let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
         let claimMap = try decoder.decode(ClaimMap.self, from: jsonData)
 
         XCTAssertTrue(claimMap.isEmpty)
@@ -154,6 +157,7 @@ final class DecodingClaimMapTests: XCTestCase {
     func testDecodeFilledClaimMap() throws {
         let jsonData = try loadJsonTestData(fileName: "claim_map_filled")
         let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
         let claimMap = try decoder.decode(ClaimMap.self, from: jsonData)
         // 各プロパティに対するテストケース
         if let givenNameClaim = claimMap["given_name"] {
@@ -191,6 +195,7 @@ final class DecodingClaimMapTests: XCTestCase {
     func testDecodeMixMandatoryAndNonMandatoryClaimMap() throws {
         let jsonData = try loadJsonTestData(fileName: "claim_map_mixed")
         let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
         let claimMap = try decoder.decode(ClaimMap.self, from: jsonData)
 
         // 各プロパティに対するテストケース
@@ -306,7 +311,9 @@ final class DecodingVCIMetadataTests: XCTestCase {
 
     func testDecodeVcSdJwtMetadata() throws {
         let jsonData = try loadJsonTestData(fileName: "credential_issuer_metadata_sd_jwt")
-        let metadata = try JSONDecoder().decode(CredentialIssuerMetadata.self, from: jsonData)
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        let metadata = try decoder.decode(CredentialIssuerMetadata.self, from: jsonData)
 
         XCTAssertEqual(metadata.credentialIssuer, "https://datasign-demo-vci.tunnelto.dev")
         XCTAssertEqual(metadata.authorizationServers, ["https://datasign-demo-vci.tunnelto.dev"])
@@ -375,7 +382,9 @@ final class DecodingVCIMetadataTests: XCTestCase {
 
     func testDecodeJwtVcMetadata() throws {
         let jsonData = try loadJsonTestData(fileName: "credential_issuer_metadata_jwt_vc")
-        let metadata = try JSONDecoder().decode(CredentialIssuerMetadata.self, from: jsonData)
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        let metadata = try decoder.decode(CredentialIssuerMetadata.self, from: jsonData)
 
         XCTAssertEqual(metadata.credentialIssuer, "https://datasign-demo-vci.tunnelto.dev")
         XCTAssertEqual(metadata.authorizationServers, ["https://datasign-demo-vci.tunnelto.dev"])
@@ -435,6 +444,77 @@ final class DecodingVCIMetadataTests: XCTestCase {
         XCTAssertNotNil(gpaClaim)
         XCTAssertEqual(gpaClaim?.display?.count, 1)
         XCTAssertEqual(gpaClaim?.display?[0].name, "GPA")
+    }
+
+    func testDecodeLdpVcMetadata() throws {
+        let jsonData = try loadJsonTestData(fileName: "credential_issuer_metadata_ldp_vc")
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        let metadata = try decoder.decode(CredentialIssuerMetadata.self, from: jsonData)
+
+        XCTAssertEqual(metadata.credentialIssuer, "https://datasign-demo-vci.tunnelto.dev")
+        XCTAssertEqual(
+            metadata.authorizationServers?.first, "https://datasign-demo-vci.tunnelto.dev")
+        XCTAssertEqual(
+            metadata.credentialEndpoint, "https://datasign-demo-vci.tunnelto.dev/credentials")
+        XCTAssertEqual(
+            metadata.batchCredentialEndpoint,
+            "https://datasign-demo-vci.tunnelto.dev/batch-credentials")
+        XCTAssertEqual(
+            metadata.deferredCredentialEndpoint,
+            "https://datasign-demo-vci.tunnelto.dev/deferred_credential")
+
+        // Display Check
+        XCTAssertEqual(metadata.display?.count, 2)
+        let displayEn = metadata.display?.first(where: { $0.locale == "en-US" })
+        XCTAssertEqual(displayEn?.name, "OWND Project")
+        XCTAssertEqual(displayEn?.logo?.uri, "https://exampleuniversity.com/public/logo.png")
+        XCTAssertEqual(displayEn?.logo?.altText, "a square logo of a university")
+
+        let displayJa = metadata.display?.first(where: { $0.locale == "ja_JP" })
+        XCTAssertEqual(displayJa?.name, "オウンドプロジェクト")
+        XCTAssertEqual(displayJa?.logo?.uri, "https://exampleuniversity.com/public/logo.png")
+        XCTAssertEqual(displayJa?.logo?.altText, "a square logo of a university")
+
+        // Credential Configurations Supported Check
+        let ldpVcConfig =
+            metadata.credentialConfigurationsSupported["UniversityDegreeLDPVC"]
+            as? CredentialSupportedLdpVc
+        XCTAssertNotNil(ldpVcConfig)
+        XCTAssertEqual(ldpVcConfig?.format, "ldp_vc")
+        XCTAssertEqual(ldpVcConfig?.cryptographicBindingMethodsSupported?.first, "did:example")
+        XCTAssertEqual(
+            ldpVcConfig?.credentialSigningAlgValuesSupported?.first, "Ed25519Signature2018")
+        // XCTAssertEqual(ldpVcConfig?.credentialDefinition.context.count, 2)
+        // XCTAssertEqual(ldpVcConfig?.credentialDefinition.context.first, "https://www.w3.org/2018/credentials/v1")
+        XCTAssertEqual(ldpVcConfig?.credentialDefinition.type.first, "VerifiableCredential")
+
+        // Credential Display Check
+        let ldpVcDisplayEn = ldpVcConfig?.display?.first(where: { $0.locale == "en-US" })
+        XCTAssertEqual(ldpVcDisplayEn?.name, "University Credential")
+        XCTAssertEqual(ldpVcDisplayEn?.logo?.uri, "https://university.example.edu/public/logo.png")
+        XCTAssertEqual(ldpVcDisplayEn?.logo?.altText, "a square logo of a university")
+        XCTAssertEqual(ldpVcDisplayEn?.backgroundColor, "#12107c")
+        XCTAssertEqual(ldpVcDisplayEn?.textColor, "#FFFFFF")
+
+        // Credential Claims Check
+        let claims = ldpVcConfig?.credentialDefinition.credentialSubject
+        XCTAssertNotNil(claims)
+        XCTAssertEqual(claims?.count, 4)
+
+        let givenNameDisplay = claims?["given_name"]?.display?.first
+        XCTAssertEqual(givenNameDisplay?.name, "Given Name")
+        XCTAssertEqual(givenNameDisplay?.locale, "en-US")
+
+        let familyNameDisplay = claims?["family_name"]?.display?.first
+        XCTAssertEqual(familyNameDisplay?.name, "Surname")
+        XCTAssertEqual(familyNameDisplay?.locale, "en-US")
+
+        let gpa = claims?["gpa"]
+        XCTAssertEqual(gpa?.mandatory, true)
+        let gpaDisplay = gpa?.display?.first
+        XCTAssertEqual(gpaDisplay?.name, "GPA")
+        XCTAssertNil(gpaDisplay?.locale)
     }
 
 }

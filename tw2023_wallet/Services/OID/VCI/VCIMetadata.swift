@@ -11,17 +11,10 @@ import SwiftyJSON
 struct Logo: Codable {
     let uri: String
     let altText: String?
-    enum CodingKeys: String, CodingKey {
-        case uri
-        case altText = "alt_text"
-    }
 }
 
 struct BackgroundImage: Codable {
     let uri: String?
-    enum CodingKeys: String, CodingKey {
-        case uri
-    }
 }
 
 protocol Displayable: Codable {
@@ -33,17 +26,11 @@ struct IssuerDisplay: Displayable {
     let name: String?
     let locale: String?
     let logo: Logo?
-    enum CodingKeys: String, CodingKey {
-        case name, locale, logo
-    }
 }
 
 struct ClaimDisplay: Displayable {
     let name: String?
     let locale: String?
-    enum CodingKeys: String, CodingKey {
-        case name, locale
-    }
 }
 
 struct CredentialDisplay: Codable {
@@ -54,22 +41,12 @@ struct CredentialDisplay: Codable {
     let backgroundColor: String?
     let backgroundImage: BackgroundImage?
     let textColor: String?
-    enum CodingKeys: String, CodingKey {
-        case name, locale, logo, description
-        case backgroundColor = "background_color"
-        case backgroundImage = "background_image"
-        case textColor = "text_color"
-    }
 }
 
 struct Claim: Codable {
     let mandatory: Bool?
     let valueType: String?
     let display: [ClaimDisplay]?
-    enum CodingKeys: String, CodingKey {
-        case mandatory, display
-        case valueType = "value_type"
-    }
 }
 
 struct ClaimOnlyMandatory: Codable {
@@ -78,20 +55,12 @@ struct ClaimOnlyMandatory: Codable {
 
 struct ProofSigningAlgValuesSupported: Codable {
     let proofSigningAlgValuesSupported: [String]
-    enum CodingKeys: String, CodingKey {
-        case proofSigningAlgValuesSupported = "proof_signing_alg_values_supported"
-    }
 }
 
 struct CredentialResponseEncryption: Codable {
     let algValuesSupported: [String]
     let encValuesSupported: [String]
     let encryptionRequired: Bool
-    enum CodingKeys: String, CodingKey {
-        case algValuesSupported = "alg_values_supported"
-        case encValuesSupported = "enc_values_supported"
-        case encryptionRequired = "encryption_required"
-    }
 }
 
 protocol CredentialConfiguration: Codable {
@@ -145,13 +114,6 @@ struct CredentialSupportedVcSdJwt: CredentialConfiguration {
     let claims: ClaimMap?
     let order: [String]?
 
-    enum CodingKeys: String, CodingKey {
-        case format, scope, display, order, vct, claims
-        case cryptographicBindingMethodsSupported = "cryptographic_binding_methods_supported"
-        case credentialSigningAlgValuesSupported = "credential_signing_alg_values_supported"
-        case proofTypesSupported = "proof_types_supported"
-    }
-
     func getClaimNames(locale: String = "ja-JP") -> [String] {
         guard let claims = self.claims else {
             return []
@@ -191,14 +153,6 @@ struct CredentialSupportedJwtVcJson: CredentialConfiguration {
     let credentialDefinition: JwtVcJsonCredentialDefinition
     let order: [String]?
 
-    enum CodingKeys: String, CodingKey {
-        case format, scope, display, order
-        case cryptographicBindingMethodsSupported = "cryptographic_binding_methods_supported"
-        case credentialSigningAlgValuesSupported = "credential_signing_alg_values_supported"
-        case proofTypesSupported = "proof_types_supported"
-        case credentialDefinition = "credential_definition"
-    }
-
     func getClaimNames(locale: String = "ja-JP") -> [String] {
         return self.credentialDefinition.getClaimNames(locale: locale)
     }
@@ -210,8 +164,16 @@ struct LdpVcCredentialDefinition: Codable {
     let credentialSubject: ClaimMap?
 
     enum CodingKeys: String, CodingKey {
-        case type, credentialSubject
+        case type
+        case credentialSubject = "credentialSubject"
         case context = "@context"
+    }
+
+    func getClaimNames(locale: String) -> [String] {
+        guard let subject = self.credentialSubject else {
+            return []
+        }
+        return getLocalizedClaimNames(claims: subject, locale: locale)
     }
 
 }
@@ -227,17 +189,8 @@ struct CredentialSupportedLdpVc: CredentialConfiguration {
     let credentialDefinition: LdpVcCredentialDefinition
     let order: [String]?
 
-    enum CodingKeys: String, CodingKey {
-        case format, scope, display, order
-        case cryptographicBindingMethodsSupported = "cryptographic_binding_methods_supported"
-        case credentialSigningAlgValuesSupported = "credential_signing_alg_values_supported"
-        case proofTypesSupported = "proof_type_supported"
-        case credentialDefinition = "credential_definition"
-    }
-
     func getClaimNames(locale: String = "ja-JP") -> [String] {
-        // todo: implement
-        return []
+        return self.credentialDefinition.getClaimNames(locale: locale)
     }
 }
 
@@ -285,7 +238,7 @@ func getLocalizedClaimNames(claims: ClaimMap, locale: String) -> [String] {
 func decodeCredentialSupported(from jsonData: Data) throws -> CredentialConfiguration {
 
     let decoder = JSONDecoder()
-    // decoder.keyDecodingStrategy = .convertFromSnakeCase
+    decoder.keyDecodingStrategy = .convertFromSnakeCase
 
     // 一時的なコンテナ構造体をデコードして、formatフィールドを読み取る
     let formatContainer = try decoder.decode(CredentialSupportedFormat.self, from: jsonData)
@@ -319,17 +272,18 @@ struct CredentialIssuerMetadata: Codable {
     let display: [IssuerDisplay]?
     let credentialConfigurationsSupported: [String: CredentialConfiguration]
 
+    // // It is assumed that the snake case strategy is configured.
     enum CodingKeys: String, CodingKey {
-        case credentialIssuer = "credential_issuer"
-        case authorizationServers = "authorization_servers"
-        case credentialEndpoint = "credential_endpoint"
-        case batchCredentialEndpoint = "batch_credential_endpoint"
-        case deferredCredentialEndpoint = "deferred_credential_endpoint"
-        case notificationEndpoint = "notification_endpoint"
-        case credentialResponseEncryption = "credential_response_encryption"
-        case credentialIdentifiersSupported = "credential_identifiers_supported"
-        case credentialConfigurationsSupported = "credential_configurations_supported"
-        case signedMetadata = "signed_metadata"
+        case credentialIssuer = "credentialIssuer"
+        case authorizationServers = "authorizationServers"
+        case credentialEndpoint = "credentialEndpoint"
+        case batchCredentialEndpoint = "batchCredentialEndpoint"
+        case deferredCredentialEndpoint = "deferredCredentialEndpoint"
+        case notificationEndpoint = "notificationEndpoint"
+        case credentialResponseEncryption = "credentialResponseEncryption"
+        case credentialIdentifiersSupported = "credentialIdentifiersSupported"
+        case credentialConfigurationsSupported = "credentialConfigurationsSupported"
+        case signedMetadata = "signedMetadata"
         case display
     }
 

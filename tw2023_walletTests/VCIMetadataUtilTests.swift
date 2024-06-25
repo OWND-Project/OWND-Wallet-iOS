@@ -20,15 +20,14 @@ final class VCIMetadataUtilTests: XCTestCase {
     func testFindMatchingCredentialsJwtVc() {
         let issuer = "https://datasign-demo-vci.tunnelto.dev"
         guard
-            let url = Bundle.main.url(
-                forResource: "credential_issuer_metadata_jwt_vc", withExtension: "json"),
-            let data = try? Data(contentsOf: url)
+            let data = try? loadJsonTestData(fileName: "credential_issuer_metadata_jwt_vc")
         else {
             XCTFail("Cannot read credential_issuer_metadata.json")
             return
         }
         do {
             let decoder = JSONDecoder()
+            decoder.keyDecodingStrategy = .convertFromSnakeCase
             let metadata = try decoder.decode(CredentialIssuerMetadata.self, from: data)
             XCTAssertEqual(metadata.credentialIssuer, issuer)
             let types = ["IdentityCredential"]
@@ -45,15 +44,14 @@ final class VCIMetadataUtilTests: XCTestCase {
     func testFindMatchingCredentialsSdJwt() {
         let issuer = "https://datasign-demo-vci.tunnelto.dev"
         guard
-            let url = Bundle.main.url(
-                forResource: "credential_issuer_metadata_sd_jwt", withExtension: "json"),
-            let data = try? Data(contentsOf: url)
+            let data = try? loadJsonTestData(fileName: "credential_issuer_metadata_sd_jwt")
         else {
             XCTFail("Cannot read credential_issuer_metadata.json")
             return
         }
         do {
             let decoder = JSONDecoder()
+            decoder.keyDecodingStrategy = .convertFromSnakeCase
             let metadata = try decoder.decode(CredentialIssuerMetadata.self, from: data)
             XCTAssertEqual(metadata.credentialIssuer, issuer)
             let types = ["EmployeeCredential"]
@@ -69,15 +67,14 @@ final class VCIMetadataUtilTests: XCTestCase {
     func testExtractDisplayByClaim() {
         let issuer = "https://datasign-demo-vci.tunnelto.dev"
         guard
-            let url = Bundle.main.url(
-                forResource: "credential_issuer_metadata_sd_jwt", withExtension: "json"),
-            let data = try? Data(contentsOf: url)
+            let data = try? loadJsonTestData(fileName: "credential_issuer_metadata_sd_jwt")
         else {
             XCTFail("Cannot read credential_issuer_metadata.json")
             return
         }
         do {
             let decoder = JSONDecoder()
+            decoder.keyDecodingStrategy = .convertFromSnakeCase
             let metadata = try decoder.decode(CredentialIssuerMetadata.self, from: data)
             XCTAssertEqual(metadata.credentialIssuer, issuer)
             let types = ["EmployeeCredential"]
@@ -154,15 +151,14 @@ final class VCIMetadataUtilTests: XCTestCase {
     func testSerializationAndDeserialization() {
         let issuer = "https://datasign-demo-vci.tunnelto.dev"
         guard
-            let url = Bundle.main.url(
-                forResource: "credential_issuer_metadata_sd_jwt", withExtension: "json"),
-            let data = try? Data(contentsOf: url)
+            let data = try? loadJsonTestData(fileName: "credential_issuer_metadata_sd_jwt")
         else {
             XCTFail("Cannot read credential_issuer_metadata.json")
             return
         }
         do {
             let decoder = JSONDecoder()
+            decoder.keyDecodingStrategy = .convertFromSnakeCase
             let metadata = try decoder.decode(CredentialIssuerMetadata.self, from: data)
             XCTAssertEqual(metadata.credentialIssuer, issuer)
             let types = ["EmployeeCredential"]
@@ -208,13 +204,6 @@ final class VCIMetadataUtilTests: XCTestCase {
         }
         catch {
             XCTFail("Decode should not fail")
-        }
-    }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
         }
     }
 

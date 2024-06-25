@@ -19,6 +19,7 @@ final class DecodingCredentialOfferTests: XCTestCase {
     func testDecodeFilledCredentialOffer() throws {
         let jsonData = try loadJsonTestData(fileName: "credential_offer_filled")
         let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
         let credentialOffer = try decoder.decode(CredentialOffer.self, from: jsonData)
 
         XCTAssertEqual(credentialOffer.credentialIssuer, "https://datasign-demo-vci.tunnelto.dev")
@@ -41,6 +42,7 @@ final class DecodingCredentialOfferTests: XCTestCase {
     func testDecodeMinimumCredentialOffer() throws {
         let jsonData = try loadJsonTestData(fileName: "credential_offer_minimum")
         let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
         let credentialOffer = try decoder.decode(CredentialOffer.self, from: jsonData)
 
         XCTAssertEqual(credentialOffer.credentialIssuer, "https://datasign-demo-vci.tunnelto.dev")
@@ -52,6 +54,7 @@ final class DecodingCredentialOfferTests: XCTestCase {
     func testDecodeCredentialOfferWithTxCode() throws {
         let jsonData = try loadJsonTestData(fileName: "credential_offer_tx_code_required")
         let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
         let credentialOffer = try decoder.decode(CredentialOffer.self, from: jsonData)
 
         XCTAssertTrue(credentialOffer.isTxCodeRequired())
@@ -103,6 +106,7 @@ final class DecodingCredentialResponseTests: XCTestCase {
     func testDecodeJwtVcJsonResponse() throws {
         let jsonData = try loadJsonTestData(fileName: "credential_response_jwt_vc_json")
         let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
         let credentialResponseJwtVcJson = try decoder.decode(
             CredentialResponse.self, from: jsonData)
 
@@ -121,6 +125,7 @@ final class DecodingCredentialResponseTests: XCTestCase {
     func testDecodeVcSdJwtResponse() throws {
         let jsonData = try loadJsonTestData(fileName: "credential_response_vc_sd_jwt")
         let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
         let credentialResponseVcSdJwt = try decoder.decode(CredentialResponse.self, from: jsonData)
 
         guard let credential = credentialResponseVcSdJwt.credential else {
@@ -128,13 +133,14 @@ final class DecodingCredentialResponseTests: XCTestCase {
             return
         }
 
-        let divided = try SDJwtUtil.divideSDJwt(credential)
+        let divided = try SDJwtUtil.divideSDJwt(sdJwt: credential)
         XCTAssertTrue(divided.disclosures.count > 0)
     }
 
     func testDeferredResponse() throws {
         let jsonData = try loadJsonTestData(fileName: "credential_response_deferred")
         let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
         let deferredResponse = try decoder.decode(CredentialResponse.self, from: jsonData)
 
         XCTAssertEqual(deferredResponse.transactionId, "12345")
@@ -144,6 +150,7 @@ final class DecodingCredentialResponseTests: XCTestCase {
     func testNotificationResponse() throws {
         let jsonData = try loadJsonTestData(fileName: "credential_response_notification")
         let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
         let deferredResponse = try decoder.decode(CredentialResponse.self, from: jsonData)
 
         XCTAssertEqual(deferredResponse.notificationId, "12345")
@@ -261,6 +268,7 @@ final class VCIClientTests: XCTestCase {
 
             // setup metadata
             let decoder = JSONDecoder()
+            decoder.keyDecodingStrategy = .convertFromSnakeCase
             guard
                 let jsonIssuerMetaData = try? loadJsonTestData(
                     fileName: "credential_issuer_metadata_jwt_vc"),
@@ -320,6 +328,7 @@ final class VCIClientTests: XCTestCase {
 
             // setup metadata
             let decoder = JSONDecoder()
+            decoder.keyDecodingStrategy = .convertFromSnakeCase
             guard
                 let jsonIssuerMetaData = try? loadJsonTestData(
                     fileName: "credential_issuer_metadata_sd_jwt"),

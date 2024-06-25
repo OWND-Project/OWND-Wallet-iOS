@@ -44,11 +44,6 @@ struct PresentationDefinition: Codable {
     let id: String
     let inputDescriptors: [InputDescriptor]
     let submissionRequirements: [SubmissionRequirement]?
-    enum CodingKeys: String, CodingKey {
-        case id
-        case inputDescriptors = "input_descriptors"
-        case submissionRequirements = "submission_requirements"
-    }
 }
 
 struct ClaimFormat: Codable {

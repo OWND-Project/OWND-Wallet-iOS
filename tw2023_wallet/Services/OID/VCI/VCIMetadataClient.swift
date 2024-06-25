@@ -39,6 +39,7 @@ func fetchMetadata<T: Decodable>(
     }
 
     let decoder = JSONDecoder()
+    decoder.keyDecodingStrategy = .convertFromSnakeCase
 
     do {
         let metaData = try decoder.decode(T.self, from: data)

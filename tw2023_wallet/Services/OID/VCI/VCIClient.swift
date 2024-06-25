@@ -20,10 +20,6 @@ enum VCIClientError: Error {
 struct GrantAuthorizationCode: Codable {
     let issuerState: String?
     let authorizationServer: String?
-    enum CodingKeys: String, CodingKey {
-        case issuerState = "issuer_state"
-        case authorizationServer = "authorization_server"
-    }
 }
 
 struct TxCode: Codable {
@@ -31,7 +27,7 @@ struct TxCode: Codable {
     let length: Int?
     let description: String?
     enum CodingKeys: String, CodingKey {
-        case inputMode = "input_mode"
+        case inputMode = "inputMode"  // It is assumed that the snake case strategy is configured.
         case length, description
     }
 }
@@ -41,10 +37,12 @@ struct GrantPreAuthorizedCode: Codable {
     let txCode: TxCode?
     var interval: Int? = 5
     let authorizationServer: String?
+
+    // It is assumed that the snake case strategy is configured.
     enum CodingKeys: String, CodingKey {
-        case preAuthorizedCode = "pre-authorized_code"
-        case txCode = "tx_code"
-        case authorizationServer = "authorization_server"
+        case preAuthorizedCode = "pre-authorizedCode"
+        case txCode = "txCode"
+        case authorizationServer = "authorizationServer"
         case interval
     }
 }
@@ -53,9 +51,10 @@ struct Grant: Codable {
     let authorizationCode: GrantAuthorizationCode?
     let preAuthorizedCode: GrantPreAuthorizedCode?
 
+    // It is assumed that the snake case strategy is configured.
     enum CodingKeys: String, CodingKey {
-        case authorizationCode = "authorization_code"
-        case preAuthorizedCode = "urn:ietf:params:oauth:grant-type:pre-authorized_code"
+        case authorizationCode = "authorizationCode"
+        case preAuthorizedCode = "urn:ietf:params:oauth:grant-type:pre-authorizedCode"
     }
 }
 
@@ -63,12 +62,6 @@ struct CredentialOffer: Codable {
     let credentialIssuer: String
     let credentialConfigurationIds: [String]
     let grants: Grant?
-
-    enum CodingKeys: String, CodingKey {
-        case credentialIssuer = "credential_issuer"
-        case credentialConfigurationIds = "credential_configuration_ids"
-        case grants
-    }
 
     func isTxCodeRequired() -> Bool {
         if let grants = self.grants,
@@ -101,6 +94,7 @@ struct CredentialOffer: Codable {
             return nil
         }
         let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
         do {
             return try decoder.decode(CredentialOffer.self, from: jsonData)
         }
@@ -132,13 +126,14 @@ struct OAuthTokenRequest: Codable {
     let preAuthorizedCode: String?
     let txCode: String?
 
+    // It is assumed that the snake case strategy is configured.
     enum CodingKeys: String, CodingKey {
         case code
-        case grantType = "grant_type"
-        case redirectUri = "redirect_uri"
-        case clientId = "client_id"
-        case preAuthorizedCode = "pre-authorized_code"
-        case txCode = "tx_code"
+        case grantType = "grantType"
+        case redirectUri = "redirectUri"
+        case clientId = "clientId"
+        case preAuthorizedCode = "pre-authorizedCode"
+        case txCode = "txCode"
     }
 }
 
@@ -148,14 +143,6 @@ struct OAuthTokenResponse: Codable {
     let expiresIn: Int
     let cNonce: String?
     let cNonceExpiresIn: Int?
-
-    enum CodingKeys: String, CodingKey {
-        case accessToken = "access_token"
-        case tokenType = "token_type"
-        case expiresIn = "expires_in"
-        case cNonce = "c_nonce"
-        case cNonceExpiresIn = "c_nonce_expires_in"
-    }
 }
 
 struct CredentialRequestCredentialResponseEncryption: Codable {
@@ -165,10 +152,6 @@ struct CredentialRequestCredentialResponseEncryption: Codable {
 
     let alg: String
     let enc: String
-
-    enum CodingKeys: String, CodingKey {
-        case alg, enc
-    }
 }
 
 struct LdpVpProofClaim: Codable {
@@ -176,10 +159,6 @@ struct LdpVpProofClaim: Codable {
 
     // REQUIRED when the Credential Issuer has provided a c_nonce. It MUST NOT be used otherwise
     let challenge: String?
-
-    enum CodingKeys: String, CodingKey {
-        case domain, challenge
-    }
 }
 
 struct LdpVp: Codable {
@@ -195,30 +174,16 @@ protocol Proofable: Codable {
 struct JwtProof: Proofable {
     let proofType: String
     let jwt: String
-
-    enum CodingKeys: String, CodingKey {
-        case proofType = "proof_type"
-        case jwt
-    }
 }
 
 struct CwtProof: Proofable {
     let proofType: String
     let cwt: String
-
-    enum CodingKeys: String, CodingKey {
-        case proofType = "proof_type"
-        case cwt
-    }
 }
 
 struct LdpVpProof: Proofable {
     let proofType: String
     let ldpVp: LdpVp
-    enum CodingKeys: String, CodingKey {
-        case proofType = "proof_type"
-        case ldpVp = "ldp_vp"
-    }
 }
 
 protocol CredentialRequest: Encodable {
@@ -241,11 +206,6 @@ struct CredentialRequestVcSdJwt: CredentialRequest {
     // REQUIRED when the format parameter is present in the Credential Request. It MUST NOT be used otherwise
     let vct: String?
     let claims: [String: Claim]?
-    enum CodingKeys: String, CodingKey {
-        case format, proof, vct, claims
-        case credentialIdentifier = "credential_identifier"
-        case credentialResponseEncryption = "credential_response_encryption"
-    }
 }
 
 struct CredentialRequestJwtVcJson: CredentialRequest {
@@ -257,13 +217,6 @@ struct CredentialRequestJwtVcJson: CredentialRequest {
     // REQUIRED when the format parameter is present in the Credential Request.
     // It MUST NOT be used otherwise
     let credentialDefinition: CredentialDefinitionJwtVcJson?
-
-    enum CodingKeys: String, CodingKey {
-        case format, proof
-        case credentialIdentifier = "credential_identifier"
-        case credentialResponseEncryption = "credential_response_encryption"
-        case credentialDefinition = "credential_definition"
-    }
 }
 
 struct CredentialResponse: Codable {
@@ -272,18 +225,16 @@ struct CredentialResponse: Codable {
     let cNonce: String?
     let cNonceExpiresIn: Int?
     let notificationId: String?
-    enum CodingKeys: String, CodingKey {
-        case credential
-        case transactionId = "transaction_id"
-        case cNonce = "c_nonce"
-        case cNonceExpiresIn = "c_nonce_expires_in"
-        case notificationId = "notification_id"
-    }
 }
 
 struct CredentialDefinitionJwtVcJson: Encodable {
     let type: [String]
     let credentialSubject: [String: ClaimOnlyMandatory]?
+
+    enum CodingKeys: String, CodingKey {
+        case type
+        case credentialSubject = "credentialSubject"
+    }
 }
 
 func createCredentialRequest(formatValue: String, credentialType: String, proofable: Proofable?)
@@ -346,7 +297,7 @@ func postTokenRequest(
     }
 
     let decoder = JSONDecoder()
-    // decoder.keyDecodingStrategy = .convertFromSnakeCase
+    decoder.keyDecodingStrategy = .convertFromSnakeCase
     return try decoder.decode(OAuthTokenResponse.self, from: data)
 }
 
@@ -386,6 +337,7 @@ func postCredentialRequest(
 
     // レスポンスデータをデコード
     let decoder = JSONDecoder()
+    decoder.keyDecodingStrategy = .convertFromSnakeCase
     return try decoder.decode(CredentialResponse.self, from: data)
 }
 

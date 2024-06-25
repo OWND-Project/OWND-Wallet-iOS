@@ -9,22 +9,32 @@ import Foundation
 
 // Helper encoder for application/x-www-form-urlencoded encoding
 struct URLEncodedFormEncoder {
+    var keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy = .useDefaultKeys
+
     func encode<T: Encodable>(_ value: T) throws -> Data {
-        let encoder = URLEncoder()
+        let encoder = URLEncoder(keyEncodingStrategy: keyEncodingStrategy)
         return try encoder.encode(value)
     }
 }
 
 struct URLEncoder {
+    var keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy
+
     func encode<T: Encodable>(_ value: T) throws -> Data {
-        let dictionary = try DictionaryEncoder().encode(value)
+        let dictionary = try DictionaryEncoder(keyEncodingStrategy: keyEncodingStrategy).encode(
+            value)
         let queryString = dictionary.map { "\($0)=\($1)" }.joined(separator: "&")
         return queryString.data(using: .utf8) ?? Data()
     }
 }
 
 struct DictionaryEncoder {
-    private let encoder = JSONEncoder()
+    private let encoder: JSONEncoder
+
+    init(keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy) {
+        self.encoder = JSONEncoder()
+        self.encoder.keyEncodingStrategy = keyEncodingStrategy
+    }
 
     func encode<T>(_ value: T) throws -> [String: String] where T: Encodable {
         let data = try encoder.encode(value)

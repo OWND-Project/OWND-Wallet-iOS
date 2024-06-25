@@ -85,26 +85,34 @@ final class CredentialIssuerMetadataTests: XCTestCase {
             let issuer = "https://datasign-demo-vci.tunnelto.dev"
             let testURL1 = URL(string: "\(issuer)/.well-known/openid-credential-issuer")!
             guard
-                let url = Bundle.main.url(
-                    forResource: "credential_issuer_metadata_jwt_vc", withExtension: "json"),
-                let mockData1 = try? Data(contentsOf: url)
+                let mockData1 = try? loadJsonTestData(fileName: "credential_issuer_metadata_jwt_vc")
             else {
                 XCTFail("Cannot read credential_issuer_metadata.json")
                 return
             }
             let testURL2 = URL(string: "\(issuer)/.well-known/oauth-authorization-server")!
             guard
-                let url = Bundle.main.url(
-                    forResource: "authorization_server", withExtension: "json"),
-                let mockData2 = try? Data(contentsOf: url)
+                let mockData2 = try? loadJsonTestData(fileName: "authorization_server")
             else {
                 XCTFail("Cannot read authorization_server.json")
                 return
             }
-            let response = HTTPURLResponse(
-                url: url, statusCode: 200, httpVersion: nil, headerFields: nil)
-            MockURLProtocol.mockResponses[testURL1.absoluteString] = (mockData1, response)
-            MockURLProtocol.mockResponses[testURL2.absoluteString] = (mockData2, response)
+            MockURLProtocol.mockResponses[testURL1.absoluteString] = (
+                mockData1,
+                HTTPURLResponse(
+                    url: testURL1.absoluteURL,
+                    statusCode: 200,
+                    httpVersion: nil,
+                    headerFields: nil)
+            )
+            MockURLProtocol.mockResponses[testURL2.absoluteString] = (
+                mockData2,
+                HTTPURLResponse(
+                    url: testURL2.absoluteURL,
+                    statusCode: 200,
+                    httpVersion: nil,
+                    headerFields: nil)
+            )
             do {
                 let metadata = try await retrieveAllMetadata(issuer: issuer, using: mockSession)
                 XCTAssertEqual(metadata.credentialIssuerMetadata.credentialIssuer, issuer)
@@ -112,6 +120,7 @@ final class CredentialIssuerMetadataTests: XCTestCase {
                     metadata.authorizationServerMetadata.tokenEndpoint, "\(issuer)/token")
             }
             catch {
+                print(error)
                 XCTFail("Request should not fail")
             }
         }
@@ -120,6 +129,7 @@ final class CredentialIssuerMetadataTests: XCTestCase {
     // todo とりあえずenum変換の方式を試すだけの仮コード(VCIの発行時点ではtokenEndpointだけあれば良いので全プロパティの変換は後回しにする)
     func testEnumDocode() {
         let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
         do {
             let jsonString = """
                 {

@@ -35,7 +35,8 @@ class URLEncodedFormEncoderTests: XCTestCase {
             txCode: nil
         )
 
-        let encoder = URLEncodedFormEncoder()
+        var encoder = URLEncodedFormEncoder()
+        encoder.keyEncodingStrategy = .convertToSnakeCase
         let encodedData = try encoder.encode(tokenRequest)
         guard let encodedString = String(data: encodedData, encoding: .utf8) else {
             XCTFail("unable to convert to String")
@@ -60,7 +61,8 @@ class URLEncodedFormEncoderTests: XCTestCase {
             txCode: "9999"
         )
 
-        let encoder = URLEncodedFormEncoder()
+        var encoder = URLEncodedFormEncoder()
+        encoder.keyEncodingStrategy = .convertToSnakeCase
         let encodedData = try encoder.encode(tokenRequest)
         guard let encodedString = String(data: encodedData, encoding: .utf8) else {
             XCTFail("unable to convert to String")
