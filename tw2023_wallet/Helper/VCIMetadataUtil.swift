@@ -7,34 +7,14 @@
 
 import Foundation
 
-struct SDJwtParts {
-    let issuerSignedJwt: String
-    let disclosures: [String]
-    let keyBindingJwt: String?
-}
-
 class VCIMetadataUtil {
-    static func divideSDJwt(sdJwt: String) -> SDJwtParts {
-        let parts = sdJwt.split(separator: "~").map(String.init)
-        guard !parts.isEmpty else {
-            fatalError("Invalid SD-JWT: No parts found")
-        }
-
-        let issuerSignedJwt = parts.first!
-        let disclosures = Array(parts[1..<parts.count - 1])
-        let keyBindingJwt = parts.last!.isEmpty ? nil : parts.last
-
-        return SDJwtParts(
-            issuerSignedJwt: issuerSignedJwt, disclosures: disclosures, keyBindingJwt: keyBindingJwt
-        )
-    }
 
     static func extractTypes(format: String, credential: String) throws -> [String] {
         var types: [String] = []
 
         switch format {
             case "vc+sd-jwt":
-                let jwt = divideSDJwt(sdJwt: credential).issuerSignedJwt
+                let jwt = try SDJwtUtil.divideSDJwt(sdJwt: credential).issuerSignedJwt
                 let decoded = try decodeJWTPayload(jwt: jwt)
                 let vct = decoded["vct"] as! String
                 types = [vct]
