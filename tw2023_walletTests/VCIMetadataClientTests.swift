@@ -85,32 +85,42 @@ final class CredentialIssuerMetadataTests: XCTestCase {
             let issuer = "https://datasign-demo-vci.tunnelto.dev"
             let testURL1 = URL(string: "\(issuer)/.well-known/openid-credential-issuer")!
             guard
-                let url = Bundle.main.url(
-                    forResource: "credential_issuer_metadata_jwt_vc", withExtension: "json"),
-                let mockData1 = try? Data(contentsOf: url)
+                let mockData1 = try? loadJsonTestData(fileName: "credential_issuer_metadata_jwt_vc")
             else {
                 XCTFail("Cannot read credential_issuer_metadata.json")
                 return
             }
             let testURL2 = URL(string: "\(issuer)/.well-known/oauth-authorization-server")!
             guard
-                let url = Bundle.main.url(
-                    forResource: "authorization_server", withExtension: "json"),
-                let mockData2 = try? Data(contentsOf: url)
+                let mockData2 = try? loadJsonTestData(fileName: "authorization_server")
             else {
                 XCTFail("Cannot read authorization_server.json")
                 return
             }
-            let response = HTTPURLResponse(
-                url: url, statusCode: 200, httpVersion: nil, headerFields: nil)
-            MockURLProtocol.mockResponses[testURL1.absoluteString] = (mockData1, response)
-            MockURLProtocol.mockResponses[testURL2.absoluteString] = (mockData2, response)
+            MockURLProtocol.mockResponses[testURL1.absoluteString] = (
+                mockData1,
+                HTTPURLResponse(
+                    url: testURL1.absoluteURL,
+                    statusCode: 200,
+                    httpVersion: nil,
+                    headerFields: nil)
+            )
+            MockURLProtocol.mockResponses[testURL2.absoluteString] = (
+                mockData2,
+                HTTPURLResponse(
+                    url: testURL2.absoluteURL,
+                    statusCode: 200,
+                    httpVersion: nil,
+                    headerFields: nil)
+            )
             do {
                 let metadata = try await retrieveAllMetadata(issuer: issuer, using: mockSession)
-                XCTAssertEqual(metadata.credentialIssuer, issuer)
-                XCTAssertEqual(metadata.tokenEndpoint, "\(issuer)/token")
+                XCTAssertEqual(metadata.credentialIssuerMetadata.credentialIssuer, issuer)
+                XCTAssertEqual(
+                    metadata.authorizationServerMetadata.tokenEndpoint, "\(issuer)/token")
             }
             catch {
+                print(error)
                 XCTFail("Request should not fail")
             }
         }
@@ -131,12 +141,7 @@ final class CredentialIssuerMetadataTests: XCTestCase {
                 print("Error: unable to convert JSON string to Data")
                 return
             }
-            guard let url = Bundle.main.url(forResource: "", withExtension: "json"),
-                let mockData = try? Data(contentsOf: url)
-            else {
-                XCTFail("Cannot read credential_issuer_metadata.json")
-                return
-            }
+
             let metadata = try decoder.decode(AuthorizationServerMetadata.self, from: jsonData)
             XCTAssertEqual("https://example.com", metadata.issuer)
             XCTAssertEqual(ResponseMode.fragment, metadata.responseMode)

@@ -1,0 +1,32 @@
+{
+  "given_name": {
+    "mandatory": true,
+    "value_type": "string",
+    "display": [
+      {
+        "name": "Given Name",
+        "locale": "en-US"
+      },
+      {
+        "name": "名",
+        "locale": "ja-JP"
+      }
+    ]
+  },
+  "last_name": {
+    "mandatory": false,
+    "value_type": "number",
+    "display": [
+      {
+        "name": "Surname",
+        "locale": "en-US"
+      },
+      {
+        "name": "姓",
+        "locale": "ja-JP"
+      }
+    ]
+  },
+}
+
+

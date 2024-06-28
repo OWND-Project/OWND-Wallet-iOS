@@ -66,7 +66,7 @@ struct SDJwtUtil {
         return base64
     }
 
-    static func divideSDJwt(_ sdJwt: String) throws -> SDJwtParts {
+    static func divideSDJwt(sdJwt: String) throws -> SDJwtParts {
         let hasKBJWT = !sdJwt.hasSuffix("~")
 
         var parts = sdJwt.split(separator: "~").map { String($0) }
@@ -115,7 +115,7 @@ struct SDJwtUtil {
     }
 
     static func decodeSDJwt(_ credential: String) throws -> [Disclosure] {
-        let dividedJwt = try divideSDJwt(credential)
+        let dividedJwt = try divideSDJwt(sdJwt: credential)
         return decodeDisclosure(dividedJwt.disclosures)
     }
 

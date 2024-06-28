@@ -1,0 +1,13 @@
+[
+    {
+        "issuer": "https://example.com",
+        "authorizationEndpoint": "https://example.com/auth",
+        "tokenEndpoint": "https://example.com/token",
+        "grantTypesSupported": [
+            "authorization_code",
+            "refresh_token",
+            "client_credentials"
+        ],
+        "responseMode": "query"
+    }
+]

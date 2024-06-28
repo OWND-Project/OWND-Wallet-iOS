@@ -11,5 +11,6 @@ struct AuthorizationServerMetadata: Codable {
     let issuer: String?
     let authorizationEndpoint: String?
     let tokenEndpoint: String?
+    let grantTypesSupported: [String]?
     let responseMode: ResponseMode?
 }

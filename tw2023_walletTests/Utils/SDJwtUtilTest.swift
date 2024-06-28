@@ -22,10 +22,10 @@ class SDJwtUtilTests: XCTestCase {
 
     func testDevideSDJwtSignedJwtExtraction() {
         do {
-            let parts1 = try SDJwtUtil.divideSDJwt(sdJwtWithoutDisclosureAndKBJ)
-            let parts2 = try SDJwtUtil.divideSDJwt(sdJwtWithoutDisclosureWithKBJ)
-            let parts3 = try SDJwtUtil.divideSDJwt(sdJwtWithDisclosureWithoutKBJ)
-            let parts4 = try SDJwtUtil.divideSDJwt(sdJwtWithDisclosureWithKBJ)
+            let parts1 = try SDJwtUtil.divideSDJwt(sdJwt: sdJwtWithoutDisclosureAndKBJ)
+            let parts2 = try SDJwtUtil.divideSDJwt(sdJwt: sdJwtWithoutDisclosureWithKBJ)
+            let parts3 = try SDJwtUtil.divideSDJwt(sdJwt: sdJwtWithDisclosureWithoutKBJ)
+            let parts4 = try SDJwtUtil.divideSDJwt(sdJwt: sdJwtWithDisclosureWithKBJ)
 
             // Issuer Signed Jwt
             XCTAssertEqual("ISSUER_SIGNED_JWT", parts1.issuerSignedJwt)
@@ -52,7 +52,7 @@ class SDJwtUtilTests: XCTestCase {
 
     func testDecodeDisclosure() {
         do {
-            let parts = try SDJwtUtil.divideSDJwt(sdJwtWithDisclosureWithoutKBJ_instance)
+            let parts = try SDJwtUtil.divideSDJwt(sdJwt: sdJwtWithDisclosureWithoutKBJ_instance)
             let expected: [String] = [
                 "verified_at", "last_name", "first_name", "is_order_than_15", "is_order_than_18",
                 "is_order_than_20", "is_order_than_65",

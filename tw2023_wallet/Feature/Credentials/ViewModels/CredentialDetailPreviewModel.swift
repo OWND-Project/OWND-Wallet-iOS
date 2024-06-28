@@ -48,6 +48,7 @@ class DetailVPModePreviewModel: CredentialDetailViewModel {
 
     func dummyPresentationDefinition() -> PresentationDefinition {
         let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
         let presentationJsonData = presentationJson.data(using: .utf8)
         let presentationDefinition = try! decoder.decode(
             PresentationDefinition.self, from: presentationJsonData!)

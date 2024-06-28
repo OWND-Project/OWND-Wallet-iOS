@@ -24,7 +24,8 @@ struct CredentialSubjectLow: View {
     let modelData = ModelData()
     modelData.loadIssuerMetaDataList()
     let credSupported =
-        modelData.issuerMetaDataList[2].credentialsSupported["ParticipationCertificate"]
+        modelData.issuerMetaDataList[2].credentialConfigurationsSupported[
+            "ParticipationCertificate"]
         as! CredentialSupportedJwtVcJson
     let displayNames = Array(credSupported.credentialDefinition.credentialSubject!.keys)
     return CredentialSubjectLow(item: displayNames.first!)

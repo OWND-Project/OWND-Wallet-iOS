@@ -217,7 +217,7 @@ struct SharingRequest: View {
                             if let display = credentialSupported.display {
                                 proofBy = String(
                                     format: NSLocalizedString("proof_by", comment: ""),
-                                    display[0].name!)
+                                    display[0].name)
                             }
                         }
                     }

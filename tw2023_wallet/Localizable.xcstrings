@@ -614,7 +614,11 @@
         }
       }
     },
+    "failed_to_load_info_for_issuance" : {
+
+    },
     "failed_to_show_credential_offer" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

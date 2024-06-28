@@ -8,142 +8,250 @@
 import Foundation
 import SwiftyJSON
 
-struct ImageInfo: Codable {
-    let url: String?
+struct Logo: Codable {
+    let uri: String
     let altText: String?
 }
 
-class Display: Codable {
+struct BackgroundImage: Codable {
+    let uri: String?
+}
+
+protocol Displayable: Codable {
+    var name: String? { get }
+    var locale: String? { get }
+}
+
+struct IssuerDisplay: Displayable {
+    let name: String?
+    let locale: String?
+    let logo: Logo?
+}
+
+struct ClaimDisplay: Displayable {
     let name: String?
     let locale: String?
 }
 
-class CredentialsSupportedDisplay: Codable {
-    let name: String?
+struct CredentialDisplay: Codable {
+    let name: String
     let locale: String?
-    let logo: ImageInfo?
+    let logo: Logo?
     let description: String?
     let backgroundColor: String?
-    let backgroundImage: String?
+    let backgroundImage: BackgroundImage?
     let textColor: String?
 }
 
-struct IssuerCredentialSubject: Codable {
+struct Claim: Codable {
     let mandatory: Bool?
     let valueType: String?
-    let display: [Display]?
-
+    let display: [ClaimDisplay]?
 }
 
-typealias IssuerCredentialSubjectMap = [String: IssuerCredentialSubject]
-
-struct JwtVcJsonCredentialDefinition: Codable {
-    let type: [String]
-    let credentialSubject: IssuerCredentialSubjectMap?
-}
-struct VcSdJwtCredentialDefinition: Codable {
-    let vct: String
-    let claims: IssuerCredentialSubjectMap?
+struct ClaimOnlyMandatory: Codable {
+    var mandatory: Bool?
 }
 
-extension JwtVcJsonCredentialDefinition {
-    func getClaimNames() -> [String] {
-        guard let subject = self.credentialSubject else {
-            return []
+struct ProofSigningAlgValuesSupported: Codable {
+    let proofSigningAlgValuesSupported: [String]
+}
+
+struct CredentialResponseEncryption: Codable {
+    let algValuesSupported: [String]
+    let encValuesSupported: [String]
+    let encryptionRequired: Bool
+}
+
+protocol CredentialConfiguration: Codable {
+    var format: String { get }
+    var scope: String? { get }
+    var cryptographicBindingMethodsSupported: [String]? { get }
+    var credentialSigningAlgValuesSupported: [String]? { get }
+    var proofTypesSupported: [String: ProofSigningAlgValuesSupported]? { get }
+    var display: [CredentialDisplay]? { get }
+
+    func getCredentialDisplayName(locale: String) -> String
+    func getClaimNames(locale: String) -> [String]
+}
+
+extension CredentialConfiguration {
+    func getCredentialDisplayName(locale: String = "ja-JP") -> String {
+        let defaultCredentialDisplay = "Unknown Credential"
+        guard let credentialDisplays = self.display, credentialDisplays.count > 0 else {
+            return defaultCredentialDisplay
         }
-        return Array(subject.keys)
+        for d in credentialDisplays {
+            if let displayLocale = d.locale {
+                if displayLocale == locale {
+                    return d.name
+                }
+            }
+        }
+        if let firstDisplay = credentialDisplays.first {
+            return firstDisplay.name
+        }
+
+        return defaultCredentialDisplay
+    }
+
+    func getClaimNames(locale: String = "ja-JP") -> [String] {
+        return []
     }
 }
 
-extension VcSdJwtCredentialDefinition {
-    func getClaimNames() -> [String] {
+typealias ClaimMap = [String: Claim]
+
+struct CredentialSupportedVcSdJwt: CredentialConfiguration {
+    let format: String
+    let scope: String?
+    let cryptographicBindingMethodsSupported: [String]?
+    let credentialSigningAlgValuesSupported: [String]?
+    let proofTypesSupported: [String: ProofSigningAlgValuesSupported]?
+    let display: [CredentialDisplay]?
+
+    let vct: String
+    let claims: ClaimMap?
+    let order: [String]?
+
+    func getClaimNames(locale: String = "ja-JP") -> [String] {
         guard let claims = self.claims else {
             return []
         }
-        return Array(claims.keys)
+
+        return getLocalizedClaimNames(claims: claims, locale: locale)
     }
+
 }
 
-typealias ICredentialContextType = [String: Any]
-
-protocol CredentialSupported: Codable {
-    var format: String { get }
-    var cryptographicBindingMethodsSupported: [String]? { get }
-    var cryptographicSuitesSupported: [String]? { get }
-    var proofTypesSupported: [String]? { get }
-    var display: [CredentialsSupportedDisplay]? { get }
-    var order: [String]? { get }
-}
-
-struct CredentialSupportedVcSdJwt: CredentialSupported {
-    let format: String
-    let scope: String
-    let cryptographicBindingMethodsSupported: [String]?
-    let cryptographicSuitesSupported: [String]?
-    let display: [CredentialsSupportedDisplay]?
-    let credentialDefinition: VcSdJwtCredentialDefinition
-    let proofTypesSupported: [String]?
-    let order: [String]?
+struct JwtVcJsonCredentialDefinition: Codable {
+    let type: [String]
+    let credentialSubject: ClaimMap?
 
     enum CodingKeys: String, CodingKey {
-        case format, scope, cryptographicBindingMethodsSupported, cryptographicSuitesSupported,
-            display, credentialDefinition, proofTypesSupported, order
+        case type
+        case credentialSubject = "credentialSubject"
     }
+
+    func getClaimNames(locale: String) -> [String] {
+        guard let subject = self.credentialSubject else {
+            return []
+        }
+        return getLocalizedClaimNames(claims: subject, locale: locale)
+    }
+
 }
 
-struct CredentialSupportedJwtVcJson: CredentialSupported {
+struct CredentialSupportedJwtVcJson: CredentialConfiguration {
     let format: String
-    let scope: String
+    let scope: String?
     let cryptographicBindingMethodsSupported: [String]?
-    let cryptographicSuitesSupported: [String]?
-    let display: [CredentialsSupportedDisplay]?
+    let credentialSigningAlgValuesSupported: [String]?
+    let proofTypesSupported: [String: ProofSigningAlgValuesSupported]?
+    let display: [CredentialDisplay]?
+
     let credentialDefinition: JwtVcJsonCredentialDefinition
-    let proofTypesSupported: [String]?
     let order: [String]?
 
-    enum CodingKeys: String, CodingKey {
-        case format, scope, cryptographicBindingMethodsSupported, cryptographicSuitesSupported,
-            display, credentialDefinition, proofTypesSupported, order
+    func getClaimNames(locale: String = "ja-JP") -> [String] {
+        return self.credentialDefinition.getClaimNames(locale: locale)
     }
 }
 
-struct CredentialSupportedJwtVcJsonLdAndLdpVc: CredentialSupported {
-    let format: String
-    let cryptographicBindingMethodsSupported: [String]?
-    let cryptographicSuitesSupported: [String]?
-    let display: [CredentialsSupportedDisplay]?
-    let proofTypesSupported: [String]?
-    let types: [String]
+struct LdpVcCredentialDefinition: Codable {
     let context: [String]  // todo オブジェクト形式に対応する
-    let credentialSubject: IssuerCredentialSubjectMap?
-    let order: [String]?
+    let type: [String]
+    let credentialSubject: ClaimMap?
 
     enum CodingKeys: String, CodingKey {
-        case format, cryptographicBindingMethodsSupported, cryptographicSuitesSupported, display,
-            types
+        case type
+        case credentialSubject = "credentialSubject"
         case context = "@context"
-        case credentialSubject, proofTypesSupported, order
+    }
+
+    func getClaimNames(locale: String) -> [String] {
+        guard let subject = self.credentialSubject else {
+            return []
+        }
+        return getLocalizedClaimNames(claims: subject, locale: locale)
+    }
+
+}
+
+struct CredentialSupportedLdpVc: CredentialConfiguration {
+    let format: String
+    let scope: String?
+    let cryptographicBindingMethodsSupported: [String]?
+    let credentialSigningAlgValuesSupported: [String]?
+    let proofTypesSupported: [String: ProofSigningAlgValuesSupported]?
+    let display: [CredentialDisplay]?
+
+    let credentialDefinition: LdpVcCredentialDefinition
+    let order: [String]?
+
+    func getClaimNames(locale: String = "ja-JP") -> [String] {
+        return self.credentialDefinition.getClaimNames(locale: locale)
     }
 }
+
+typealias CredentialSupportedJwtVcJsonLd = CredentialSupportedLdpVc
 
 struct CredentialSupportedFormat: Decodable {
     let format: String
 }
-func decodeCredentialSupported(from jsonData: Data) throws -> CredentialSupported {
+
+func getLocalizedClaimNames(claims: ClaimMap, locale: String) -> [String] {
+    var result: [String] = []
+    for (claimKey, claimValue) in claims {
+        if let displays = claimValue.display {
+            if displays.isEmpty {
+                result.append(claimKey)
+            }
+            else {
+                // Priority is given to those matching LOCALE.
+                let firstElmMatchingToLocale = displays.first(where: {
+                    ($0.locale == locale) && ($0.name != nil)
+                })
+                if let elm = firstElmMatchingToLocale {
+                    result.append(elm.name!)
+                }
+                else {
+                    // If there is no match for Locale, use the first element.
+                    // And, If `name` does not exist for the first element, `claimKey` is used.
+                    let firstDisplay = displays.first!  // `displays` is not empty
+                    if let firstDisplayName = firstDisplay.name {
+                        result.append(firstDisplayName)
+                    }
+                    else {
+                        result.append(claimKey)
+                    }
+                }
+            }
+        }
+        else {
+            result.append(claimKey)
+        }
+    }
+    return result
+}
+
+func decodeCredentialSupported(from jsonData: Data) throws -> CredentialConfiguration {
+
     let decoder = JSONDecoder()
     decoder.keyDecodingStrategy = .convertFromSnakeCase
 
     // 一時的なコンテナ構造体をデコードして、formatフィールドを読み取る
     let formatContainer = try decoder.decode(CredentialSupportedFormat.self, from: jsonData)
-    let format = formatContainer.format
 
-    switch format {
+    print(formatContainer)
+
+    switch formatContainer.format {
         case "vc+sd-jwt":
             return try decoder.decode(CredentialSupportedVcSdJwt.self, from: jsonData)
         case "jwt_vc_json":
             return try decoder.decode(CredentialSupportedJwtVcJson.self, from: jsonData)
         case "ldp_vc":
-            return try decoder.decode(CredentialSupportedJwtVcJsonLdAndLdpVc.self, from: jsonData)
+            return try decoder.decode(CredentialSupportedLdpVc.self, from: jsonData)
         default:
             throw DecodingError.dataCorrupted(
                 DecodingError.Context(codingPath: [], debugDescription: "Invalid format value"))
@@ -154,42 +262,37 @@ func decodeCredentialSupported(from jsonData: Data) throws -> CredentialSupporte
 struct CredentialIssuerMetadata: Codable {
     let credentialIssuer: String
     let authorizationServers: [String]?
-    let credentialEndpoint: String?
-    var tokenEndpoint: String?
+    let credentialEndpoint: String
     let batchCredentialEndpoint: String?
     let deferredCredentialEndpoint: String?
-    let credentialsSupported: [String: CredentialSupported]
-    let display: [Display]?
+    let notificationEndpoint: String?
+    let credentialResponseEncryption: CredentialResponseEncryption?
+    let credentialIdentifiersSupported: Bool?
+    let signedMetadata: String?
+    let display: [IssuerDisplay]?
+    let credentialConfigurationsSupported: [String: CredentialConfiguration]
 
+    // // It is assumed that the snake case strategy is configured.
     enum CodingKeys: String, CodingKey {
-        case credentialIssuer = "credential_issuer"
-        case authorizationServers = "authorization_servers"
-        case credentialEndpoint = "credential_endpoint"
-        case tokenEndpoint = "token_endpoint"
-        case batchCredentialEndpoint = "batch_credential_endpoint"
-        case deferredCredentialEndpoint = "deferred_credential_endpoint"
-        case credentialsSupported = "credentials_supported"
+        case credentialIssuer = "credentialIssuer"
+        case authorizationServers = "authorizationServers"
+        case credentialEndpoint = "credentialEndpoint"
+        case batchCredentialEndpoint = "batchCredentialEndpoint"
+        case deferredCredentialEndpoint = "deferredCredentialEndpoint"
+        case notificationEndpoint = "notificationEndpoint"
+        case credentialResponseEncryption = "credentialResponseEncryption"
+        case credentialIdentifiersSupported = "credentialIdentifiersSupported"
+        case credentialConfigurationsSupported = "credentialConfigurationsSupported"
+        case signedMetadata = "signedMetadata"
         case display
     }
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
-        credentialIssuer = try container.decode(String.self, forKey: .credentialIssuer)
-        authorizationServers = try container.decodeIfPresent(
-            [String].self, forKey: .authorizationServers)
-        credentialEndpoint = try container.decodeIfPresent(String.self, forKey: .credentialEndpoint)
-        tokenEndpoint = try container.decodeIfPresent(String.self, forKey: .tokenEndpoint)
-        batchCredentialEndpoint = try container.decodeIfPresent(
-            String.self, forKey: .batchCredentialEndpoint)
-        deferredCredentialEndpoint = try container.decodeIfPresent(
-            String.self, forKey: .deferredCredentialEndpoint)
-
-        display = try container.decodeIfPresent([Display].self, forKey: .display)
-
-        var credentialsSupportedDict = [String: CredentialSupported]()
+        var credentialsSupportedDict = [String: CredentialConfiguration]()
         let credentialsSupportedContainer = try container.nestedContainer(
-            keyedBy: DynamicKey.self, forKey: .credentialsSupported)
+            keyedBy: DynamicKey.self, forKey: .credentialConfigurationsSupported)
         for key in credentialsSupportedContainer.allKeys {
             let credentialJSON = try credentialsSupportedContainer.decode(JSON.self, forKey: key)
             let credentialData = try JSONSerialization.data(
@@ -197,7 +300,47 @@ struct CredentialIssuerMetadata: Codable {
             let credentialSupported = try decodeCredentialSupported(from: credentialData)
             credentialsSupportedDict[key.stringValue] = credentialSupported
         }
-        self.credentialsSupported = credentialsSupportedDict
+
+        credentialIssuer = try container.decode(String.self, forKey: .credentialIssuer)
+        authorizationServers = try container.decodeIfPresent(
+            [String].self, forKey: .authorizationServers)
+        credentialEndpoint = try container.decodeIfPresent(
+            String.self, forKey: .credentialEndpoint)!
+        batchCredentialEndpoint = try container.decodeIfPresent(
+            String.self, forKey: .batchCredentialEndpoint)
+        deferredCredentialEndpoint = try container.decodeIfPresent(
+            String.self, forKey: .deferredCredentialEndpoint)
+        notificationEndpoint = try container.decodeIfPresent(
+            String.self, forKey: .notificationEndpoint)
+        credentialResponseEncryption = try container.decodeIfPresent(
+            CredentialResponseEncryption.self, forKey: .credentialResponseEncryption)
+        credentialIdentifiersSupported = try container.decodeIfPresent(
+            Bool.self, forKey: .credentialIdentifiersSupported)
+        signedMetadata = try container.decodeIfPresent(
+            String.self, forKey: .signedMetadata)
+        display = try container.decodeIfPresent([IssuerDisplay].self, forKey: .display)
+        credentialConfigurationsSupported = credentialsSupportedDict
+    }
+
+    func getCredentialIssuerDisplayName(locale: String = "ja-jp") -> String {
+        let defaultIssuerDisplay = "Unknown Issuer"
+        guard let issuerDisplays = self.display, issuerDisplays.count > 0 else {
+            return defaultIssuerDisplay
+        }
+        for d in issuerDisplays {
+            if let displayLocale = d.locale {
+                if let name = d.name, displayLocale == locale {
+                    return name
+                }
+            }
+        }
+        if let firstDisplay = issuerDisplays.first,
+            let name = firstDisplay.name
+        {
+            return name
+        }
+
+        return defaultIssuerDisplay
     }
 
     func encode(to encoder: Encoder) throws {
@@ -206,15 +349,14 @@ struct CredentialIssuerMetadata: Codable {
         try container.encode(credentialIssuer, forKey: .credentialIssuer)
         try container.encodeIfPresent(authorizationServers, forKey: .authorizationServers)
         try container.encodeIfPresent(credentialEndpoint, forKey: .credentialEndpoint)
-        try container.encodeIfPresent(tokenEndpoint, forKey: .tokenEndpoint)
         try container.encodeIfPresent(batchCredentialEndpoint, forKey: .batchCredentialEndpoint)
         try container.encodeIfPresent(
             deferredCredentialEndpoint, forKey: .deferredCredentialEndpoint)
 
         // Encode credentialsSupported based on the actual type
         var credentialsSupportedContainer = container.nestedContainer(
-            keyedBy: DynamicKey.self, forKey: .credentialsSupported)
-        for (key, value) in credentialsSupported {
+            keyedBy: DynamicKey.self, forKey: .credentialConfigurationsSupported)
+        for (key, value) in credentialConfigurationsSupported {
             let credentialEncoder = credentialsSupportedContainer.superEncoder(
                 forKey: DynamicKey(stringValue: key)!)
             try value.encode(to: credentialEncoder)
@@ -234,51 +376,4 @@ struct DynamicKey: CodingKey {
     init?(intValue: Int) {
         return nil
     }
-}
-
-struct GrantAuthorizationCode: Codable {
-    let issuerState: String?
-
-    enum CodingKeys: String, CodingKey {
-        case issuerState = "issuer_state"
-    }
-}
-
-struct GrantUrnIetf: Codable {
-    let preAuthorizedCode: String
-    let userPinRequired: BooleanLiteralType
-
-    enum CodingKeys: String, CodingKey {
-        case preAuthorizedCode = "pre-authorized_code"
-        case userPinRequired = "user_pin_required"
-    }
-}
-
-struct Grant: Codable {
-    let authorizationCode: GrantAuthorizationCode?
-    let urnIetfParams: GrantUrnIetf?
-
-    enum CodingKeys: String, CodingKey {
-        case authorizationCode = "authorization_code"
-        case urnIetfParams = "urn:ietf:params:oauth:grant-type:pre-authorized_code"
-    }
-}
-
-struct CredentialOffer: Codable {
-    let credentialIssuer: String
-    let credentials: [String]
-    let grants: Grant?
-
-    enum CodingKeys: String, CodingKey {
-        case credentialIssuer = "credential_issuer"
-        case credentials, grants
-    }
-}
-
-struct OAuthTokenResponse: Codable {
-    let accessToken: String
-    let tokenType: String
-    let expiresIn: Int
-    let cNonce: String?
-    let cNonceExpiresIn: Int?
 }

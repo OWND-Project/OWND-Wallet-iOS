@@ -61,10 +61,10 @@ class VerificationPreviewModel: VerificationViewModel {
     }
 }
 
-func decodeDisplay(value: String) -> Display {
+func decodeDisplay(value: String) -> IssuerDisplay {
     let decoder = JSONDecoder()
     let jsonData = value.data(using: .utf8)!
-    return try! decoder.decode(Display.self, from: jsonData)
+    return try! decoder.decode(IssuerDisplay.self, from: jsonData)
 }
 
 class VerificationErrorPreviewModel: VerificationViewModel {

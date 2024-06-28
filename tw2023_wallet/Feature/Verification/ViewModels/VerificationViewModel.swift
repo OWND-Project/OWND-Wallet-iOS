@@ -15,7 +15,7 @@ class DecompressedVerificationArgs: Codable {
 
 class VerificationViewModel {
     var dataModel: VerificationModel = .init()
-    var displayMap: [String: [Display]]? = nil
+    var displayMap: [String: [ClaimDisplay]]? = nil
     var format: String = ""
     var credential: String = ""
 
