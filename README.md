@@ -75,7 +75,42 @@ After successfully building the project, the app will automatically run on the s
 - If using a physical device, ensure the device is connected to your computer and selected in the device dropdown menu.
 
 ## Contributing
-Contributions are welcome! The contribution guidelines are currently under consideration. Please check back soon for updates on how you can contribute to this project.
+
+### Development Workflow
+
+We use Git-Flow for our development process. Here is the step-by-step guide:
+
+#### 1. Fork the Repository
+
+- Start by forking the repository to your own GitHub account.
+
+#### 2. Create a Feature Branch
+
+- Create a new branch from the `develop` branch in your forked repository. Name your branch descriptively to indicate the feature or fix you are working on.
+
+#### 3. Make Your Changes
+
+- Make your changes in your feature branch. Ensure your code adheres to our coding standards and includes appropriate tests.
+
+#### 4. Submit a Pull Request
+
+- Push your changes to your forked repository and open a pull request (PR) to the `develop` branch of this repository. Provide a clear and detailed description of your changes in the PR.
+
+#### 5. Code Review and Approval
+
+- Your PR will be reviewed by the core contributors. They may request changes or provide feedback. Once your PR is approved, it will be merged into the `develop` branch.
+
+#### 6. Release Preparation
+
+- At appropriate intervals, a `release` branch will be created from the `develop` branch. This branch is used to finalize the release, including bug fixes and version number increments.
+
+#### 7. Merge to Main
+
+- Once the release is ready, the `release` branch will be merged into the `main` branch. A version tag will be created based on the version number.
+
+#### 8. Back-Merge to Develop
+
+- Finally, the `main` branch changes will be merged back into the `develop` branch to ensure that the `develop` branch includes the latest updates.
 
 ## License
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
