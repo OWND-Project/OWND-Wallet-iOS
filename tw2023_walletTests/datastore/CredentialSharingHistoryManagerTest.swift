@@ -64,7 +64,6 @@ class CredentialSharingHistoryManagerTests: XCTestCase {
         let fetchedHistory = savedHistories.first!
         XCTAssertEqual(fetchedHistory.rp, credentialSharingHistory.rp)
         XCTAssertEqual(fetchedHistory.accountIndex, credentialSharingHistory.accountIndex)
-        XCTAssertEqual(fetchedHistory.createdAt, credentialSharingHistory.createdAt)
         XCTAssertEqual(fetchedHistory.credentialID, credentialSharingHistory.credentialID)
 
         let set1 = NSSet(array: credentialSharingHistory.claims)

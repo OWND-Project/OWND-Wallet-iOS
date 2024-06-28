@@ -9,6 +9,120 @@ import XCTest
 
 @testable import tw2023_wallet
 
+class ConvertVpTokenResponseResponseTests: XCTestCase {
+    var idProvider: OpenIdProvider!
+
+    override func setUp() {
+        super.setUp()
+        idProvider = OpenIdProvider(ProviderOption())
+    }
+
+    func testConvertVpTokenResponseResponse_withValid200JSONResponse() throws {
+        // Given
+        let json = """
+            {
+                "redirect_uri": "https://example.com"
+            }
+            """.data(using: .utf8)!
+        let response = HTTPURLResponse(
+            url: URL(string: "https://example.com")!,
+            statusCode: 200,
+            httpVersion: nil,
+            headerFields: ["Content-Type": "application/json"]
+        )!
+        let requestURL = URL(string: "https://example.com")!
+
+        // When
+        let result = try idProvider.convertVpTokenResponseResponse(
+            data: json, response: response, requestURL: requestURL)
+
+        // Then
+        XCTAssertEqual(result.statusCode, 200)
+        XCTAssertEqual(result.location, "https://example.com")
+        XCTAssertNil(result.cookies)
+    }
+
+    func testConvertVpTokenResponseResponse_withInvalid200JSONResponse() throws {
+        // Given
+        let json = """
+            {
+                "invalid_key": "invalid_value"
+            }
+            """.data(using: .utf8)!
+        let response = HTTPURLResponse(
+            url: URL(string: "https://example.com")!,
+            statusCode: 200,
+            httpVersion: nil,
+            headerFields: ["Content-Type": "application/json"]
+        )!
+        let requestURL = URL(string: "https://example.com")!
+
+        // Then
+        let result = try idProvider.convertVpTokenResponseResponse(
+            data: json, response: response, requestURL: requestURL)
+        XCTAssertEqual(result.statusCode, 200)
+        XCTAssertNil(result.location)
+        XCTAssertNil(result.cookies)
+
+    }
+
+    func testConvertVpTokenResponseResponse_with302RedirectAbsoluteURL() throws {
+        // Given
+        let response = HTTPURLResponse(
+            url: URL(string: "https://example.com")!,
+            statusCode: 302,
+            httpVersion: nil,
+            headerFields: ["Location": "https://example.com"]
+        )!
+        let requestURL = URL(string: "https://example.com")!
+
+        // When
+        let result = try idProvider.convertVpTokenResponseResponse(
+            data: Data(), response: response, requestURL: requestURL)
+
+        // Then
+        XCTAssertEqual(result.statusCode, 302)
+        XCTAssertEqual(result.location, "https://example.com")
+        XCTAssertNil(result.cookies)
+    }
+
+    func testConvertVpTokenResponseResponse_with302RedirectRelativeURL() throws {
+        // Given
+        let response = HTTPURLResponse(
+            url: URL(string: "https://example.com")!,
+            statusCode: 302,
+            httpVersion: nil,
+            headerFields: ["Location": "/path/to/resource"]
+        )!
+        let requestURL = URL(string: "https://example.com")!
+
+        // When
+        let result = try idProvider.convertVpTokenResponseResponse(
+            data: Data(), response: response, requestURL: requestURL)
+
+        // Then
+        XCTAssertEqual(result.statusCode, 302)
+        XCTAssertEqual(result.location, "https://example.com/path/to/resource")
+        XCTAssertNil(result.cookies)
+    }
+
+    func testConvertVpTokenResponseResponse_with302RedirectMissingLocationHeader() throws {
+        // Given
+        let response = HTTPURLResponse(
+            url: URL(string: "https://example.com")!,
+            statusCode: 302,
+            httpVersion: nil,
+            headerFields: [:]
+        )!
+        let requestURL = URL(string: "https://example.com")!
+
+        // Then
+        XCTAssertThrowsError(
+            try idProvider.convertVpTokenResponseResponse(
+                data: Data(), response: response, requestURL: requestURL))
+    }
+}
+
 final class OpenIdProviderTests: XCTestCase {
 
     override func setUpWithError() throws {

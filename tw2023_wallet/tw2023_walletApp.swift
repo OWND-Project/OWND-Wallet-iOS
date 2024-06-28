@@ -27,6 +27,7 @@ struct tw2023_walletApp: App {
     @State private var credentialOffer: String? = nil
     @State private var isShowingOpenID4VP = false
     @State private var openID4VP: String? = nil
+    @State private var navigateToRedirectView = false
 
     @State private var sharingRequestModel = SharingRequestModel()
 
@@ -58,11 +59,38 @@ struct tw2023_walletApp: App {
                         isPresented: $isShowingOpenID4VP,
                         onDismiss: {
                             openID4VP = nil
+                            if let postResult = sharingRequestModel.postResult,
+                               let location = postResult.location {
+                                navigateToRedirectView.toggle()
+                            }
                         }
                     ) {
                         if let value = openID4VP {
                             SharingRequest(args: createOpenID4VPArgs(value: value)).environment(
                                 sharingRequestModel)
+                        }
+                        else {
+                            EmptyView()
+                        }
+                    }
+                    .fullScreenCover(
+                        isPresented: $navigateToRedirectView,
+                        onDismiss: {
+                            navigateToRedirectView = false
+                        }
+                    ) {
+                        // let (urlString, cookies) = getRedirectParameters()
+                        if let postResult = sharingRequestModel.postResult,
+                            let urlString = postResult.location
+                        {
+                            NavigationView {
+                                RedirectView(urlString: urlString, cookieStrings: [])
+                                    .navigationBarItems(
+                                        trailing: Button("close") {
+                                            navigateToRedirectView = false
+                                        }
+                                    )
+                            }
                         }
                         else {
                             EmptyView()
