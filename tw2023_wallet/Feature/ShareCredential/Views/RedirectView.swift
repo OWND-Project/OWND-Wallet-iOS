@@ -12,10 +12,13 @@ import WebKit
 struct WebView: UIViewRepresentable {
     let urlString: String
     let cookieStrings: [String]
-    // let cookies: [HTTPCookie]
+    var onClose: () -> Void
 
     func makeUIView(context: Context) -> WKWebView {
-        return WKWebView()
+        let webConfiguration = WKWebViewConfiguration()
+        let webView = WKWebView(frame: .zero, configuration: webConfiguration)
+        webView.navigationDelegate = context.coordinator
+        return webView
     }
 
     func updateUIView(_ webView: WKWebView, context: Context) {
@@ -49,6 +52,53 @@ struct WebView: UIViewRepresentable {
         // リクエストを実行
         webView.load(URLRequest(url: url))
     }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self, onClose: onClose)
+    }
+
+    class Coordinator: NSObject, WKNavigationDelegate {
+        var parent: WebView
+        var onClose: () -> Void
+
+        init(_ parent: WebView, onClose: @escaping () -> Void) {
+            self.parent = parent
+            self.onClose = onClose
+        }
+
+        func webView(
+            _ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction,
+            decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
+        ) {
+            if let url = navigationAction.request.url {
+                if url.scheme == "openid-credential-offer" {
+                    handleCustomSchemeInWKWebView(url: url)
+                    decisionHandler(.cancel)
+                    return
+                }
+            }
+            decisionHandler(.allow)
+        }
+
+        func handleCustomSchemeInWKWebView(url: URL) {
+            print("Handling custom scheme URL: \(url)")
+            if UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url, options: [:]) { success in
+                    if success {
+                        DispatchQueue.main.async {
+                            self.onClose()
+                        }
+                    }
+                    else {
+                        print("Failed to open URL: \(url)")
+                    }
+                }
+            }
+            else {
+                print("Cannot open URL: \(url)")
+            }
+        }
+    }
 }
 
 struct RedirectView: View {
@@ -63,44 +113,19 @@ struct RedirectView: View {
     var cookieStrings: [String] = []
 
     var body: some View {
-        WebView(urlString: urlString, cookieStrings: cookieStrings)
-            //        EmptyView().onAppear {
-            //            openURLInSafari(urlString: urlString)
-            //        }
-            .alert(isPresented: $showAlert) {
-                Alert(
-                    title: Text(alertTitle),
-                    message: Text(alertMessage),
-                    dismissButton: .default(Text("OK")) {
-                        presentationMode.wrappedValue.dismiss()
-                    }
-                )
-            }
+        WebView(urlString: urlString, cookieStrings: cookieStrings) {
+            self.presentationMode.wrappedValue.dismiss()
+        }
+        .alert(isPresented: $showAlert) {
+            Alert(
+                title: Text(alertTitle),
+                message: Text(alertMessage),
+                dismissButton: .default(Text("OK")) {
+                    presentationMode.wrappedValue.dismiss()
+                }
+            )
+        }
     }
-
-    //    func openURLWithCookies(urlString: String, cookieValue: String) {
-    //        guard let url = URL(string: urlString) else {
-    //            print("Invalid URL specified.")
-    //            return
-    //        }
-    //
-    //        let webView = WKWebView(frame: .zero)
-    //        let cookie = HTTPCookie(properties: [
-    //            .domain: url.host!,
-    //            .path: "/",
-    //            .name: "username_mapping_session",
-    //            .value: cookieValue,
-    //            .secure: "FALSE",
-    //            .expires: NSDate(timeIntervalSinceNow: 3600)
-    //        ])!
-    //
-    //        webView.configuration.websiteDataStore.httpCookieStore.setCookie(cookie) {
-    //            DispatchQueue.main.async {
-    //                webView.load(URLRequest(url: url))
-    //                // WKWebViewを表示するためのUI処理をここに実装
-    //            }
-    //        }
-    //    }
 
     func openURLInSafari(urlString: String) {
         if let url = URL(string: urlString), UIApplication.shared.canOpenURL(url) {
