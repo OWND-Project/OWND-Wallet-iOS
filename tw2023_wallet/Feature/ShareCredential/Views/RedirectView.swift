@@ -13,6 +13,9 @@ struct WebView: UIViewRepresentable {
     let urlString: String
     let cookieStrings: [String]
     var onClose: () -> Void
+    var openURL: (URL, @escaping (Bool) -> Void) -> Void = { url, completion in
+        UIApplication.shared.open(url, options: [:], completionHandler: completion)
+    }
 
     func makeUIView(context: Context) -> WKWebView {
         let webConfiguration = WKWebViewConfiguration()
@@ -28,7 +31,6 @@ struct WebView: UIViewRepresentable {
         }
 
         let cookies = cookieStrings.compactMap { cookieString -> HTTPCookie? in
-            // シンプルな`key=value`形式を想定
             let parts = cookieString.split(separator: "=", maxSplits: 1).map(String.init)
             guard parts.count == 2 else { return nil }
 
@@ -39,31 +41,33 @@ struct WebView: UIViewRepresentable {
                 .domain: url.host ?? "",
             ]
 
-            // 必要に応じて`Secure`やその他の属性を設定
             return HTTPCookie(properties: properties)
         }
 
-        // クッキーをWebViewのセッションに設定
         let dataStore = webView.configuration.websiteDataStore
         for cookie in cookies {
             dataStore.httpCookieStore.setCookie(cookie)
         }
 
-        // リクエストを実行
         webView.load(URLRequest(url: url))
     }
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(self, onClose: onClose)
+        Coordinator(self, onClose: onClose, openURL: openURL)
     }
 
     class Coordinator: NSObject, WKNavigationDelegate {
         var parent: WebView
         var onClose: () -> Void
+        var openURL: (URL, @escaping (Bool) -> Void) -> Void
 
-        init(_ parent: WebView, onClose: @escaping () -> Void) {
+        init(
+            _ parent: WebView, onClose: @escaping () -> Void,
+            openURL: @escaping (URL, @escaping (Bool) -> Void) -> Void
+        ) {
             self.parent = parent
             self.onClose = onClose
+            self.openURL = openURL
         }
 
         func webView(
@@ -82,20 +86,15 @@ struct WebView: UIViewRepresentable {
 
         func handleCustomSchemeInWKWebView(url: URL) {
             print("Handling custom scheme URL: \(url)")
-            if UIApplication.shared.canOpenURL(url) {
-                UIApplication.shared.open(url, options: [:]) { success in
-                    if success {
-                        DispatchQueue.main.async {
-                            self.onClose()
-                        }
-                    }
-                    else {
-                        print("Failed to open URL: \(url)")
+            openURL(url) { success in
+                if success {
+                    DispatchQueue.main.async {
+                        self.onClose()
                     }
                 }
-            }
-            else {
-                print("Cannot open URL: \(url)")
+                else {
+                    print("Failed to open URL: \(url)")
+                }
             }
         }
     }
@@ -113,9 +112,21 @@ struct RedirectView: View {
     var cookieStrings: [String] = []
 
     var body: some View {
-        WebView(urlString: urlString, cookieStrings: cookieStrings) {
-            self.presentationMode.wrappedValue.dismiss()
-        }
+        WebView(
+            urlString: urlString, cookieStrings: cookieStrings,
+            onClose: {
+                self.presentationMode.wrappedValue.dismiss()
+            },
+            openURL: { url, completion in
+                if UIApplication.shared.canOpenURL(url) {
+                    UIApplication.shared.open(url, options: [:], completionHandler: completion)
+                }
+                else {
+                    print("Cannot open URL: \(url)")
+                    completion(false)
+                }
+            }
+        )
         .alert(isPresented: $showAlert) {
             Alert(
                 title: Text(alertTitle),
