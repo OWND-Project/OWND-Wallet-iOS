@@ -180,6 +180,7 @@
 		A88D32442C27001B00429E75 /* credential_display_filled.json in Resources */ = {isa = PBXBuildFile; fileRef = A82601A82C267A2A00BF8139 /* credential_display_filled.json */; };
 		A88D32452C27001F00429E75 /* credential_display_minimum.json in Resources */ = {isa = PBXBuildFile; fileRef = A82601AA2C267B1000BF8139 /* credential_display_minimum.json */; };
 		A88D32462C27002300429E75 /* claim_map_mixed.json in Resources */ = {isa = PBXBuildFile; fileRef = A82601AD2C2685F200BF8139 /* claim_map_mixed.json */; };
+		A88779BD2C33DC08002EE9C2 /* WebViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A88779BC2C33DC08002EE9C2 /* WebViewTests.swift */; };
 		A89108022B82D1650060DD71 /* RecipientClaimsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89108012B82D1650060DD71 /* RecipientClaimsViewModel.swift */; };
 		A89108042B82D2880060DD71 /* RecipientClaimsPreviewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89108032B82D2880060DD71 /* RecipientClaimsPreviewModel.swift */; };
 		A891080C2B84785F0060DD71 /* credential_sharing_history.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = A891080B2B84785F0060DD71 /* credential_sharing_history.pb.swift */; };
@@ -420,6 +421,7 @@
 		A84AB70A2B50B98C00E8C88B /* CredentialSharingHistoryManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialSharingHistoryManagerTest.swift; sourceTree = "<group>"; };
 		A84AB70C2B50C2DD00E8C88B /* IdTokenSharingHistoryManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdTokenSharingHistoryManagerTest.swift; sourceTree = "<group>"; };
 		A8509C282B82315D00B28C35 /* RecipientClaims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientClaims.swift; sourceTree = "<group>"; };
+		A88779BC2C33DC08002EE9C2 /* WebViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewTests.swift; sourceTree = "<group>"; };
 		A89108012B82D1650060DD71 /* RecipientClaimsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientClaimsViewModel.swift; sourceTree = "<group>"; };
 		A89108032B82D2880060DD71 /* RecipientClaimsPreviewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientClaimsPreviewModel.swift; sourceTree = "<group>"; };
 		A891080B2B84785F0060DD71 /* credential_sharing_history.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = credential_sharing_history.pb.swift; sourceTree = "<group>"; };
@@ -700,6 +702,7 @@
 		8B81E2AC2B33CC4300ED3B4E /* tw2023_walletTests */ = {
 			isa = PBXGroup;
 			children = (
+				A88779B92C33DBDA002EE9C2 /* Feature */,
 				A8AF22892C12A61E00D6EDA5 /* Helper */,
 				A84AB6BF2B4F725000E8C88B /* datastore */,
 				A83039B62B4E4229004139A7 /* Utils */,
@@ -1090,6 +1093,30 @@
 				A8AB4BE12C298D9700C009A1 /* credential_response_notification.json */,
 			);
 			path = credential_response;
+			sourceTree = "<group>";
+		};
+		A88779B92C33DBDA002EE9C2 /* Feature */ = {
+			isa = PBXGroup;
+			children = (
+				A88779BA2C33DBE5002EE9C2 /* ShareCredential */,
+			);
+			path = Feature;
+			sourceTree = "<group>";
+		};
+		A88779BA2C33DBE5002EE9C2 /* ShareCredential */ = {
+			isa = PBXGroup;
+			children = (
+				A88779BB2C33DBEE002EE9C2 /* Views */,
+			);
+			path = ShareCredential;
+			sourceTree = "<group>";
+		};
+		A88779BB2C33DBEE002EE9C2 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A88779BC2C33DC08002EE9C2 /* WebViewTests.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		A8AF22892C12A61E00D6EDA5 /* Helper */ = {
@@ -1714,6 +1741,7 @@
 				8B43AE382B3A93C60016CF83 /* AuthServerMetadata.swift in Sources */,
 				A83039C22B4E4229004139A7 /* SerializeUtilTest.swift in Sources */,
 				8B0E0AB02B403D510080F6A3 /* PresentationExchange.swift in Sources */,
+				A88779BD2C33DC08002EE9C2 /* WebViewTests.swift in Sources */,
 				8B297C372B39538500D2998D /* VCIMetadataTests.swift in Sources */,
 				8BB513942B3BB69A00D4EFB3 /* AsynTestRunner.swift in Sources */,
 				8BB5138D2B3AD0CC00D4EFB3 /* VCIClient.swift in Sources */,
