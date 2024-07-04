@@ -5,9 +5,6 @@
 //  Created by 若葉良介 on 2023/12/22.
 //
 
-// AndroidのConfirmationFragment相当
-// https://github.com/datasign-inc/tw2023-wallet-android/blob/3655ace01d3c454529e34f1b78a4329f44508d23/app/src/main/java/com/ownd_project/tw2023_wallet_android/ui/confirmation/ConfirmationFragment.kt#L1
-
 import SwiftUI
 
 func getCredentialDisplayName(credentialSupported: CredentialSupported?) -> String {
