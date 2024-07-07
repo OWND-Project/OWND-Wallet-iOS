@@ -14,7 +14,7 @@ enum CredentialOfferParseError: Error {
     case InvalidCredentialOffer
 }
 
-class CredentialOfferViewModel {
+class CredentialOfferViewModel: ObservableObject {
     var dataModel: CredentialOfferModel = .init()
     var rawCredentialOfferString: String? = nil
 
