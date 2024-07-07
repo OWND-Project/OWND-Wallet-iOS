@@ -5,6 +5,22 @@
 //  Created by 若葉良介 on 2023/12/22.
 //
 
+
+/*
+ -------------------------------------------------------------------------------
+ Caution!
+
+ `CredentialOfferView` will be significantly revised in PR#17,
+  which has been filed to make it ID1 compliant.
+  This PR#17 will be merged soon, but will not be included in the next release.
+
+  With that in mind, the current content below contains a stopgap measure
+  that was implemented to get through the next release.
+ 
+ -------------------------------------------------------------------------------
+*/
+
+
 import Foundation
 import SwiftUI
 
@@ -48,7 +64,6 @@ class CredentialOfferViewModel: ObservableObject {
 
     func sendRequest(userPin: String?) async throws {
         do {
-            interpretMetadataAndOffer()
 
             let vciClient = try await VCIClient(
                 credentialOfferJson:
@@ -105,6 +120,8 @@ class CredentialOfferViewModel: ObservableObject {
 
         let credentialIssuer = credentialOffer!["credential_issuer"] as! String
         self.dataModel.metaData = try await retrieveAllMetadata(issuer: credentialIssuer)
+        
+        interpretMetadataAndOffer()
 
         dataModel.isLoading = false
         dataModel.hasLoadedData = true

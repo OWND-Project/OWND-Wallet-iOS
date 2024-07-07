@@ -5,17 +5,19 @@
 //  Created by 若葉良介 on 2023/12/22.
 //
 
-/*
 
+/*
+ -------------------------------------------------------------------------------
  Caution!
 
- `CredentialOfferView` will be significantly revised in PR17,
+ `CredentialOfferView` will be significantly revised in PR#17,
   which has been filed to make it ID1 compliant.
-  This PR will be merged soon, but will not be included in the next release.
+  This PR#17 will be merged soon, but will not be included in the next release.
 
   With that in mind, the current content below contains a stopgap measure
   that was implemented to get through the next release.
-
+ 
+ -------------------------------------------------------------------------------
 */
 
 import SwiftUI
@@ -133,11 +135,10 @@ struct CredentialOfferView: View {
     private var content: some View {
 
         if let issuerDisplayName = viewModel.dataModel.metaData?.display?.first?.name,
-            let credentialSupported = viewModel.dataModel.metaData?.credentialsSupported
-                .keys,
-            let firstCredentialName = credentialSupported.first,
+           let credentialName = viewModel.credential_vct,
+            let credentialSupported = viewModel.dataModel.metaData?.credentialsSupported,
             let targetCredential = viewModel.dataModel.metaData?.credentialsSupported[
-                firstCredentialName]
+                credentialName]
         {
 
             let credentialDisplayName = getCredentialDisplayName(
@@ -152,6 +153,7 @@ struct CredentialOfferView: View {
         else {
             EmptyView()
                 .onAppear {
+                    print("Unable to load metadata")
                     showErrorDialog = true
                 }
         }
