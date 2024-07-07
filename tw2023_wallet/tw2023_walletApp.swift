@@ -91,7 +91,10 @@ struct tw2023_walletApp: App {
                     }
             }
             else {
-                AuthenticationView(authenticationManager: self.authenticationManager)
+                AuthenticationView(authenticationManager: self.authenticationManager).onOpenURL(
+                    perform: { url in
+                        handleIncomingURL(url)
+                    })
             }
         }
         .environment(authenticationManager)
@@ -110,9 +113,8 @@ struct tw2023_walletApp: App {
                 print("App is in background")
                 if self.authenticationManager.shouldLock() {
                     self.authenticationManager.isUnlocked = false
-                    if credentialOffer != nil {
-                        credentialOffer = nil
-                    }
+                    credentialOffer = nil
+                    openID4VP = nil
                 }
             @unknown default:
                 break
