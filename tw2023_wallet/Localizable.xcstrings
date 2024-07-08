@@ -614,6 +614,17 @@
         }
       }
     },
+    "eventName" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "イベント名"
+          }
+        }
+      }
+    },
     "failed_to_show_credential_offer" : {
       "localizations" : {
         "en" : {
@@ -1035,7 +1046,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "氏名"
+            "value" : "イベント名"
           }
         }
       }
@@ -1668,6 +1679,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "テスト"
+          }
+        }
+      }
+    },
+    "ticketNo" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ticket Number"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "チケット番号"
           }
         }
       }
