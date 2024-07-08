@@ -625,6 +625,17 @@
         }
       }
     },
+    "EventTicketCredential" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "イベントチケット"
+          }
+        }
+      }
+    },
     "failed_to_show_credential_offer" : {
       "localizations" : {
         "en" : {
