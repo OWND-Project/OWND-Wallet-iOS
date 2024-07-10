@@ -21,11 +21,13 @@ func createOpenID4VPArgs(value: String) -> SharingCredentialArgs {
     return args
 }
 
+extension String: Identifiable {
+    public var id: String { return self }
+}
+
 @main
 struct tw2023_walletApp: App {
-    @State private var isShowingCredentialOffer = false
     @State private var credentialOffer: String? = nil
-    @State private var isShowingOpenID4VP = false
     @State private var openID4VP: String? = nil
     @State private var navigateToRedirectView = false
 
@@ -42,36 +44,27 @@ struct tw2023_walletApp: App {
                         handleIncomingURL(url)
                     })
                     .fullScreenCover(
-                        isPresented: $isShowingCredentialOffer,
+                        item: $credentialOffer,
                         onDismiss: {
                             credentialOffer = nil
                         }
-                    ) {
-                        if let value = credentialOffer {
-                            CredentialOfferView().environment(
-                                createCredentialOfferArgs(value: value))
-                        }
-                        else {
-                            EmptyView()
-                        }
+                    ) { value in
+                        CredentialOfferView().environment(
+                            createCredentialOfferArgs(value: value))
                     }
                     .fullScreenCover(
-                        isPresented: $isShowingOpenID4VP,
+                        item: $openID4VP,
                         onDismiss: {
                             openID4VP = nil
                             if let postResult = sharingRequestModel.postResult,
-                               let location = postResult.location {
+                                let location = postResult.location
+                            {
                                 navigateToRedirectView.toggle()
                             }
                         }
-                    ) {
-                        if let value = openID4VP {
-                            SharingRequest(args: createOpenID4VPArgs(value: value)).environment(
-                                sharingRequestModel)
-                        }
-                        else {
-                            EmptyView()
-                        }
+                    ) { value in
+                        SharingRequest(args: createOpenID4VPArgs(value: value)).environment(
+                            sharingRequestModel)
                     }
                     .fullScreenCover(
                         isPresented: $navigateToRedirectView,
@@ -98,7 +91,10 @@ struct tw2023_walletApp: App {
                     }
             }
             else {
-                AuthenticationView(authenticationManager: self.authenticationManager)
+                AuthenticationView(authenticationManager: self.authenticationManager).onOpenURL(
+                    perform: { url in
+                        handleIncomingURL(url)
+                    })
             }
         }
         .environment(authenticationManager)
@@ -117,9 +113,8 @@ struct tw2023_walletApp: App {
                 print("App is in background")
                 if self.authenticationManager.shouldLock() {
                     self.authenticationManager.isUnlocked = false
-                    if credentialOffer != nil {
-                        credentialOffer = nil
-                    }
+                    credentialOffer = nil
+                    openID4VP = nil
                 }
             @unknown default:
                 break
@@ -153,13 +148,11 @@ struct tw2023_walletApp: App {
     private func handleOffer(_ url: URL) {
         print("credential offer")
         credentialOffer = url.absoluteString
-        isShowingCredentialOffer = true
     }
 
     private func handleVp(_ url: URL) {
         print("vp")
         openID4VP = url.absoluteString
-        isShowingOpenID4VP = true
     }
 
 }

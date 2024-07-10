@@ -399,7 +399,7 @@ class OpenIdProvider {
                 throw NetworkError.invalidResponse
             }
         }
-        
+
         return PostResult(statusCode: statusCode, location: nil, cookies: nil)
     }
 
