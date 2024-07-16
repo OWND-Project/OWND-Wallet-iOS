@@ -112,7 +112,13 @@ class OpenIdProvider {
                             the Client Identifier MUST be a DNS name and match a dNSName Subject Alternative Name (SAN) [RFC5280] entry in the leaf certificate passed with the request.
                              */
                                 let (decoded, certificates) = verifedX5CJwt
-                                if isDomainInSAN(certificate: certificates[0], domain: _clientId) {
+                            
+                                guard let url = URL(string: _clientId),
+                                      let domainName = url.host else {
+                                    return .failure(.authRequestInputError(reason: .compliantError(reason: "Unable to get host name")))
+                                }
+
+                                if isDomainInSAN(certificate: certificates[0], domain: domainName) {
                                     print("verify san entry success")
                                 }
                                 else {
@@ -367,7 +373,7 @@ class OpenIdProvider {
         let statusCode = response.statusCode
         if statusCode == 200 {
             if let contentType = response.allHeaderFields["Content-Type"] as? String {
-                if contentType == "application/json" {
+                if contentType.hasPrefix("application/json") {
                     guard
                         let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []),
                         let jsonDict = jsonObject as? [String: Any]
@@ -377,17 +383,30 @@ class OpenIdProvider {
                     let location = jsonDict["redirect_uri"] as? String
                     return PostResult(statusCode: statusCode, location: location, cookies: nil)
                 }
-                else {
-                    return PostResult(statusCode: statusCode, location: nil, cookies: nil)
+            }
+        }
+        if response.statusCode == 302 {
+            if let locationHeader = response.allHeaderFields["Location"] as? String {
+                var location: String? = nil
+                if locationHeader.starts(with: "http://") || locationHeader.starts(with: "https://")
+                {
+                    location = locationHeader
                 }
+                else {
+                    let scheme = requestURL.scheme ?? "http"
+                    let host = requestURL.host ?? ""
+                    let port = requestURL.port.map { ":\($0)" } ?? ""
+                    location = "\(scheme)://\(host)\(port)\(locationHeader)"
+                }
+                return PostResult(
+                    statusCode: response.statusCode, location: location, cookies: nil)
             }
             else {
-                return PostResult(statusCode: statusCode, location: nil, cookies: nil)
+                throw NetworkError.invalidResponse
             }
         }
-        else {
-            return PostResult(statusCode: statusCode, location: nil, cookies: nil)
-        }
+
+        return PostResult(statusCode: statusCode, location: nil, cookies: nil)
     }
 
     func respondVPResponse(
