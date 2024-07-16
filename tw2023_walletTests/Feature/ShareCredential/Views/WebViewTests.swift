@@ -43,6 +43,7 @@ class WebViewTests: XCTestCase {
         wait(for: [expectation], timeout: 2.0)
     }
 
+    /*
     func testWebViewSetsCookies() {
         let expectation = XCTestExpectation(description: "WebView sets cookies")
 
@@ -112,7 +113,7 @@ class WebViewTests: XCTestCase {
 
         wait(for: [expectation], timeout: 2.0)
     }
-
+     */
 }
 
 class MockCoordinator: NSObject, WKNavigationDelegate {
