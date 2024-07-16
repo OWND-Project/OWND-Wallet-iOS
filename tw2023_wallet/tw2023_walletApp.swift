@@ -60,7 +60,8 @@ struct tw2023_walletApp: App {
                         onDismiss: {
                             openID4VP = nil
                             if let postResult = sharingRequestModel.postResult,
-                               let location = postResult.location {
+                                let location = postResult.location
+                            {
                                 navigateToRedirectView.toggle()
                             }
                         }
