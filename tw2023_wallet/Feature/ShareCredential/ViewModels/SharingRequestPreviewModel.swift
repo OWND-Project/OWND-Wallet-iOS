@@ -143,7 +143,7 @@ class CredentialListVpModePreviewModel: CredentialListViewModel {
 
 let clientInfoJson = """
       {
-        "name": "OWND Wallet",
+        "name": "OWND Project",
         "url": "https://ownd-project.com:8443",
         "logoUrl": "https://www.ownd-project.com/img/logo_only.png",
         "policyUrl": "https://www.ownd-project.com/wallet/privacy/index.html",
@@ -174,8 +174,8 @@ let presentationJson = """
         "inputDescriptors": [
           {
             "id": "input1",
-            "name": "First Input",
-            "purpose": "For identification",
+            "name": "あなたが13歳以上であること",
+            "purpose": "OWND Projectの利用者として適格であると確認するために必要です。Walletに登録された証明書を使って証明します。",
             "format": {
               "vc+sd-jwt": {}
             },
@@ -204,6 +204,7 @@ let presentationJson = """
             "count": 1,
             "from": "A"
           }
-        ]
+        ],
+        "name": "OWND Projectの利用開始に必要な情報を提供してください"
       }
     """

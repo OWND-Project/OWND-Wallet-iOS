@@ -44,6 +44,8 @@ struct PresentationDefinition: Codable {
     let id: String
     let inputDescriptors: [InputDescriptor]
     let submissionRequirements: [SubmissionRequirement]?
+    let name: String?
+    let purpose: String?
 }
 
 struct ClaimFormat: Codable {
