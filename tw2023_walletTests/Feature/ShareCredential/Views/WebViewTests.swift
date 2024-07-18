@@ -114,7 +114,6 @@ class WebViewTests: XCTestCase {
         wait(for: [expectation], timeout: 2.0)
     }
      */
-
 }
 
 class MockCoordinator: NSObject, WKNavigationDelegate {

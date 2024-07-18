@@ -1310,23 +1310,6 @@
         }
       }
     },
-    "provide_the_information_necessary_to_start_using" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Provide the information necessary to start using %@."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@の利用開始に必要な情報を提供します"
-          }
-        }
-      }
-    },
     "provide_the_information_required_to_register" : {
       "extractionState" : "manual",
       "localizations" : {
