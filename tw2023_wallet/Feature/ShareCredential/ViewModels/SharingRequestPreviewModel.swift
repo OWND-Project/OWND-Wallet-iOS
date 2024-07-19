@@ -74,6 +74,7 @@ class SharingRequestVPPreviewModel: SharingRequestViewModel {
         isLoading = true
         print("load dummy data..")
         let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
 
         let clientInfoJsonData = clientInfoJson.data(using: .utf8)
         clientInfo = try! decoder.decode(ClientInfo.self, from: clientInfoJsonData!)

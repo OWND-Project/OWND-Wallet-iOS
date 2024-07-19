@@ -17,12 +17,31 @@
       }
     ]
   },
-  "degree": {},
+  "address": {
+    "mandatory": false,
+    "display": [
+      {
+        "name": "Address",
+        "locale": "en-US"
+      }
+    ]
+  },
+  "age": {
+    "value_type": "Integer",
+    "display": [
+      {
+        "name": "Age",
+        "locale": "en-US"
+      }
+    ]
+  },
   "gpa": {
     "display": [
       {
         "name": "GPA"
       }
     ]
-  }
+  },
+  "degree": {}
 }
+

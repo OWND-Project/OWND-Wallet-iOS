@@ -636,7 +636,7 @@
         }
       }
     },
-    "failed_to_show_credential_offer" : {
+    "failed_to_load_info_for_issuance" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {

@@ -37,6 +37,7 @@ extension Datastore_CredentialData {
         if let jsonData = self.credentialIssuerMetadata.data(using: .utf8) {
             do {
                 let decoder = JSONDecoder()
+                decoder.keyDecodingStrategy = .convertFromSnakeCase
                 let result = try decoder.decode(CredentialIssuerMetadata.self, from: jsonData)
                 return result
             }
@@ -60,6 +61,7 @@ extension Datastore_CredentialData {
 
             // メタデータをデコード
             let decoder = JSONDecoder()
+            decoder.keyDecodingStrategy = .convertFromSnakeCase
             let metadata = try decoder.decode(CredentialIssuerMetadata.self, from: metadataData)
 
             // メタデータから対応するクレデンシャルを探す
@@ -120,15 +122,15 @@ extension Datastore_CredentialData {
 
     private func getBackgroundImage(credentialType: String) -> String? {
         guard let metaData = self.parsedMetaData(),
-            let supported = metaData.credentialsSupported[credentialType],
+            let supported = metaData.credentialConfigurationsSupported[credentialType],
             let displays = supported.display,
             let firstDisplay = displays.first,  // todo: 1つめを前提としている
-            let backgroundImageUrl = firstDisplay.backgroundImage
+            let backgroundImage = firstDisplay.backgroundImage
         else {
             return nil
         }
 
-        return backgroundImageUrl
+        return backgroundImage.uri
     }
 
     private func convertUnixTimestampToDate(unixTimestamp: Int64) -> String {
