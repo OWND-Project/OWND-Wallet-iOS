@@ -120,10 +120,9 @@ extension Datastore_CredentialData {
         }
     }
 
-    private func getBackgroundImage() -> String? {
+    private func getBackgroundImage(credentialType: String) -> String? {
         guard let metaData = self.parsedMetaData(),
-            let supportedName = metaData.credentialConfigurationsSupported.keys.first,  // todo: 1つめを前提としている
-            let supported = metaData.credentialConfigurationsSupported[supportedName],
+            let supported = metaData.credentialConfigurationsSupported[credentialType],
             let displays = supported.display,
             let firstDisplay = displays.first,  // todo: 1つめを前提としている
             let backgroundImage = firstDisplay.backgroundImage
@@ -163,7 +162,7 @@ extension Datastore_CredentialData {
             issuer: issuer,
             issuerDisplayName: issuerName,
             issuedAt: iat,
-            backgroundImageUrl: getBackgroundImage(),
+            backgroundImageUrl: getBackgroundImage(credentialType: self.type),
             credentialType: self.type,
             disclosure: disclosure,
             qrDisplay: self.generateQRDisplay(),

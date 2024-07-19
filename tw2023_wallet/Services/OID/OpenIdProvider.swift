@@ -112,7 +112,13 @@ class OpenIdProvider {
                             the Client Identifier MUST be a DNS name and match a dNSName Subject Alternative Name (SAN) [RFC5280] entry in the leaf certificate passed with the request.
                              */
                                 let (decoded, certificates) = verifedX5CJwt
-                                if isDomainInSAN(certificate: certificates[0], domain: _clientId) {
+                            
+                                guard let url = URL(string: _clientId),
+                                      let domainName = url.host else {
+                                    return .failure(.authRequestInputError(reason: .compliantError(reason: "Unable to get host name")))
+                                }
+
+                                if isDomainInSAN(certificate: certificates[0], domain: domainName) {
                                     print("verify san entry success")
                                 }
                                 else {
@@ -399,7 +405,7 @@ class OpenIdProvider {
                 throw NetworkError.invalidResponse
             }
         }
-        
+
         return PostResult(statusCode: statusCode, location: nil, cookies: nil)
     }
 

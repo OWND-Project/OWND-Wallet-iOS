@@ -10,14 +10,10 @@ import SwiftUI
 struct CredentialOfferView: View {
     @Environment(\.presentationMode) var presentationMode
     @Environment(CredentialOfferArgs.self) var args
-    var viewModel: CredentialOfferViewModel
+    @StateObject var viewModel: CredentialOfferViewModel = .init()
     @State private var navigateToHome = false
     @State private var navigateToPinInput = false
     @State private var showErrorDialog = false
-
-    init(viewModel: CredentialOfferViewModel = CredentialOfferViewModel()) {
-        self.viewModel = viewModel
-    }
 
     private func handleCredentialIssue() {
         if let offer = viewModel.dataModel.credentialOffer {

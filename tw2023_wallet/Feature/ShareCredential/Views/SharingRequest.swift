@@ -55,17 +55,23 @@ struct SharingRequest: View {
                                         Spacer()
                                     }
                                     // ------------ title section ------------
-                                    let titleKey =
-                                        viewModel.presentationDefinition != nil
-                                        ? "provide_the_information_necessary_to_start_using"
-                                        : "provide_the_information_required_to_register"
-                                    Text(
-                                        String(
+                                    if let pd = viewModel.presentationDefinition,
+                                        let name = pd.name
+                                    {
+                                        Text(name)
+                                            .modifier(Title3Black())
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                    }
+                                    else {
+                                        let titleKey =
+                                            "provide_the_information_required_to_register"
+                                        let title = String(
                                             format: NSLocalizedString(titleKey, comment: ""),
                                             clientInfo.name)
-                                    )
-                                    .modifier(Title3Black())
-                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                        Text(title)
+                                            .modifier(Title3Black())
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                    }
 
                                     // ------------ logo to logo section ------------
                                     HStack {

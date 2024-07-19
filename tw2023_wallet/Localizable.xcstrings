@@ -614,8 +614,29 @@
         }
       }
     },
+    "eventName" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "イベント名"
+          }
+        }
+      }
+    },
+    "EventTicketCredential" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "イベントチケット"
+          }
+        }
+      }
+    },
     "failed_to_load_info_for_issuance" : {
-
     },
     "failed_to_show_credential_offer" : {
       "extractionState" : "stale",
@@ -1039,7 +1060,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "氏名"
+            "value" : "イベント名"
           }
         }
       }
@@ -1288,23 +1309,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "情報を提供する"
-          }
-        }
-      }
-    },
-    "provide_the_information_necessary_to_start_using" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Provide the information necessary to start using %@."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@の利用開始に必要な情報を提供します"
           }
         }
       }
@@ -1672,6 +1676,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "テスト"
+          }
+        }
+      }
+    },
+    "ticketNo" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ticket Number"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "チケット番号"
           }
         }
       }

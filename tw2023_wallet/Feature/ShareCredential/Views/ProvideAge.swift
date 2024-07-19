@@ -12,19 +12,30 @@ struct ProvideAge: View {
     var presentationDefinition: PresentationDefinition
 
     var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 0) {
-                Text(LocalizedStringKey(presentationDefinition.inputDescriptors[0].purpose!))
-                    .modifier(BodyBlack())
-                Text(
-                    String(
-                        format: NSLocalizedString("age_share_description", comment: ""),
-                        self.clientInfo.name)
-                )
-                .modifier(SubHeadLineGray())
+        let id = presentationDefinition.inputDescriptors[0]
+        if let name = id.name, let purpose = id.purpose {
+            HStack {
+                VStack(alignment: .leading, spacing: 0) {
+                    Text(name).modifier(BodyBlack())
+                    Text(purpose).modifier(SubHeadLineGray())
+                }
+                .padding(.vertical, 8)
+                .frame(maxWidth: .infinity, alignment: .leading)  // 左寄せ
             }
-            .padding(.vertical, 8)
-            .frame(maxWidth: .infinity, alignment: .leading)  // 左寄せ
+        }
+        else {
+            HStack {
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("").modifier(BodyBlack())
+                    Text(
+                        String(
+                            format: NSLocalizedString("age_share_description", comment: ""),
+                            self.clientInfo.name)
+                    )
+                }
+                .padding(.vertical, 8)
+                .frame(maxWidth: .infinity, alignment: .leading)  // 左寄せ
+            }
         }
     }
 }
